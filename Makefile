@@ -1,8 +1,18 @@
+PROJECT_NAME=megabot
+
 fmt:
 	go fmt ./...
 
 lint:
 	golint ./...
+
+test-docker-restart: test-docker-stop test-docker-start
+
+test-docker-start:
+	docker-compose --project-name ${PROJECT_NAME} -f test/docker-compose-test.yaml up -d
+
+test-docker-stop:
+	docker-compose --project-name ${PROJECT_NAME} -f test/docker-compose-test.yaml down
 
 test-local: tidy fmt lint
 	go test -cover ./...
