@@ -25,6 +25,7 @@ pipeline {
             string(credentialsId: 'integration-redis-test', variable: 'REDIS_PASSWORD')
           ]) {
             sh """#!/bin/bash
+            rm -vf coverage.txt gosec.xml
             go get -t -v ./...
             go test -race -coverprofile=coverage.txt -covermode=atomic ./...
             RESULT=\$?
