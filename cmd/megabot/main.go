@@ -7,6 +7,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"github.com/tyrm/megabot/cmd/megabot/action"
+	"github.com/tyrm/megabot/cmd/megabot/flag"
 	"github.com/tyrm/megabot/internal/config"
 	"github.com/tyrm/megabot/internal/log"
 )
@@ -37,10 +38,17 @@ func main() {
 		SilenceUsage:  true,
 	}
 
+	flag.Global(rootCmd, config.Defaults)
+
+	err := viper.BindPFlag(config.Keys.ConfigPath, rootCmd.PersistentFlags().Lookup(config.Keys.ConfigPath))
+	if err != nil {
+		logrus.Fatalf("error binding config flag: %s", err)
+	}
+
 	// add commands
 	rootCmd.AddCommand(serverCommands())
 
-	err := rootCmd.Execute()
+	err = rootCmd.Execute()
 	if err != nil {
 		logrus.Fatalf("error executing command: %s", err)
 	}

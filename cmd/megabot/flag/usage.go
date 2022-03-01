@@ -18,4 +18,7 @@ var usage = config.KeyNames{
 	DbDatabase:  "Database name",
 	DbTLSMode:   "Database tls mode",
 	DbTLSCACert: "Path to CA cert for db tls connection",
+
+	// server
+	ServerRoles: "Server roles that should be started: [graphql]",
 }

@@ -27,5 +27,6 @@ func serverCommands() *cobra.Command {
 	flag.Server(serverStartCmd, config.Defaults)
 
 	serverCmd.AddCommand(serverStartCmd)
+
 	return serverCmd
 }

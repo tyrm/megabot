@@ -18,6 +18,9 @@ type Values struct {
 	DbDatabase  string
 	DbTLSMode   string
 	DbTLSCACert string
+
+	// server
+	ServerRoles []string
 }
 
 // Defaults contains the default values
@@ -37,4 +40,7 @@ var Defaults = Values{
 	DbDatabase:  "megabot",
 	DbTLSMode:   "disable",
 	DbTLSCACert: "",
+
+	// server
+	ServerRoles: []string{ServerRoleGraphql},
 }

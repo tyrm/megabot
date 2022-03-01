@@ -7,4 +7,6 @@ import (
 
 // Server adds all flags for running the server.
 func Server(cmd *cobra.Command, values config.Values) {
+	// application
+	cmd.PersistentFlags().StringArray(config.Keys.ServerRoles, values.ServerRoles, usage.ServerRoles)
 }

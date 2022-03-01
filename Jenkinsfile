@@ -48,7 +48,7 @@ pipeline {
       }
       steps {
         script {
-          sh 'goreleaser'
+          sh '~/go/bin/goreleaser'
         }
       }
     }

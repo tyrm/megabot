@@ -18,6 +18,9 @@ type KeyNames struct {
 	DbDatabase  string
 	DbTLSMode   string
 	DbTLSCACert string
+
+	// server
+	ServerRoles string
 }
 
 // Keys contains the names of config keys.
@@ -38,4 +41,7 @@ var Keys = KeyNames{
 	DbDatabase:  "db-database",
 	DbTLSMode:   "db-tls-mode",
 	DbTLSCACert: "db-tls-ca-cert",
+
+	// server
+	ServerRoles: "server-role",
 }
