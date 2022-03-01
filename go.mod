@@ -3,6 +3,7 @@ module github.com/tyrm/megabot
 go 1.17
 
 require (
+	github.com/google/uuid v1.3.0
 	github.com/jackc/pgconn v1.11.0
 	github.com/jackc/pgx/v4 v4.15.0
 	github.com/sirupsen/logrus v1.4.2
@@ -12,12 +13,12 @@ require (
 	github.com/uptrace/bun v1.1.0
 	github.com/uptrace/bun/dialect/pgdialect v1.1.0
 	github.com/uptrace/bun/dialect/sqlitedialect v1.1.0
+	golang.org/x/crypto v0.0.0-20210817164053-32db794688a5
 	modernc.org/sqlite v1.14.7
 )
 
 require (
 	github.com/fsnotify/fsnotify v1.5.1 // indirect
-	github.com/google/uuid v1.3.0 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
 	github.com/jackc/chunkreader/v2 v2.0.1 // indirect
@@ -41,7 +42,6 @@ require (
 	github.com/tmthrgd/go-hex v0.0.0-20190904060850-447a3041c3bc // indirect
 	github.com/vmihailenco/msgpack/v5 v5.3.5 // indirect
 	github.com/vmihailenco/tagparser/v2 v2.0.0 // indirect
-	golang.org/x/crypto v0.0.0-20210817164053-32db794688a5 // indirect
 	golang.org/x/mod v0.5.0 // indirect
 	golang.org/x/sys v0.0.0-20220227234510-4e6760a101f9 // indirect
 	golang.org/x/text v0.3.7 // indirect

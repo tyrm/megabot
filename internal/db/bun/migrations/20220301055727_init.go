@@ -6,17 +6,18 @@ import (
 	"github.com/uptrace/bun"
 )
 
-
 func init() {
 	up := func(ctx context.Context, db *bun.DB) error {
 		modelList := []interface{}{
 			&models.User{},
+			&models.GroupMembership{},
 		}
 		for _, i := range modelList {
 			if _, err := db.NewCreateTable().Model(i).IfNotExists().Exec(ctx); err != nil {
 				return err
 			}
 		}
+
 		return nil
 	}
 

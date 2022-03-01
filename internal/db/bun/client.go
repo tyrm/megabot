@@ -37,28 +37,29 @@ const (
 	dbTLSModeUnset   = ""
 )
 
-type Conn struct {
+type Bun struct {
 	errProc func(error) db.Error
 	*bun.DB
 }
 
 type bunClient struct {
-	db *Conn
+	commonDB
+	bun *Bun
 }
 
-func NewBunDBService(ctx context.Context) (db.DB, error) {
-	var conn *Conn
+func NewClient(ctx context.Context) (db.DB, error) {
+	var newBun *Bun
 	var err error
 	dbType := strings.ToLower(viper.GetString(config.Keys.DbType))
 
 	switch dbType {
 	case dbTypePostgres:
-		conn, err = pgConn(ctx)
+		newBun, err = pgConn(ctx)
 		if err != nil {
 			return nil, err
 		}
 	case dbTypeSqlite:
-		conn, err = sqliteConn(ctx)
+		newBun, err = sqliteConn(ctx)
 		if err != nil {
 			return nil, err
 		}
@@ -66,21 +67,23 @@ func NewBunDBService(ctx context.Context) (db.DB, error) {
 		return nil, fmt.Errorf("database type %s not supported for bundb", dbType)
 	}
 
-	// perform database migrations
-	if err := doMigration(ctx, conn.DB); err != nil {
-		return nil, fmt.Errorf("db migration error: %s", err)
+	// do migrations
+	if err := doMigration(ctx, newBun.DB); err != nil {
+		return nil, fmt.Errorf("bun migration error: %s", err)
 	}
 
 	ps := &bunClient{
-		db: conn,
+		commonDB: commonDB{
+			bun: newBun,
+		},
+		bun: newBun,
 	}
 
-	// we can confidently return this useable service now
 	return ps, nil
 }
 
-func sqliteConn(ctx context.Context) (*Conn, error) {
-	// validate db address has actually been set
+func sqliteConn(ctx context.Context) (*Bun, error) {
+	// validate bun address has actually been set
 	dbAddress := viper.GetString(config.Keys.DbAddress)
 	if dbAddress == "" {
 		return nil, fmt.Errorf("'%s' was not set when attempting to start sqlite", config.Keys.DbAddress)
@@ -99,7 +102,7 @@ func sqliteConn(ctx context.Context) (*Conn, error) {
 		if errWithCode, ok := err.(*sqlite.Error); ok {
 			err = errors.New(sqlite.ErrorCodeString[errWithCode.Code()])
 		}
-		return nil, fmt.Errorf("could not open sqlite db: %s", err)
+		return nil, fmt.Errorf("could not open sqlite bun: %s", err)
 	}
 
 	setConnectionValues(sqldb)
@@ -114,7 +117,7 @@ func sqliteConn(ctx context.Context) (*Conn, error) {
 
 	conn := getErrConn(bun.NewDB(sqldb, sqlitedialect.New()))
 
-	// ping to check the db is there and listening
+	// ping to check the bun is there and listening
 	if err := conn.PingContext(ctx); err != nil {
 		if errWithCode, ok := err.(*sqlite.Error); ok {
 			err = errors.New(sqlite.ErrorCodeString[errWithCode.Code()])
@@ -126,7 +129,7 @@ func sqliteConn(ctx context.Context) (*Conn, error) {
 	return conn, nil
 }
 
-func pgConn(ctx context.Context) (*Conn, error) {
+func pgConn(ctx context.Context) (*Bun, error) {
 	opts, err := deriveBunDBPGOptions()
 	if err != nil {
 		return nil, fmt.Errorf("could not create bundb postgres options: %s", err)
@@ -138,7 +141,7 @@ func pgConn(ctx context.Context) (*Conn, error) {
 
 	conn := getErrConn(bun.NewDB(sqldb, pgdialect.New()))
 
-	// ping to check the db is there and listening
+	// ping to check the bun is there and listening
 	if err := conn.PingContext(ctx); err != nil {
 		return nil, fmt.Errorf("postgres ping: %s", err)
 	}
@@ -176,11 +179,11 @@ func doMigration(ctx context.Context, db *bun.DB) error {
 func deriveBunDBPGOptions() (*pgx.ConnConfig, error) {
 	keys := config.Keys
 
-	if strings.ToUpper(viper.GetString(keys.DbType)) != db.DBTypePostgres {
-		return nil, fmt.Errorf("expected db type of %s but got %s", db.DBTypePostgres, viper.GetString(keys.DbType))
+	if strings.ToUpper(viper.GetString(keys.DbType)) != db.TypePostgres {
+		return nil, fmt.Errorf("expected bun type of %s but got %s", db.TypePostgres, viper.GetString(keys.DbType))
 	}
 
-	// these are all optional, the db adapter figures out defaults
+	// these are all optional, the bun adapter figures out defaults
 	port := viper.GetInt(keys.DbPort)
 	address := viper.GetString(keys.DbAddress)
 	username := viper.GetString(keys.DbUser)
@@ -274,7 +277,7 @@ func setConnectionValues(sqldb *sql.DB) {
 	sqldb.SetMaxIdleConns(maxOpenConns)
 }
 
-func getErrConn(dbConn *bun.DB) *Conn {
+func getErrConn(dbConn *bun.DB) *Bun {
 	var errProc func(error) db.Error
 	switch dbConn.Dialect().Name() {
 	case dialect.PG:
@@ -284,8 +287,20 @@ func getErrConn(dbConn *bun.DB) *Conn {
 	default:
 		panic("unknown dialect name: " + dbConn.Dialect().Name().String())
 	}
-	return &Conn{
+	return &Bun{
 		errProc: errProc,
 		DB:      dbConn,
+	}
+}
+
+// ProcessError replaces any known values with our own db.Error types
+func (conn *Bun) ProcessError(err error) db.Error {
+	switch {
+	case err == nil:
+		return nil
+	case err == sql.ErrNoRows:
+		return db.ErrNoEntries
+	default:
+		return conn.errProc(err)
 	}
 }

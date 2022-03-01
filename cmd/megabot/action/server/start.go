@@ -9,11 +9,17 @@ import (
 
 var Start action.Action = func(ctx context.Context) error {
 	logrus.Infof("starting")
-	dbClient, err := bun.NewBunDBService(ctx)
+	dbClient, err := bun.NewClient(ctx)
 	if err != nil {
 		logrus.Errorf("db: %s", err.Error())
 		return err
 	}
+	defer func() {
+		err := dbClient.Close(ctx)
+		if err != nil {
+			logrus.Errorf("closing db: %s", err.Error())
+		}
+	}()
 
 	_ = dbClient
 
