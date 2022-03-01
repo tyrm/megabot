@@ -1,5 +1,8 @@
 PROJECT_NAME=megabot
 
+build-snapshot:
+	goreleaser build --snapshot --single-target --rm-dist
+
 fmt:
 	go fmt ./...
 
@@ -9,10 +12,10 @@ lint:
 test-docker-restart: test-docker-stop test-docker-start
 
 test-docker-start:
-	docker-compose --project-name ${PROJECT_NAME} -f test/docker-compose-test.yaml up -d
+	docker-compose --project-name ${PROJECT_NAME} -f deployments/docker-compose-test.yaml up -d
 
 test-docker-stop:
-	docker-compose --project-name ${PROJECT_NAME} -f test/docker-compose-test.yaml down
+	docker-compose --project-name ${PROJECT_NAME} -f deployments/docker-compose-test.yaml down
 
 test-local: tidy fmt lint
 	go test -cover ./...

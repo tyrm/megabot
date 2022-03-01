@@ -1,0 +1,291 @@
+package bun
+
+import (
+	"context"
+	"crypto/tls"
+	"crypto/x509"
+	"database/sql"
+	"encoding/pem"
+	"errors"
+	"fmt"
+	"github.com/jackc/pgx/v4"
+	"github.com/jackc/pgx/v4/stdlib"
+	"github.com/sirupsen/logrus"
+	"github.com/spf13/viper"
+	"github.com/tyrm/megabot/internal/config"
+	"github.com/tyrm/megabot/internal/db"
+	"github.com/tyrm/megabot/internal/db/bun/migrations"
+	"github.com/uptrace/bun/dialect"
+	"github.com/uptrace/bun/dialect/pgdialect"
+	"github.com/uptrace/bun/dialect/sqlitedialect"
+	"github.com/uptrace/bun/migrate"
+	"modernc.org/sqlite"
+	"os"
+	"runtime"
+	"strings"
+
+	"github.com/uptrace/bun"
+)
+
+const (
+	dbTypePostgres = "postgres"
+	dbTypeSqlite   = "sqlite"
+
+	dbTLSModeDisable = "disable"
+	dbTLSModeEnable  = "enable"
+	dbTLSModeRequire = "require"
+	dbTLSModeUnset   = ""
+)
+
+type Conn struct {
+	errProc func(error) db.Error
+	*bun.DB
+}
+
+type bunClient struct {
+	db *Conn
+}
+
+func NewBunDBService(ctx context.Context) (db.DB, error) {
+	var conn *Conn
+	var err error
+	dbType := strings.ToLower(viper.GetString(config.Keys.DbType))
+
+	switch dbType {
+	case dbTypePostgres:
+		conn, err = pgConn(ctx)
+		if err != nil {
+			return nil, err
+		}
+	case dbTypeSqlite:
+		conn, err = sqliteConn(ctx)
+		if err != nil {
+			return nil, err
+		}
+	default:
+		return nil, fmt.Errorf("database type %s not supported for bundb", dbType)
+	}
+
+	// perform database migrations
+	if err := doMigration(ctx, conn.DB); err != nil {
+		return nil, fmt.Errorf("db migration error: %s", err)
+	}
+
+	ps := &bunClient{
+		db: conn,
+	}
+
+	// we can confidently return this useable service now
+	return ps, nil
+}
+
+func sqliteConn(ctx context.Context) (*Conn, error) {
+	// validate db address has actually been set
+	dbAddress := viper.GetString(config.Keys.DbAddress)
+	if dbAddress == "" {
+		return nil, fmt.Errorf("'%s' was not set when attempting to start sqlite", config.Keys.DbAddress)
+	}
+
+	// Drop anything fancy from DB address
+	dbAddress = strings.Split(dbAddress, "?")[0]
+	dbAddress = strings.TrimPrefix(dbAddress, "file:")
+
+	// Append our own SQLite preferences
+	dbAddress = "file:" + dbAddress + "?cache=shared"
+
+	// Open new DB instance
+	sqldb, err := sql.Open("sqlite", dbAddress)
+	if err != nil {
+		if errWithCode, ok := err.(*sqlite.Error); ok {
+			err = errors.New(sqlite.ErrorCodeString[errWithCode.Code()])
+		}
+		return nil, fmt.Errorf("could not open sqlite db: %s", err)
+	}
+
+	setConnectionValues(sqldb)
+
+	if dbAddress == "file::memory:?cache=shared" {
+		logrus.Warn("sqlite in-memory database should only be used for debugging")
+		// don't close connections on disconnect -- otherwise
+		// the SQLite database will be deleted when there
+		// are no active connections
+		sqldb.SetConnMaxLifetime(0)
+	}
+
+	conn := getErrConn(bun.NewDB(sqldb, sqlitedialect.New()))
+
+	// ping to check the db is there and listening
+	if err := conn.PingContext(ctx); err != nil {
+		if errWithCode, ok := err.(*sqlite.Error); ok {
+			err = errors.New(sqlite.ErrorCodeString[errWithCode.Code()])
+		}
+		return nil, fmt.Errorf("sqlite ping: %s", err)
+	}
+
+	logrus.Info("connected to SQLITE database")
+	return conn, nil
+}
+
+func pgConn(ctx context.Context) (*Conn, error) {
+	opts, err := deriveBunDBPGOptions()
+	if err != nil {
+		return nil, fmt.Errorf("could not create bundb postgres options: %s", err)
+	}
+
+	sqldb := stdlib.OpenDB(*opts)
+
+	setConnectionValues(sqldb)
+
+	conn := getErrConn(bun.NewDB(sqldb, pgdialect.New()))
+
+	// ping to check the db is there and listening
+	if err := conn.PingContext(ctx); err != nil {
+		return nil, fmt.Errorf("postgres ping: %s", err)
+	}
+
+	logrus.Info("connected to POSTGRES database")
+	return conn, nil
+}
+
+func doMigration(ctx context.Context, db *bun.DB) error {
+	l := logrus.WithField("func", "doMigration")
+
+	migrator := migrate.NewMigrator(db, migrations.Migrations)
+
+	if err := migrator.Init(ctx); err != nil {
+		return err
+	}
+
+	group, err := migrator.Migrate(ctx)
+	if err != nil {
+		if err.Error() == "migrate: there are no any migrations" {
+			return nil
+		}
+		return err
+	}
+
+	if group.ID == 0 {
+		l.Info("there are no new migrations to run")
+		return nil
+	}
+
+	l.Infof("MIGRATED DATABASE TO %s", group)
+	return nil
+}
+
+func deriveBunDBPGOptions() (*pgx.ConnConfig, error) {
+	keys := config.Keys
+
+	if strings.ToUpper(viper.GetString(keys.DbType)) != db.DBTypePostgres {
+		return nil, fmt.Errorf("expected db type of %s but got %s", db.DBTypePostgres, viper.GetString(keys.DbType))
+	}
+
+	// these are all optional, the db adapter figures out defaults
+	port := viper.GetInt(keys.DbPort)
+	address := viper.GetString(keys.DbAddress)
+	username := viper.GetString(keys.DbUser)
+	password := viper.GetString(keys.DbPassword)
+
+	// validate database
+	database := viper.GetString(keys.DbDatabase)
+	if database == "" {
+		return nil, errors.New("no database set")
+	}
+
+	var tlsConfig *tls.Config
+	tlsMode := viper.GetString(keys.DbTLSMode)
+	switch tlsMode {
+	case dbTLSModeDisable, dbTLSModeUnset:
+		break // nothing to do
+	case dbTLSModeEnable:
+		/* #nosec G402 */
+		tlsConfig = &tls.Config{
+			InsecureSkipVerify: true,
+		}
+	case dbTLSModeRequire:
+		tlsConfig = &tls.Config{
+			InsecureSkipVerify: false,
+			ServerName:         viper.GetString(keys.DbAddress),
+			MinVersion:         tls.VersionTLS12,
+		}
+	}
+
+	caCertPath := viper.GetString(keys.DbTLSCACert)
+	if tlsConfig != nil && caCertPath != "" {
+		// load the system cert pool first -- we'll append the given CA cert to this
+		certPool, err := x509.SystemCertPool()
+		if err != nil {
+			return nil, fmt.Errorf("error fetching system CA cert pool: %s", err)
+		}
+
+		// open the file itself and make sure there's something in it
+		caCertBytes, err := os.ReadFile(caCertPath)
+		if err != nil {
+			return nil, fmt.Errorf("error opening CA certificate at %s: %s", caCertPath, err)
+		}
+		if len(caCertBytes) == 0 {
+			return nil, fmt.Errorf("ca cert at %s was empty", caCertPath)
+		}
+
+		// make sure we have a PEM block
+		caPem, _ := pem.Decode(caCertBytes)
+		if caPem == nil {
+			return nil, fmt.Errorf("could not parse cert at %s into PEM", caCertPath)
+		}
+
+		// parse the PEM block into the certificate
+		caCert, err := x509.ParseCertificate(caPem.Bytes)
+		if err != nil {
+			return nil, fmt.Errorf("could not parse cert at %s into x509 certificate: %s", caCertPath, err)
+		}
+
+		// we're happy, add it to the existing pool and then use this pool in our tls config
+		certPool.AddCert(caCert)
+		tlsConfig.RootCAs = certPool
+	}
+
+	cfg, _ := pgx.ParseConfig("")
+	if address != "" {
+		cfg.Host = address
+	}
+	if port > 0 {
+		cfg.Port = uint16(port)
+	}
+	if username != "" {
+		cfg.User = username
+	}
+	if password != "" {
+		cfg.Password = password
+	}
+	if tlsConfig != nil {
+		cfg.TLSConfig = tlsConfig
+	}
+	cfg.Database = database
+	cfg.PreferSimpleProtocol = true
+	cfg.RuntimeParams["application_name"] = viper.GetString(keys.ApplicationName)
+
+	return cfg, nil
+}
+
+// https://bun.uptrace.dev/postgres/running-bun-in-production.html#database-sql
+func setConnectionValues(sqldb *sql.DB) {
+	maxOpenConns := 4 * runtime.GOMAXPROCS(0)
+	sqldb.SetMaxOpenConns(maxOpenConns)
+	sqldb.SetMaxIdleConns(maxOpenConns)
+}
+
+func getErrConn(dbConn *bun.DB) *Conn {
+	var errProc func(error) db.Error
+	switch dbConn.Dialect().Name() {
+	case dialect.PG:
+		errProc = processPostgresError
+	case dialect.SQLite:
+		errProc = processSQLiteError
+	default:
+		panic("unknown dialect name: " + dbConn.Dialect().Name().String())
+	}
+	return &Conn{
+		errProc: errProc,
+		DB:      dbConn,
+	}
+}
