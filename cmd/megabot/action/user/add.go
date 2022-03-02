@@ -14,11 +14,12 @@ import (
 	"github.com/tyrm/megabot/internal/models"
 )
 
+// Add adds a user from the command line
 var Add action.Action = func(ctx context.Context) error {
 	l := logrus.WithField("func", "Add")
 
 	l.Infof("adding user %s", viper.GetString(config.Keys.UserEmail))
-	dbClient, err := bun.NewClient(ctx)
+	dbClient, err := bun.New(ctx)
 	if err != nil {
 		l.Errorf("db: %s", err.Error())
 		return err
@@ -38,7 +39,7 @@ var Add action.Action = func(ctx context.Context) error {
 
 	// create user
 	newUser := models.User{
-		ID: newID,
+		ID:    newID,
 		Email: viper.GetString(config.Keys.UserEmail),
 	}
 	err = newUser.SetPassword(viper.GetString(config.Keys.UserPassword))
@@ -62,7 +63,7 @@ var Add action.Action = func(ctx context.Context) error {
 		}
 
 		groupMem := &models.GroupMembership{
-			ID: newID,
+			ID:      newID,
 			GroupID: groupID,
 		}
 		l.Debugf("adding group: %s", group)

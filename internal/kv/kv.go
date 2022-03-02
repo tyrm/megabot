@@ -5,11 +5,13 @@ import (
 	"time"
 )
 
+// KV represents a key value store
 type KV interface {
 	JWT
 	Close(ctx context.Context) error
 }
 
+// JWT represents a jwt interface for a KV store
 type JWT interface {
 	DeleteJWTAccessToken(ctx context.Context, accessTokenID string) error
 	DeleteJWTRefreshToken(ctx context.Context, refreshTokenID string) error

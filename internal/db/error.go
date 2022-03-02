@@ -2,6 +2,7 @@ package db
 
 import "fmt"
 
+// Error represents a database specific error
 type Error error
 
 var (
@@ -18,10 +19,12 @@ type ErrAlreadyExists struct {
 	message string
 }
 
+// Error returns the error message as a string.
 func (e *ErrAlreadyExists) Error() string {
 	return e.message
 }
 
+// NewErrAlreadyExists wraps a message in an ErrAlreadyExists object.
 func NewErrAlreadyExists(msg string) error {
 	return &ErrAlreadyExists{message: msg}
 }

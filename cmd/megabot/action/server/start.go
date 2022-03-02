@@ -18,9 +18,10 @@ import (
 	"syscall"
 )
 
+// Start starts the server
 var Start action.Action = func(ctx context.Context) error {
 	logrus.Infof("starting")
-	dbClient, err := bun.NewClient(ctx)
+	dbClient, err := bun.New(ctx)
 	if err != nil {
 		logrus.Errorf("db: %s", err.Error())
 		return err
@@ -56,7 +57,7 @@ var Start action.Action = func(ctx context.Context) error {
 		}
 	}()
 
-	webServer, err := web.NewServer(ctx, dbClient)
+	webServer, err := web.New(ctx, dbClient)
 	if err != nil {
 		logrus.Errorf("web server: %s", err.Error())
 		return err

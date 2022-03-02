@@ -43,12 +43,13 @@ pipeline {
       when {
         buildingTag()
       }
-      environment {
-        GITHUB_TOKEN = credentials('gihub-tyrm-pat')
-      }
       steps {
         script {
-          sh '~/go/bin/goreleaser'
+          withCredentials([
+            usernamePassword(credentialsId: 'gihub-tyrm-pat', usernameVariable: 'GITHUB_USER', passwordVariable: 'GITHUB_TOKEN')
+          ]) {
+            sh '~/go/bin/goreleaser'
+          }
         }
       }
     }

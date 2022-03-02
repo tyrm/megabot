@@ -12,7 +12,7 @@ import (
 	"net/http"
 )
 
-const PathGraphQL = "/graphql"
+const pathGraphQL = "/graphql"
 
 type postData struct {
 	Query     string                 `json:"query"`
@@ -34,8 +34,9 @@ func New(db db.DB, jwt *jwt.Module) web.Module {
 	}
 }
 
-func (m *Module) Route(s web.Server) error {
-	s.HandleFunc(PathGraphQL, m.graphqlHandler).Methods("POST")
+// Route attaches routes to the web server
+func (m *Module) Route(s *web.Server) error {
+	s.HandleFunc(pathGraphQL, m.graphqlHandler).Methods("POST")
 	return nil
 }
 

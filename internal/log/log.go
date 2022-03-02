@@ -6,6 +6,7 @@ import (
 	"github.com/tyrm/megabot/internal/config"
 )
 
+// Init the logging engine
 func Init() error {
 	logrus.SetFormatter(&logrus.TextFormatter{
 		FullTimestamp: true,

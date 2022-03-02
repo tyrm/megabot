@@ -8,27 +8,28 @@ import (
 	"github.com/tyrm/megabot/internal/config"
 )
 
-type client struct {
-	client *redis.Client
+// Client represents a redis client
+type Client struct {
+	redis *redis.Client
 }
 
 // New creates a new redis client.
-func New(ctx context.Context) (*client, error) {
-	c := client{
-		client: redis.NewClient(&redis.Options{
+func New(ctx context.Context) (*Client, error) {
+	c := Client{
+		redis: redis.NewClient(&redis.Options{
 			Addr:     viper.GetString(config.Keys.RedisAddress),
 			Password: viper.GetString(config.Keys.RedisPassword),
 			DB:       viper.GetInt(config.Keys.RedisDB),
 		}),
 	}
 
-	resp := c.client.Ping(ctx)
+	resp := c.redis.Ping(ctx)
 	logrus.Debugf("%s", resp.String())
 
 	return &c, nil
 }
 
 // Close closes the redis pool
-func (c *client) Close(ctx context.Context) error {
-	return c.client.Close()
+func (c *Client) Close(ctx context.Context) error {
+	return c.redis.Close()
 }

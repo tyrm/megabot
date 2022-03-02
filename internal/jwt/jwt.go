@@ -18,18 +18,21 @@ import (
 	"time"
 )
 
+// Module is a module for processing jwt tokens
 type Module struct {
 	db db.DB
 	kv kv.JWT
 }
 
-func New(db db.DB,kv kv.JWT) (*Module, error) {
+// New creates a new JWT module
+func New(db db.DB, kv kv.JWT) (*Module, error) {
 	return &Module{
 		db: db,
 		kv: kv,
 	}, nil
 }
 
+// Close closes the jwt module
 func (m Module) Close() error {
 	return nil
 }
@@ -43,13 +46,15 @@ const (
 	claimUserID     = "user_id"
 )
 
+// AccessDetails contains data stored in the jwt token
 type AccessDetails struct {
 	AccessID string
 	UserID   string
 	Groups   []uuid.UUID
 }
 
-type tokenDetails struct {
+// TokenDetails contains the metadata for a token
+type TokenDetails struct {
 	AccessToken  string `json:"access_token"`
 	RefreshToken string `json:"refresh_token"`
 	AccessID     string
@@ -58,7 +63,8 @@ type tokenDetails struct {
 	RtExpires    int64
 }
 
-func (m *Module) CreateAuth(ctx context.Context, userid string, td *tokenDetails) error {
+// CreateAuth inserts the token data into the KV
+func (m *Module) CreateAuth(ctx context.Context, userid string, td *TokenDetails) error {
 	l := logrus.WithField("func", "CreateAuth")
 
 	at := time.Unix(td.AtExpires, 0) //converting Unix to UTC(to Time object)
@@ -78,10 +84,11 @@ func (m *Module) CreateAuth(ctx context.Context, userid string, td *tokenDetails
 	return nil
 }
 
-func (m *Module) CreateToken(ctx context.Context, user *models.User) (*tokenDetails, error) {
+// CreateToken creates a token based on a user
+func (m *Module) CreateToken(ctx context.Context, user *models.User) (*TokenDetails, error) {
 	l := logrus.WithField("func", "CreateToken")
 
-	td := &tokenDetails{}
+	td := &TokenDetails{}
 	td.AtExpires = time.Now().Add(viper.GetDuration(config.Keys.AccessExpiration)).Unix()
 	newAccessToken, err := id.NewRandomULID()
 	if err != nil {
@@ -121,10 +128,12 @@ func (m *Module) CreateToken(ctx context.Context, user *models.User) (*tokenDeta
 	return td, nil
 }
 
+// DeleteRefreshToken deletes a refresh token from KV
 func (m *Module) DeleteRefreshToken(ctx context.Context, refreshToken string) error {
 	return m.kv.DeleteJWTRefreshToken(ctx, refreshToken)
 }
 
+// DeleteTokens deletes tokens from the KV
 func (m *Module) DeleteTokens(ctx context.Context, authD *AccessDetails) error {
 	// get the refresh id
 	refreshUUID := fmt.Sprintf("%s++%s", authD.AccessID, authD.UserID)
@@ -151,6 +160,7 @@ func (m *Module) extractToken(r *http.Request) string {
 	return ""
 }
 
+// ExtractTokenMetadata gets the token from the bearer token
 func (m *Module) ExtractTokenMetadata(r *http.Request) (*AccessDetails, error) {
 	token, err := m.verifyToken(r)
 	if err != nil {
@@ -219,7 +229,8 @@ func (m *Module) verifyToken(r *http.Request) (*jwt.Token, error) {
 	return token, nil
 }
 
-func (m *Module) RefreshAccessToken(ctx context.Context, refreshToken string) (*tokenDetails, error) {
+// RefreshAccessToken generates a new access token for a given refresh token
+func (m *Module) RefreshAccessToken(ctx context.Context, refreshToken string) (*TokenDetails, error) {
 	//verify the token
 	token, err := jwt.Parse(refreshToken, func(token *jwt.Token) (interface{}, error) {
 		//Make sure that the token method conform to "SigningMethodHMAC"

@@ -5,6 +5,7 @@ import (
 	"time"
 )
 
+// GroupMembership represents a user's membership in a group
 type GroupMembership struct {
 	ID        string    `validate:"required,ulid" bun:"type:CHAR(26),pk,nullzero,notnull,unique"`
 	CreatedAt time.Time `validate:"-" bun:"type:timestamptz,nullzero,notnull,default:current_timestamp"`

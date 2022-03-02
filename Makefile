@@ -20,13 +20,13 @@ test-docker-start:
 test-docker-stop:
 	docker-compose --project-name ${PROJECT_NAME} -f deployments/docker-compose-test.yaml down
 
-test-local: tidy fmt lint
+test: tidy fmt lint
 	go test -cover ./...
 
-test-local-race: tidy fmt lint
+test-race: tidy fmt lint
 	go test -race -cover ./...
 
-test-local-verbose: tidy fmt lint
+test-verbose: tidy fmt lint
 	go test -v -cover ./...
 
 tidy:

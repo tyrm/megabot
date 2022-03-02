@@ -9,33 +9,30 @@ import (
 	"time"
 )
 
-type Server interface {
-	HandleFunc(path string, f func(http.ResponseWriter, *http.Request)) *mux.Route
-	// Start the web
-	Start() error
-	// Stop the web
-	Stop(ctx context.Context) error
-}
-
-type server struct {
+// Server is the web server
+type Server struct {
 	router *mux.Router
 	srv    *http.Server
 }
 
-func (r *server) HandleFunc(path string, f func(http.ResponseWriter, *http.Request)) *mux.Route {
+// HandleFunc attaches a function to a path
+func (r *Server) HandleFunc(path string, f func(http.ResponseWriter, *http.Request)) *mux.Route {
 	return r.router.HandleFunc(path, f)
 }
 
-func (r *server) Start() error {
+// Start starts the web server
+func (r *Server) Start() error {
 	logrus.Infof("listening on %s", r.srv.Addr)
 	return r.srv.ListenAndServe()
 }
 
-func (r *server) Stop(ctx context.Context) error {
+// Stop shuts down the web server
+func (r *Server) Stop(ctx context.Context) error {
 	return r.srv.Shutdown(ctx)
 }
 
-func NewServer(ctx context.Context, db db.DB) (Server, error) {
+// New creates a new web server
+func New(ctx context.Context, db db.DB) (*Server, error) {
 	r := mux.NewRouter()
 
 	s := &http.Server{
@@ -45,7 +42,7 @@ func NewServer(ctx context.Context, db db.DB) (Server, error) {
 		ReadTimeout:  15 * time.Second,
 	}
 
-	return &server{
+	return &Server{
 		router: r,
 		srv:    s,
 	}, nil

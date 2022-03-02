@@ -37,6 +37,7 @@ const (
 	dbTLSModeUnset   = ""
 )
 
+// Bun represents a bun db connection and it's error handler
 type Bun struct {
 	errProc func(error) db.Error
 	*bun.DB
@@ -48,7 +49,8 @@ type bunClient struct {
 	bun *Bun
 }
 
-func NewClient(ctx context.Context) (db.DB, error) {
+// New creates a new bun database client
+func New(ctx context.Context) (db.DB, error) {
 	var newBun *Bun
 	var err error
 	dbType := strings.ToLower(viper.GetString(config.Keys.DbType))

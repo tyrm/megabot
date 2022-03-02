@@ -10,11 +10,13 @@ type commonDB struct {
 	bun *Bun
 }
 
-func (b *commonDB) Close(ctx context.Context) db.Error {
+// Close closes the bun db connection
+func (c *commonDB) Close(ctx context.Context) db.Error {
 	logrus.Info("closing db connection")
-	return b.bun.Close()
+	return c.bun.Close()
 }
 
+// Create inserts an object into the database
 func (c *commonDB) Create(ctx context.Context, i interface{}) db.Error {
 	_, err := c.bun.NewInsert().Model(i).Exec(ctx)
 	return c.bun.ProcessError(err)
