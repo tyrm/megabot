@@ -228,6 +228,7 @@ func deriveBunDBPGOptions() (*pgx.ConnConfig, error) {
 		}
 
 		// open the file itself and make sure there's something in it
+		/* #nosec G304 */
 		caCertBytes, err := os.ReadFile(caCertPath)
 		if err != nil {
 			return nil, fmt.Errorf("error opening CA certificate at %s: %s", caCertPath, err)

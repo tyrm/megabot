@@ -9,6 +9,9 @@ clean:
 fmt:
 	go fmt ./...
 
+gosec:
+	gosec ./...
+
 lint:
 	golint ./...
 
@@ -20,13 +23,13 @@ test-docker-start:
 test-docker-stop:
 	docker-compose --project-name ${PROJECT_NAME} -f deployments/docker-compose-test.yaml down
 
-test: tidy fmt lint
+test: tidy fmt lint gosec
 	go test -cover ./...
 
-test-race: tidy fmt lint
+test-race: tidy fmt lint gosec
 	go test -race -cover ./...
 
-test-verbose: tidy fmt lint
+test-verbose: tidy fmt lint gosec
 	go test -v -cover ./...
 
 tidy:
