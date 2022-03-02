@@ -26,4 +26,9 @@ var usage = config.KeyNames{
 
 	// server
 	ServerRoles: "Server roles that should be started: [graphql]",
+
+	// user
+	UserEmail:    "User email address",
+	UserGroups:   "User groups",
+	UserPassword: "User password",
 }

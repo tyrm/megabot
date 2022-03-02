@@ -47,6 +47,7 @@ func main() {
 
 	// add commands
 	rootCmd.AddCommand(serverCommands())
+	rootCmd.AddCommand(userCommands())
 
 	err = rootCmd.Execute()
 	if err != nil {

@@ -11,13 +11,18 @@ type GroupMembership struct {
 	UpdatedAt time.Time `validate:"-" bun:"type:timestamptz,nullzero,notnull,default:current_timestamp"`
 	UserID    string    `validate:"required,ulid" bun:"type:CHAR(26),unique:groupmembership,notnull,nullzero"`
 	User      *User     `validate:"-" bun:"rel:belongs-to"`
-	GroupID   uuid.UUID `validate:"required,uuid" bun:"type:CHAR(26),unique:groupmembership,notnull,nullzero"`
+	GroupID   uuid.UUID `validate:"required,uuid" bun:",unique:groupmembership,notnull,nullzero"`
 }
 
-// GroupSuperAdmin is the uuid of the Super Administrators group
+// groupSuperAdmin is the uuid of the Super Administrators group
 var groupSuperAdmin = uuid.Must(uuid.Parse("11a08aec-b7e0-46b4-ba53-e95a858d4cad"))
 
-// GroupTitle contains the titles of the groups.
+// groupName contains the names of the groups.
+var groupName = map[string]uuid.UUID{
+	"admin": groupSuperAdmin,
+}
+
+// groupTitle contains the titles of the groups.
 var groupTitle = map[uuid.UUID]string{
 	groupSuperAdmin: "Super Admin",
 }
@@ -33,4 +38,12 @@ func GroupTitle(g uuid.UUID) string {
 		return s
 	}
 	return ""
+}
+
+// GroupName return a uuid for the group name
+func GroupName(g string) uuid.UUID {
+	if s, ok := groupName[g]; ok {
+		return s
+	}
+	return uuid.Nil
 }

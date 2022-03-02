@@ -32,6 +32,11 @@ type KeyNames struct {
 
 	// server
 	ServerRoles string
+
+	// user
+	UserEmail    string
+	UserGroups   string
+	UserPassword string
 }
 
 // Keys contains the names of config keys.
@@ -66,4 +71,9 @@ var Keys = KeyNames{
 
 	// server
 	ServerRoles: "server-role",
+
+	// user
+	UserEmail:    "email",
+	UserGroups:   "group",
+	UserPassword: "password",
 }

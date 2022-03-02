@@ -59,28 +59,33 @@ type tokenDetails struct {
 }
 
 func (m *Module) CreateAuth(ctx context.Context, userid string, td *tokenDetails) error {
+	l := logrus.WithField("func", "CreateAuth")
+
 	at := time.Unix(td.AtExpires, 0) //converting Unix to UTC(to Time object)
 	rt := time.Unix(td.RtExpires, 0)
 	now := time.Now()
 
 	errAccess := m.kv.SetJWTAccessToken(ctx, td.AccessID, userid, at.Sub(now))
 	if errAccess != nil {
-		logrus.Debugf("can't save access token: %s", errAccess.Error())
+		l.Debugf("can't save access token: %s", errAccess.Error())
 		return errAccess
 	}
 	errRefresh := m.kv.SetJWTRefreshToken(ctx, td.RefreshID, userid, rt.Sub(now))
 	if errRefresh != nil {
-		logrus.Debugf("can't save refresh token: %s", errRefresh.Error())
+		l.Debugf("can't save refresh token: %s", errRefresh.Error())
 		return errRefresh
 	}
 	return nil
 }
 
 func (m *Module) CreateToken(ctx context.Context, user *models.User) (*tokenDetails, error) {
+	l := logrus.WithField("func", "CreateToken")
+
 	td := &tokenDetails{}
 	td.AtExpires = time.Now().Add(viper.GetDuration(config.Keys.AccessExpiration)).Unix()
 	newAccessToken, err := id.NewRandomULID()
 	if err != nil {
+		l.Errorf("generating id: %s", err.Error())
 		return nil, err
 	}
 	td.AccessID = newAccessToken
@@ -96,8 +101,9 @@ func (m *Module) CreateToken(ctx context.Context, user *models.User) (*tokenDeta
 	atClaims[claimExpires] = td.AtExpires
 	atClaims[claimGroups] = user.Groups
 	at := jwt.NewWithClaims(jwt.SigningMethodHS512, atClaims)
-	td.AccessToken, err = at.SignedString(viper.GetString(config.Keys.AccessSecret))
+	td.AccessToken, err = at.SignedString([]byte(viper.GetString(config.Keys.AccessSecret)))
 	if err != nil {
+		l.Errorf("access token signed string: %s", err.Error())
 		return nil, err
 	}
 
@@ -107,8 +113,9 @@ func (m *Module) CreateToken(ctx context.Context, user *models.User) (*tokenDeta
 	rtClaims[claimUserID] = user.ID
 	rtClaims[claimExpires] = td.RtExpires
 	rt := jwt.NewWithClaims(jwt.SigningMethodHS512, rtClaims)
-	td.RefreshToken, err = rt.SignedString(viper.GetString(config.Keys.RefreshSecret))
+	td.RefreshToken, err = rt.SignedString([]byte(viper.GetString(config.Keys.RefreshSecret)))
 	if err != nil {
+		l.Errorf("refresh token signed string: %s", err.Error())
 		return nil, err
 	}
 	return td, nil
@@ -204,7 +211,7 @@ func (m *Module) verifyToken(r *http.Request) (*jwt.Token, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
-		return viper.GetString(config.Keys.AccessSecret), nil
+		return []byte(viper.GetString(config.Keys.AccessSecret)), nil
 	})
 	if err != nil {
 		return nil, err
@@ -219,7 +226,7 @@ func (m *Module) RefreshAccessToken(ctx context.Context, refreshToken string) (*
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
-		return viper.GetString(config.Keys.RefreshSecret), nil
+		return []byte(viper.GetString(config.Keys.RefreshSecret)), nil
 	})
 
 	//if there is an error, the token must have expired

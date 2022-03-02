@@ -40,6 +40,7 @@ func (m *Module) Route(s web.Server) error {
 }
 
 func (m *Module) graphqlHandler(w http.ResponseWriter, r *http.Request) {
+	l := logrus.WithField("func", "graphqlHandler")
 	var p map[string]interface{}
 	if err := json.NewDecoder(r.Body).Decode(&p); err != nil {
 		w.WriteHeader(400)
@@ -60,20 +61,20 @@ func (m *Module) graphqlHandler(w http.ResponseWriter, r *http.Request) {
 		variables = val
 	}
 
-	logrus.Tracef("query: %s", query)
-	logrus.Tracef("operation: %s", operation)
-	logrus.Tracef("variables: %v", variables)
-
 	ctx := r.Context()
 
 	// check auth
 	var err error
 	metadata, err := m.jwt.ExtractTokenMetadata(r)
+	if err != nil {
+		l.Debugf("extract token metadata error: %s", err.Error())
+	}
 
 	// do
 	var result *graphql.Result
 	if err == nil {
 		// authorized
+		l.Tracef("authorzed query: %s", query)
 		ctx = context.WithValue(ctx, metadataKey, metadata)
 		result = graphql.Do(graphql.Params{
 			Context:        ctx,
@@ -84,6 +85,7 @@ func (m *Module) graphqlHandler(w http.ResponseWriter, r *http.Request) {
 		})
 	} else {
 		// unauthorized
+		l.Tracef("unauthorized query: %s", query)
 		result = graphql.Do(graphql.Params{
 			Context:        ctx,
 			Schema:         m.schemaUnauthorized(),

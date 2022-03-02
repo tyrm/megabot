@@ -15,7 +15,8 @@ type userDB struct {
 func (u *userDB) newUserQ(user *models.User) *bun.SelectQuery {
 	return u.bun.
 		NewSelect().
-		Model(user)
+		Model(user).
+		Relation("Groups")
 }
 
 func (u *userDB) ReadUserByID(ctx context.Context, id string) (*models.User, db.Error) {

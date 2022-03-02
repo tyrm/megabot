@@ -14,7 +14,6 @@ type User struct {
 	EncryptedPassword []byte             `validate:"-" bun:""`
 	SignInCount       int                `validate:"min=0" bun:",notnull,default:0"`
 	Groups            []*GroupMembership `validate:"-" bun:"rel:has-many,join:id=user_id"`
-	Admin             bool               `validate:"-" bun:",notnull,default:false"`
 	Disabled          bool               `validate:"-" bun:",notnull,default:false"`
 }
 

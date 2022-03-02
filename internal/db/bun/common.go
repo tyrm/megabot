@@ -15,7 +15,7 @@ func (b *commonDB) Close(ctx context.Context) db.Error {
 	return b.bun.Close()
 }
 
-func (c *commonDB) Put(ctx context.Context, i interface{}) db.Error {
+func (c *commonDB) Create(ctx context.Context, i interface{}) db.Error {
 	_, err := c.bun.NewInsert().Model(i).Exec(ctx)
 	return c.bun.ProcessError(err)
 }

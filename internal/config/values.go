@@ -34,6 +34,11 @@ type Values struct {
 
 	// server
 	ServerRoles []string
+
+	// user
+	UserEmail    string
+	UserGroups   []string
+	UserPassword string
 }
 
 // Defaults contains the default values

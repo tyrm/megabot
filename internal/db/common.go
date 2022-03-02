@@ -6,6 +6,6 @@ import "context"
 type Common interface {
 	// Close closes the db connections
 	Close(ctx context.Context) Error
-	// Put stores the object
-	Put(context.Context, interface{}) Error
+	// Create stores the object
+	Create(context.Context, interface{}) Error
 }
