@@ -1,6 +1,7 @@
 package graphql
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"github.com/graphql-go/graphql"
@@ -67,13 +68,13 @@ func (m *Module) graphqlHandler(w http.ResponseWriter, r *http.Request) {
 
 	// check auth
 	var err error
-	//metadata, err := s.extractTokenMetadata(r)
+	metadata, err := m.jwt.ExtractTokenMetadata(r)
 
 	// do
 	var result *graphql.Result
 	if err == nil {
 		// authorized
-		//ctx = context.WithValue(ctx, metadataKey, metadata)
+		ctx = context.WithValue(ctx, metadataKey, metadata)
 		result = graphql.Do(graphql.Params{
 			Context:        ctx,
 			Schema:         m.schema(),
@@ -92,6 +93,7 @@ func (m *Module) graphqlHandler(w http.ResponseWriter, r *http.Request) {
 		})
 	}
 
+	w.Header().Set("Content-Type", "application/json")
 	if err := json.NewEncoder(w).Encode(result); err != nil {
 		fmt.Printf("could not write result to response: %s", err)
 	}

@@ -44,7 +44,7 @@ var Start action.Action = func(ctx context.Context) error {
 		}
 	}()
 
-	jwtModule, err := jwt.New(redisClient)
+	jwtModule, err := jwt.New(dbClient, redisClient)
 	if err != nil {
 		logrus.Errorf("jwt: %s", err.Error())
 		return err

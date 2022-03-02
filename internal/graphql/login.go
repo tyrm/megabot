@@ -3,6 +3,7 @@ package graphql
 import (
 	"github.com/graphql-go/graphql"
 	"github.com/sirupsen/logrus"
+	"github.com/tyrm/megabot/internal/jwt"
 )
 
 func (m *Module) loginMutator(params graphql.ResolveParams) (interface{}, error) {
@@ -41,4 +42,30 @@ func (m *Module) loginMutator(params graphql.ResolveParams) (interface{}, error)
 	}
 
 	return ts, nil
+}
+
+func (m *Module) logoutMutator(params graphql.ResolveParams) (interface{}, error) {
+	logrus.Debugf("trying to logout")
+
+	if params.Context.Value(metadataKey) == nil {
+		return nil, errUnauthorized
+	}
+	metadata := params.Context.Value(metadataKey).(*jwt.AccessDetails)
+
+	err := m.jwt.DeleteTokens(params.Context, metadata)
+	if err != nil {
+		logrus.Tracef("can't delete tokens: %s", err.Error())
+		return nil, err
+	}
+
+	return success{Success: true}, nil
+}
+
+func (m *Module) refreshAccessTokenMutator(params graphql.ResolveParams) (interface{}, error) {
+	logrus.Debugf("trying to refresh token")
+
+	// marshall and cast the argument values
+	refreshToken, _ := params.Args["refreshToken"].(string)
+
+	return m.jwt.RefreshAccessToken(params.Context, refreshToken)
 }

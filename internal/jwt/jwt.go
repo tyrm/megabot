@@ -9,6 +9,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 	"github.com/tyrm/megabot/internal/config"
+	"github.com/tyrm/megabot/internal/db"
 	"github.com/tyrm/megabot/internal/id"
 	"github.com/tyrm/megabot/internal/kv"
 	"github.com/tyrm/megabot/internal/models"
@@ -18,11 +19,13 @@ import (
 )
 
 type Module struct {
+	db db.DB
 	kv kv.JWT
 }
 
-func New(kv kv.JWT) (*Module, error) {
+func New(db db.DB,kv kv.JWT) (*Module, error) {
 	return &Module{
+		db: db,
 		kv: kv,
 	}, nil
 }
@@ -40,7 +43,7 @@ const (
 	claimUserID     = "user_id"
 )
 
-type accessDetails struct {
+type AccessDetails struct {
 	AccessID string
 	UserID   string
 	Groups   []uuid.UUID
@@ -111,7 +114,11 @@ func (m *Module) CreateToken(ctx context.Context, user *models.User) (*tokenDeta
 	return td, nil
 }
 
-func (m *Module) deleteTokens(ctx context.Context, authD *accessDetails) error {
+func (m *Module) DeleteRefreshToken(ctx context.Context, refreshToken string) error {
+	return m.kv.DeleteJWTRefreshToken(ctx, refreshToken)
+}
+
+func (m *Module) DeleteTokens(ctx context.Context, authD *AccessDetails) error {
 	// get the refresh id
 	refreshUUID := fmt.Sprintf("%s++%s", authD.AccessID, authD.UserID)
 	// delete access token
@@ -137,14 +144,14 @@ func (m *Module) extractToken(r *http.Request) string {
 	return ""
 }
 
-func (m *Module) extractTokenMetadata(r *http.Request) (*accessDetails, error) {
+func (m *Module) ExtractTokenMetadata(r *http.Request) (*AccessDetails, error) {
 	token, err := m.verifyToken(r)
 	if err != nil {
 		return nil, err
 	}
 	claims, ok := token.Claims.(jwt.MapClaims)
 	if ok && token.Valid {
-		metadata := accessDetails{
+		metadata := AccessDetails{
 			AccessID: claims[claimAccessID].(string),
 			UserID:   claims[claimUserID].(string),
 		}
@@ -167,7 +174,7 @@ func (m *Module) extractTokenMetadata(r *http.Request) (*accessDetails, error) {
 	return nil, err
 }
 
-func (m *Module) fetchAuth(ctx context.Context, authD *accessDetails) (string, error) {
+func (m *Module) fetchAuth(ctx context.Context, authD *AccessDetails) (string, error) {
 	userid, err := m.kv.GetJWTAccessToken(ctx, authD.AccessID)
 	if err != nil {
 		return "", err
@@ -203,4 +210,71 @@ func (m *Module) verifyToken(r *http.Request) (*jwt.Token, error) {
 		return nil, err
 	}
 	return token, nil
+}
+
+func (m *Module) RefreshAccessToken(ctx context.Context, refreshToken string) (*tokenDetails, error) {
+	//verify the token
+	token, err := jwt.Parse(refreshToken, func(token *jwt.Token) (interface{}, error) {
+		//Make sure that the token method conform to "SigningMethodHMAC"
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+		}
+		return viper.GetString(config.Keys.RefreshSecret), nil
+	})
+
+	//if there is an error, the token must have expired
+	if err != nil {
+		logrus.Tracef("token error: %s", err.Error())
+		return nil, err
+	}
+	//is token valid?
+	if _, ok := token.Claims.(jwt.Claims); !ok && !token.Valid {
+		return nil, errUnauthorized
+	}
+
+	//Since token is valid, get the uuid:
+	claims, ok := token.Claims.(jwt.MapClaims) //the token claims should conform to MapClaims
+	if ok && token.Valid {
+		// read key data
+		refreshString, ok := claims[claimRefreshID].(string) //convert the interface to string
+		if !ok {
+			logrus.Tracef("claim %s missing", claimRefreshID)
+			return nil, errUnprocessableEntity
+		}
+
+		// get user
+		user, err := m.db.ReadUserByID(ctx, claims[claimUserID].(string))
+		if err != nil {
+			logrus.Errorf("getting user: %s", err.Error())
+			return nil, err
+		}
+		if user == nil {
+			return nil, errUnauthorized
+		}
+
+		// Delete the previous Refresh Token
+		err = m.DeleteRefreshToken(ctx, refreshString)
+		if err != nil {
+			logrus.Errorf("kv error: %s", err.Error())
+			return nil, err
+		}
+
+		// Create new pairs of refresh and access tokens
+		ts, createErr := m.CreateToken(ctx, user)
+		if createErr != nil {
+			logrus.Tracef("error creating token: %s", createErr)
+			return nil, createErr
+		}
+
+		// save the tokens metadata to kv
+		saveErr := m.CreateAuth(ctx, user.ID, ts)
+		if saveErr != nil {
+			logrus.Tracef("error saving token: %s", createErr)
+			return nil, saveErr
+		}
+
+		return ts, nil
+	}
+
+	return nil, errRefreshExpired
 }

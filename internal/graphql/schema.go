@@ -7,8 +7,8 @@ import (
 
 func (m *Module) schema() graphql.Schema {
 	schema, err := graphql.NewSchema(graphql.SchemaConfig{
-		Query:    m.rootQueryUnauthorized(),
-		Mutation: m.rootMutationUnauthorized(),
+		Query:    m.rootQuery(),
+		Mutation: m.rootMutation(),
 	})
 	if err != nil {
 		logrus.Errorf("can't create schema: %s", err.Error())
