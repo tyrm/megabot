@@ -19,6 +19,17 @@ type KeyNames struct {
 	DbTLSMode   string
 	DbTLSCACert string
 
+	// redis
+	RedisAddress  string
+	RedisDB       string
+	RedisPassword string
+
+	// auth
+	AccessExpiration  string
+	AccessSecret      string
+	RefreshExpiration string
+	RefreshSecret     string
+
 	// server
 	ServerRoles string
 }
@@ -41,6 +52,17 @@ var Keys = KeyNames{
 	DbDatabase:  "db-database",
 	DbTLSMode:   "db-tls-mode",
 	DbTLSCACert: "db-tls-ca-cert",
+
+	// redis
+	RedisAddress:  "redis-address",
+	RedisDB:       "redis-db",
+	RedisPassword: "redis-password",
+
+	// auth
+	AccessExpiration:  "access-expiration",
+	AccessSecret:      "access-secret",
+	RefreshExpiration: "refresh-expiration",
+	RefreshSecret:     "refresh-secret",
 
 	// server
 	ServerRoles: "server-role",

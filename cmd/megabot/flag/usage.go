@@ -19,6 +19,11 @@ var usage = config.KeyNames{
 	DbTLSMode:   "Database tls mode",
 	DbTLSCACert: "Path to CA cert for db tls connection",
 
+	// redis
+	RedisAddress:  "Redis address: eg. localhost:6379",
+	RedisDB:       "Redis db",
+	RedisPassword: "Redis password, optional",
+
 	// server
 	ServerRoles: "Server roles that should be started: [graphql]",
 }

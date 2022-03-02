@@ -1,5 +1,7 @@
 package config
 
+import "time"
+
 // Values contains the type of each value.
 type Values struct {
 	ConfigPath string
@@ -18,6 +20,17 @@ type Values struct {
 	DbDatabase  string
 	DbTLSMode   string
 	DbTLSCACert string
+
+	// redis
+	RedisAddress  string
+	RedisDB       int
+	RedisPassword string
+
+	// auth
+	AccessExpiration  time.Duration
+	AccessSecret      string
+	RefreshExpiration time.Duration
+	RefreshSecret     string
 
 	// server
 	ServerRoles []string
@@ -40,6 +53,15 @@ var Defaults = Values{
 	DbDatabase:  "megabot",
 	DbTLSMode:   "disable",
 	DbTLSCACert: "",
+
+	// redis
+	RedisAddress:  "localhost:6379",
+	RedisDB:       0,
+	RedisPassword: "",
+
+	// auth
+	AccessExpiration:  time.Minute * 15,
+	RefreshExpiration: time.Hour * 24 * 7,
 
 	// server
 	ServerRoles: []string{ServerRoleGraphql},

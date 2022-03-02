@@ -44,6 +44,7 @@ type Bun struct {
 
 type bunClient struct {
 	commonDB
+	userDB
 	bun *Bun
 }
 
@@ -74,6 +75,9 @@ func NewClient(ctx context.Context) (db.DB, error) {
 
 	ps := &bunClient{
 		commonDB: commonDB{
+			bun: newBun,
+		},
+		userDB: userDB{
 			bun: newBun,
 		},
 		bun: newBun,
