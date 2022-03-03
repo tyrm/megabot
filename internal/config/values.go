@@ -32,6 +32,9 @@ type Values struct {
 	RefreshExpiration time.Duration
 	RefreshSecret     string
 
+	// database
+	DatabaseTestData bool
+
 	// server
 	ServerRoles []string
 
@@ -63,6 +66,9 @@ var Defaults = Values{
 	RedisAddress:  "localhost:6379",
 	RedisDB:       0,
 	RedisPassword: "",
+
+	// database
+	DatabaseTestData: false,
 
 	// auth
 	AccessExpiration:  time.Minute * 15,

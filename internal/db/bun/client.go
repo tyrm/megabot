@@ -14,11 +14,9 @@ import (
 	"github.com/spf13/viper"
 	"github.com/tyrm/megabot/internal/config"
 	"github.com/tyrm/megabot/internal/db"
-	"github.com/tyrm/megabot/internal/db/bun/migrations"
 	"github.com/uptrace/bun/dialect"
 	"github.com/uptrace/bun/dialect/pgdialect"
 	"github.com/uptrace/bun/dialect/sqlitedialect"
-	"github.com/uptrace/bun/migrate"
 	"modernc.org/sqlite"
 	"os"
 	"runtime"
@@ -68,11 +66,6 @@ func New(ctx context.Context) (db.DB, error) {
 		}
 	default:
 		return nil, fmt.Errorf("database type %s not supported for bundb", dbType)
-	}
-
-	// do migrations
-	if err := doMigration(ctx, newBun.DB); err != nil {
-		return nil, fmt.Errorf("bun migration error: %s", err)
 	}
 
 	ps := &bunClient{
@@ -154,32 +147,6 @@ func pgConn(ctx context.Context) (*Bun, error) {
 
 	logrus.Info("connected to POSTGRES database")
 	return conn, nil
-}
-
-func doMigration(ctx context.Context, db *bun.DB) error {
-	l := logrus.WithField("func", "doMigration")
-
-	migrator := migrate.NewMigrator(db, migrations.Migrations)
-
-	if err := migrator.Init(ctx); err != nil {
-		return err
-	}
-
-	group, err := migrator.Migrate(ctx)
-	if err != nil {
-		if err.Error() == "migrate: there are no any migrations" {
-			return nil
-		}
-		return err
-	}
-
-	if group.ID == 0 {
-		l.Info("there are no new migrations to run")
-		return nil
-	}
-
-	l.Infof("MIGRATED DATABASE TO %s", group)
-	return nil
 }
 
 func deriveBunDBPGOptions() (*pgx.ConnConfig, error) {

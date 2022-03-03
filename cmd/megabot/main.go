@@ -46,6 +46,7 @@ func main() {
 	}
 
 	// add commands
+	rootCmd.AddCommand(databaseCommands())
 	rootCmd.AddCommand(serverCommands())
 	rootCmd.AddCommand(userCommands())
 

@@ -16,9 +16,10 @@ require (
 	github.com/spf13/pflag v1.0.5
 	github.com/spf13/viper v1.10.1
 	github.com/tyrm/go-util v0.1.0
-	github.com/uptrace/bun v1.1.0
-	github.com/uptrace/bun/dialect/pgdialect v1.1.0
-	github.com/uptrace/bun/dialect/sqlitedialect v1.1.0
+	github.com/uptrace/bun v1.1.1
+	github.com/uptrace/bun/dbfixture v1.1.1
+	github.com/uptrace/bun/dialect/pgdialect v1.1.1
+	github.com/uptrace/bun/dialect/sqlitedialect v1.1.1
 	golang.org/x/crypto v0.0.0-20210817164053-32db794688a5
 	modernc.org/sqlite v1.14.7
 )
@@ -57,6 +58,7 @@ require (
 	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect
 	gopkg.in/ini.v1 v1.66.2 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
+	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect
 	lukechampine.com/uint128 v1.1.1 // indirect
 	modernc.org/cc/v3 v3.35.22 // indirect
 	modernc.org/ccgo/v3 v3.15.13 // indirect

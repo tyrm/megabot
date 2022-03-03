@@ -24,6 +24,9 @@ var usage = config.KeyNames{
 	RedisDB:       "Redis db",
 	RedisPassword: "Redis password, optional",
 
+	// database
+	DatabaseTestData: "Should test data be loaded into the database",
+
 	// server
 	ServerRoles: "Server roles that should be started: [graphql]",
 

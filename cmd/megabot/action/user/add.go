@@ -80,10 +80,12 @@ var Add action.Action = func(ctx context.Context) error {
 		g.UserID = newUser.ID
 	}
 
-	err = dbClient.Create(ctx, &newUser.Groups)
-	if err != nil {
-		l.Errorf("db: %s", err.Error())
-		return err
+	if len(newUser.Groups) > 0 {
+		err = dbClient.Create(ctx, &newUser.Groups)
+		if err != nil {
+			l.Errorf("db: %s", err.Error())
+			return err
+		}
 	}
 
 	l.Infof("added user %s", newUser.Email)

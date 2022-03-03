@@ -7,7 +7,9 @@ import (
 
 // Server adds all flags for running the server.
 func Server(cmd *cobra.Command, values config.Values) {
-	// application
+	Redis(cmd, values)
+
+	// server
 	cmd.PersistentFlags().StringArray(config.Keys.ServerRoles, values.ServerRoles, usage.ServerRoles)
 	cmd.PersistentFlags().Duration(config.Keys.AccessExpiration, values.AccessExpiration, usage.AccessExpiration)
 	cmd.PersistentFlags().String(config.Keys.AccessSecret, values.AccessSecret, usage.AccessSecret)

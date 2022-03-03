@@ -30,6 +30,9 @@ type KeyNames struct {
 	RefreshExpiration string
 	RefreshSecret     string
 
+	// database
+	DatabaseTestData string
+
 	// server
 	ServerRoles string
 
@@ -68,6 +71,9 @@ var Keys = KeyNames{
 	AccessSecret:      "access-secret",
 	RefreshExpiration: "refresh-expiration",
 	RefreshSecret:     "refresh-secret",
+
+	// database
+	DatabaseTestData: "test-data",
 
 	// server
 	ServerRoles: "server-role",

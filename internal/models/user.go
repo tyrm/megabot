@@ -11,7 +11,7 @@ type User struct {
 	CreatedAt         time.Time          `validate:"-" bun:"type:timestamptz,nullzero,notnull,default:current_timestamp"`
 	UpdatedAt         time.Time          `validate:"-" bun:"type:timestamptz,nullzero,notnull,default:current_timestamp"`
 	Email             string             `validate:"-" bun:",nullzero,notnull,unique"`
-	EncryptedPassword []byte             `validate:"-" bun:""`
+	EncryptedPassword string             `validate:"-" bun:""`
 	SignInCount       int                `validate:"min=0" bun:",notnull,default:0"`
 	Groups            []*GroupMembership `validate:"-" bun:"rel:has-many,join:id=user_id"`
 	Disabled          bool               `validate:"-" bun:",notnull,default:false"`
@@ -19,7 +19,7 @@ type User struct {
 
 // CheckPasswordHash is used to validate that a given password matches the stored hash
 func (u *User) CheckPasswordHash(password string) bool {
-	err := bcrypt.CompareHashAndPassword(u.EncryptedPassword, []byte(password))
+	err := bcrypt.CompareHashAndPassword([]byte(u.EncryptedPassword), []byte(password))
 	return err == nil
 }
 
@@ -30,6 +30,6 @@ func (u *User) SetPassword(password string) error {
 		return err
 	}
 
-	u.EncryptedPassword = bytes
+	u.EncryptedPassword = string(bytes)
 	return nil
 }
