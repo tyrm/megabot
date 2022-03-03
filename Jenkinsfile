@@ -20,7 +20,7 @@ pipeline {
       steps {
         script {
           withCredentials([
-            string(credentialsId: 'codecov-tyrm-supreme-robot', variable: 'CODECOV_TOKEN'),
+            string(credentialsId: 'codecov-tyrm-megabot', variable: 'CODECOV_TOKEN'),
             usernamePassword(credentialsId: 'integration-postgres-test', usernameVariable: 'POSTGRES_USER', passwordVariable: 'POSTGRES_PASSWORD'),
             string(credentialsId: 'integration-redis-test', variable: 'REDIS_PASSWORD')
           ]) {
