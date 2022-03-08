@@ -1,0 +1,51 @@
+package language
+
+import (
+	"github.com/BurntSushi/toml"
+	"github.com/markbates/pkger"
+	"github.com/nicksnyder/go-i18n/v2/i18n"
+	"golang.org/x/text/language"
+)
+
+var translationFiles = map[string]string{
+	"active.es.toml": pkger.Include("/active.es.toml"),
+}
+
+// Module represent the language module for translating text
+type Module struct {
+	langBundle *i18n.Bundle
+}
+
+// New creates a new language module
+func (m *Module) New() (*Module, error) {
+	module := Module{
+		langBundle: i18n.NewBundle(language.English),
+	}
+
+	module.langBundle.RegisterUnmarshalFunc("toml", toml.Unmarshal)
+
+	for filename, file := range translationFiles {
+		langFile, err := pkger.Open(file)
+		if err != nil {
+			return nil, err
+		}
+		defer langFile.Close()
+
+		fileinfo, err := langFile.Stat()
+		if err != nil {
+			return nil, err
+		}
+
+		filesize := fileinfo.Size()
+		buffer := make([]byte, filesize)
+
+		_, err = langFile.Read(buffer)
+		if err != nil {
+			return nil, err
+		}
+
+		module.langBundle.MustParseMessageFileBytes(buffer, filename)
+	}
+
+	return &module, nil
+}

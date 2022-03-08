@@ -12,6 +12,9 @@ fmt:
 gosec:
 	gosec ./...
 
+i18n-extract:
+	goi18n extract
+
 lint:
 	golint ./...
 

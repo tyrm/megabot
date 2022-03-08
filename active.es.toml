@@ -1,0 +1,4 @@
+[HelloWorld]
+description = "the phrase: Hello World!"
+hash = "sha1-e85aea673b99861bc135e8d3f2a2d75a8ff0031d"
+other = "¡Hola mundo!"
