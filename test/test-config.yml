@@ -5,7 +5,7 @@
 # String. Log level to use throughout the application.
 # Options: ["trace","debug","info","warn","error","fatal"]
 # Default: "info"
-log-level: "trace"
+log-level: "debug"
 
 
 ##############
@@ -93,7 +93,7 @@ redis-password: "test"
 
 # String. Secret for signing access secrets
 # Examples: ["","test","password"]
-# Default: ""+
+# Default: ""
 access-secret: "test"
 
 # String. Secret for signing refresh secrets

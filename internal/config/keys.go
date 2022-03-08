@@ -10,14 +10,15 @@ type KeyNames struct {
 	SoftwareVersion string
 
 	// database
-	DbType      string
-	DbAddress   string
-	DbPort      string
-	DbUser      string
-	DbPassword  string
-	DbDatabase  string
-	DbTLSMode   string
-	DbTLSCACert string
+	DbType         string
+	DbAddress      string
+	DbPort         string
+	DbUser         string
+	DbPassword     string
+	DbDatabase     string
+	DbTLSMode      string
+	DbTLSCACert    string
+	DbLoadTestData string
 
 	// redis
 	RedisAddress  string
@@ -30,9 +31,6 @@ type KeyNames struct {
 	RefreshExpiration string
 	RefreshSecret     string
 
-	// database
-	DatabaseTestData string
-
 	// server
 	ServerRoles string
 
@@ -44,22 +42,23 @@ type KeyNames struct {
 
 // Keys contains the names of config keys.
 var Keys = KeyNames{
-	ConfigPath: "config-path",
+	ConfigPath: "config-path", // CLI only
 	LogLevel:   "log-level",
 
 	// application
 	ApplicationName: "application-name",
-	SoftwareVersion: "software-version",
+	SoftwareVersion: "software-version", // Set at build
 
 	// database
-	DbType:      "db-type",
-	DbAddress:   "db-address",
-	DbPort:      "db-port",
-	DbUser:      "db-user",
-	DbPassword:  "db-password",
-	DbDatabase:  "db-database",
-	DbTLSMode:   "db-tls-mode",
-	DbTLSCACert: "db-tls-ca-cert",
+	DbType:         "db-type",
+	DbAddress:      "db-address",
+	DbPort:         "db-port",
+	DbUser:         "db-user",
+	DbPassword:     "db-password",
+	DbDatabase:     "db-database",
+	DbTLSMode:      "db-tls-mode",
+	DbTLSCACert:    "db-tls-ca-cert",
+	DbLoadTestData: "test-data", // CLI only
 
 	// redis
 	RedisAddress:  "redis-address",
@@ -71,9 +70,6 @@ var Keys = KeyNames{
 	AccessSecret:      "access-secret",
 	RefreshExpiration: "refresh-expiration",
 	RefreshSecret:     "refresh-secret",
-
-	// database
-	DatabaseTestData: "test-data",
 
 	// server
 	ServerRoles: "server-role",

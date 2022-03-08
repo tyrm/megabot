@@ -32,7 +32,7 @@ var Migrate action.Action = func(ctx context.Context) error {
 		return err
 	}
 
-	if viper.GetBool(config.Keys.DatabaseTestData) {
+	if viper.GetBool(config.Keys.DbLoadTestData) {
 		err = dbClient.LoadTestData(ctx)
 		if err != nil {
 			l.Errorf("migration: %s", err.Error())

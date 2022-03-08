@@ -10,22 +10,20 @@ var usage = config.KeyNames{
 	ApplicationName: "Name of the application, used in various places internally",
 
 	// database
-	DbType:      "Database type: eg., postgres",
-	DbAddress:   "Database ipv4 address, hostname, or filename",
-	DbPort:      "Database port",
-	DbUser:      "Database username",
-	DbPassword:  "Database password",
-	DbDatabase:  "Database name",
-	DbTLSMode:   "Database tls mode",
-	DbTLSCACert: "Path to CA cert for db tls connection",
+	DbType:         "Database type: eg., postgres",
+	DbAddress:      "Database ipv4 address, hostname, or filename",
+	DbPort:         "Database port",
+	DbUser:         "Database username",
+	DbPassword:     "Database password",
+	DbDatabase:     "Database name",
+	DbTLSMode:      "Database tls mode",
+	DbTLSCACert:    "Path to CA cert for db tls connection",
+	DbLoadTestData: "Should test data be loaded into the database",
 
 	// redis
 	RedisAddress:  "Redis address: eg. localhost:6379",
 	RedisDB:       "Redis db",
 	RedisPassword: "Redis password, optional",
-
-	// database
-	DatabaseTestData: "Should test data be loaded into the database",
 
 	// server
 	ServerRoles: "Server roles that should be started: [graphql]",

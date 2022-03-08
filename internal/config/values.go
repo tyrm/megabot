@@ -12,14 +12,15 @@ type Values struct {
 	SoftwareVersion string
 
 	// database
-	DbType      string
-	DbAddress   string
-	DbPort      int
-	DbUser      string
-	DbPassword  string
-	DbDatabase  string
-	DbTLSMode   string
-	DbTLSCACert string
+	DbType         string
+	DbAddress      string
+	DbPort         int
+	DbUser         string
+	DbPassword     string
+	DbDatabase     string
+	DbTLSMode      string
+	DbTLSCACert    string
+	DbLoadTestData bool
 
 	// redis
 	RedisAddress  string
@@ -31,9 +32,6 @@ type Values struct {
 	AccessSecret      string
 	RefreshExpiration time.Duration
 	RefreshSecret     string
-
-	// database
-	DatabaseTestData bool
 
 	// server
 	ServerRoles []string
@@ -53,22 +51,20 @@ var Defaults = Values{
 	ApplicationName: "megabot",
 
 	// database
-	DbType:      "postgres",
-	DbAddress:   "",
-	DbPort:      5432,
-	DbUser:      "",
-	DbPassword:  "",
-	DbDatabase:  "megabot",
-	DbTLSMode:   "disable",
-	DbTLSCACert: "",
+	DbType:         "postgres",
+	DbAddress:      "",
+	DbPort:         5432,
+	DbUser:         "",
+	DbPassword:     "",
+	DbDatabase:     "megabot",
+	DbTLSMode:      "disable",
+	DbTLSCACert:    "",
+	DbLoadTestData: false,
 
 	// redis
 	RedisAddress:  "localhost:6379",
 	RedisDB:       0,
 	RedisPassword: "",
-
-	// database
-	DatabaseTestData: false,
 
 	// auth
 	AccessExpiration:  time.Minute * 15,

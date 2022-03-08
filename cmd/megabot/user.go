@@ -28,5 +28,17 @@ func userCommands() *cobra.Command {
 	flag.UserAdd(userAddCmd, config.Defaults)
 	userCmd.AddCommand(userAddCmd)
 
+	userShowCmd := &cobra.Command{
+		Use:   "show",
+		Short: "display a user",
+		PreRunE: func(cmd *cobra.Command, args []string) error {
+			return preRun(cmd)
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return run(cmd.Context(), user.Show)
+		},
+	}
+	userCmd.AddCommand(userShowCmd)
+
 	return userCmd
 }
