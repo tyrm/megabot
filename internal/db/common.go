@@ -10,6 +10,6 @@ type Common interface {
 	Create(context.Context, interface{}) Error
 	// DoMigration runs database migrations
 	DoMigration(ctx context.Context) Error
-	// LoadTestData
+	// LoadTestData adds test data to the database
 	LoadTestData(ctx context.Context) Error
 }
