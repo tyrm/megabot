@@ -41,7 +41,8 @@ type Bun struct {
 	*bun.DB
 }
 
-type bunClient struct {
+// Client is a DB interface compatible client for Bun
+type Client struct {
 	commonDB
 	userDB
 	bun *Bun
@@ -68,7 +69,7 @@ func New(ctx context.Context) (db.DB, error) {
 		return nil, fmt.Errorf("database type %s not supported for bundb", dbType)
 	}
 
-	ps := &bunClient{
+	ps := &Client{
 		commonDB: commonDB{
 			bun: newBun,
 		},
