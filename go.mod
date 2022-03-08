@@ -3,6 +3,7 @@ module github.com/tyrm/megabot
 go 1.17
 
 require (
+	github.com/go-playground/validator/v10 v10.10.1
 	github.com/go-redis/redis/v8 v8.11.4
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/google/uuid v1.3.0
@@ -20,7 +21,7 @@ require (
 	github.com/uptrace/bun/dbfixture v1.1.1
 	github.com/uptrace/bun/dialect/pgdialect v1.1.1
 	github.com/uptrace/bun/dialect/sqlitedialect v1.1.1
-	golang.org/x/crypto v0.0.0-20210817164053-32db794688a5
+	golang.org/x/crypto v0.0.0-20211215153901-e495a2d5b3d3
 	modernc.org/sqlite v1.14.7
 )
 
@@ -28,6 +29,8 @@ require (
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/fsnotify/fsnotify v1.5.1 // indirect
+	github.com/go-playground/locales v0.14.0 // indirect
+	github.com/go-playground/universal-translator v0.18.0 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
 	github.com/jackc/chunkreader/v2 v2.0.1 // indirect
@@ -39,6 +42,7 @@ require (
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/kballard/go-shellquote v0.0.0-20180428030007-95032a82bc51 // indirect
 	github.com/konsorten/go-windows-terminal-sequences v1.0.2 // indirect
+	github.com/leodido/go-urn v1.2.1 // indirect
 	github.com/magiconair/properties v1.8.5 // indirect
 	github.com/mattn/go-isatty v0.0.14 // indirect
 	github.com/mitchellh/mapstructure v1.4.3 // indirect
