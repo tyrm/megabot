@@ -2,8 +2,6 @@ package webapp
 
 import "net/http"
 
-const pathHome = "/"
-
 // HomeTemplate contains the variables for the "home" template.
 type HomeTemplate struct {
 	templateCommon
@@ -18,7 +16,13 @@ func (m *Module) HomeGetHandler(w http.ResponseWriter, r *http.Request) {
 		},
 	}
 
-	err := m.templates.ExecuteTemplate(w, "home", tmplVars)
+	err := m.initTemplate(w, r, tmplVars)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	err = m.templates.ExecuteTemplate(w, "home", tmplVars)
 	if err != nil {
 		logger.Errorf("could not render home template: %s", err.Error())
 	}

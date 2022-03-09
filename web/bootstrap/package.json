@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "scss": "./node_modules/node-sass/bin/node-sass src/bootstrap.scss ../static/css/bootstrap.css"
+    "scss": "./node_modules/node-sass/bin/node-sass src/bootstrap.scss ../static/css/bootstrap.css && cp node_modules/bootstrap/dist/js/bootstrap.bundle.js ../static/js/bootstrap.bundle.js"
   },
   "author": "",
   "license": "ISC",

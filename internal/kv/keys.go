@@ -1,13 +1,17 @@
 package kv
 
-var (
+const (
 	keyBase = "megabot:"
 
-	keyJwt = keyBase + "jwt:"
-
+	keyJwt          = keyBase + "jwt:"
 	keyJwtAccesses  = keyJwt + "a:"
 	keyJwtRefreshes = keyJwt + "r:"
+
+	keySession = keyBase + "session:"
 )
+
+// KeySession returns the base kv key prefix
+func KeySession() string { return keySession }
 
 // KeyJwtAccess returns the kv key which holds a JWT access token
 func KeyJwtAccess(d string) string { return keyJwtAccesses + d }
