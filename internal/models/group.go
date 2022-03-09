@@ -33,18 +33,18 @@ func GroupSuperAdmin() uuid.UUID {
 	return groupSuperAdmin
 }
 
-// GroupTitle return a pretty text name for the group
-func GroupTitle(g uuid.UUID) string {
-	if s, ok := groupTitle[g]; ok {
-		return s
-	}
-	return ""
-}
-
 // GroupName return a uuid for the group name
 func GroupName(g string) uuid.UUID {
 	if s, ok := groupName[g]; ok {
 		return s
 	}
 	return uuid.Nil
+}
+
+// GroupTitle return a pretty text name for the group
+func GroupTitle(g uuid.UUID) string {
+	if s, ok := groupTitle[g]; ok {
+		return s
+	}
+	return ""
 }
