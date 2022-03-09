@@ -7,7 +7,7 @@ type Localizer struct {
 	localizer *i18n.Localizer
 }
 
-// NewLocalizer returns a Localizer which will return translated phrases based on the provided languages
+// NewLocalizer returns a localizer which will return translated phrases based on the provided languages
 func (m Module) NewLocalizer(langs ...string) (*Localizer, error) {
 	return &Localizer{
 		localizer: i18n.NewLocalizer(m.langBundle, langs...),

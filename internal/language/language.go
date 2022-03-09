@@ -4,6 +4,7 @@ import (
 	"github.com/BurntSushi/toml"
 	"github.com/markbates/pkger"
 	"github.com/nicksnyder/go-i18n/v2/i18n"
+	"github.com/sirupsen/logrus"
 	"golang.org/x/text/language"
 )
 
@@ -17,7 +18,7 @@ type Module struct {
 }
 
 // New creates a new language module
-func (m *Module) New() (*Module, error) {
+func New() (*Module, error) {
 	module := Module{
 		langBundle: i18n.NewBundle(language.English),
 	}
@@ -27,12 +28,14 @@ func (m *Module) New() (*Module, error) {
 	for filename, file := range translationFiles {
 		langFile, err := pkger.Open(file)
 		if err != nil {
+			logrus.Errorf("opening file: %s", err.Error())
 			return nil, err
 		}
 		defer langFile.Close()
 
 		fileinfo, err := langFile.Stat()
 		if err != nil {
+			logrus.Errorf("stating file: %s", err.Error())
 			return nil, err
 		}
 
@@ -41,6 +44,7 @@ func (m *Module) New() (*Module, error) {
 
 		_, err = langFile.Read(buffer)
 		if err != nil {
+			logrus.Errorf("reading buffer: %s", err.Error())
 			return nil, err
 		}
 
