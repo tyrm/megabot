@@ -1,6 +1,8 @@
 package config
 
 const (
-	// ServerRoleGraphql represents the graphql server role
-	ServerRoleGraphql = "graphql"
+	// ServerRoleGraphQL represents the graphql server role
+	ServerRoleGraphQL = "graphql"
+	// ServerRoleWebapp represents the webapp server role
+	ServerRoleWebapp = "webapp"
 )

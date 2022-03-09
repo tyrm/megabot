@@ -71,5 +71,5 @@ var Defaults = Values{
 	RefreshExpiration: time.Hour * 24 * 7,
 
 	// server
-	ServerRoles: []string{ServerRoleGraphql},
+	ServerRoles: []string{ServerRoleGraphQL, ServerRoleWebapp},
 }
