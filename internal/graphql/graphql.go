@@ -24,7 +24,7 @@ type Module struct {
 	jwt *jwt.Module
 }
 
-// New returns a new auth module
+// New returns a new graphql module
 func New(db db.DB, jwt *jwt.Module) web.Module {
 	return &Module{
 		db:  db,
