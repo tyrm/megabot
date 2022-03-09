@@ -4,7 +4,7 @@ build-snapshot:
 	goreleaser build --snapshot --single-target --rm-dist
 
 clean:
-	rm -Rvf dist megabot pkged.go
+	rm -Rvf coverage.txt dist gosec.xml megabot pkged.go
 
 fmt:
 	go fmt ./...
