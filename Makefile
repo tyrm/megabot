@@ -6,6 +6,9 @@ build-snapshot: clean
 clean:
 	rm -Rvf coverage.txt dist gosec.xml megabot pkged.go
 
+clean-npm:
+	rm -Rvf web/static/css/bootstrap.css
+
 fmt:
 	go fmt ./...
 
@@ -17,6 +20,12 @@ i18n-extract:
 
 lint:
 	golint ./...
+
+npm-install:
+	cd web/bootstrap && npm install
+
+npm-scss: npm-install
+	cd web/bootstrap && npm run scss
 
 test-docker-restart: test-docker-stop test-docker-start
 

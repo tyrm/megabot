@@ -2,3 +2,6 @@
 dist/
 /megabot
 /pkged.go
+
+/web/bootstrap/node_modules
+/web/static/css/bootstrap.css
