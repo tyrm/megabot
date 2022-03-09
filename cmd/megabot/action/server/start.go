@@ -72,7 +72,11 @@ var Start action.Action = func(ctx context.Context) error {
 	}
 	if util.ContainsString(viper.GetStringSlice(config.Keys.ServerRoles), config.ServerRoleWebapp) {
 		logrus.Infof("adding webapp module")
-		webMod := webapp.New(dbClient)
+		webMod, err := webapp.New(dbClient)
+		if err != nil {
+			logrus.Errorf("webapp module: %s", err.Error())
+			return err
+		}
 		webModules = append(webModules, webMod)
 	}
 
