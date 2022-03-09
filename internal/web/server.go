@@ -20,6 +20,11 @@ func (r *Server) HandleFunc(path string, f func(http.ResponseWriter, *http.Reque
 	return r.router.HandleFunc(path, f)
 }
 
+// PathPrefix attaches a new route url path prefix
+func (r *Server) PathPrefix(tpl string) *mux.Route {
+	return r.router.PathPrefix(tpl)
+}
+
 // Start starts the web server
 func (r *Server) Start() error {
 	logrus.Infof("listening on %s", r.srv.Addr)
