@@ -3,9 +3,7 @@ package graphql
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"github.com/graphql-go/graphql"
-	"github.com/sirupsen/logrus"
 	"github.com/tyrm/megabot/internal/db"
 	"github.com/tyrm/megabot/internal/jwt"
 	"github.com/tyrm/megabot/internal/web"
@@ -20,7 +18,7 @@ type postData struct {
 	Variables map[string]interface{} `json:"variables"`
 }
 
-// Module implements the web module interface
+// Module contains a graphql module for the web server. Implements web.Module
 type Module struct {
 	db  db.DB
 	jwt *jwt.Module
@@ -41,7 +39,7 @@ func (m *Module) Route(s *web.Server) error {
 }
 
 func (m *Module) graphqlHandler(w http.ResponseWriter, r *http.Request) {
-	l := logrus.WithField("func", "graphqlHandler")
+	l := logger.WithField("func", "graphqlHandler")
 	var p map[string]interface{}
 	if err := json.NewDecoder(r.Body).Decode(&p); err != nil {
 		w.WriteHeader(400)
@@ -98,6 +96,6 @@ func (m *Module) graphqlHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	if err := json.NewEncoder(w).Encode(result); err != nil {
-		fmt.Printf("could not write result to response: %s", err)
+		l.Errorf("could not write result to response: %s", err)
 	}
 }

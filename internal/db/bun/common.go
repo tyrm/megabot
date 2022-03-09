@@ -2,7 +2,6 @@ package bun
 
 import (
 	"context"
-	"github.com/sirupsen/logrus"
 	"github.com/tyrm/megabot/internal/db"
 	"github.com/tyrm/megabot/internal/db/bun/migrations"
 	"github.com/tyrm/megabot/internal/models"
@@ -17,7 +16,8 @@ type commonDB struct {
 
 // Close closes the bun db connection
 func (c *commonDB) Close(ctx context.Context) db.Error {
-	logrus.Info("closing db connection")
+	l := logger.WithField("func", "Close")
+	l.Info("closing db connection")
 	return c.bun.Close()
 }
 
@@ -29,7 +29,7 @@ func (c *commonDB) Create(ctx context.Context, i interface{}) db.Error {
 
 // DoMigration runs schema migrations on the database
 func (c *commonDB) DoMigration(ctx context.Context) db.Error {
-	l := logrus.WithField("func", "DoMigration")
+	l := logger.WithField("func", "DoMigration")
 
 	migrator := migrate.NewMigrator(c.bun.DB, migrations.Migrations)
 
@@ -55,7 +55,7 @@ func (c *commonDB) DoMigration(ctx context.Context) db.Error {
 }
 
 func (c *commonDB) LoadTestData(ctx context.Context) db.Error {
-	l := logrus.WithField("func", "DoMigration")
+	l := logger.WithField("func", "DoMigration")
 
 	// Register models before loading fixtures.
 	c.bun.RegisterModel(

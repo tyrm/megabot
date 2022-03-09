@@ -2,7 +2,6 @@ package graphql
 
 import (
 	"github.com/graphql-go/graphql"
-	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 	"github.com/tyrm/megabot/internal/config"
 )
@@ -12,7 +11,8 @@ type status struct {
 }
 
 func (m *Module) statusQuery(params graphql.ResolveParams) (interface{}, error) {
-	logrus.Debugf("trying to get status")
+	l := logger.WithField("func", "statusQuery")
+	l.Debugf("trying to get status")
 
 	newStatus := status{
 		Version: viper.GetString(config.Keys.SoftwareVersion),
