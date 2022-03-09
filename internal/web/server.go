@@ -2,6 +2,7 @@ package web
 
 import (
 	"context"
+	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/sirupsen/logrus"
 	"github.com/tyrm/megabot/internal/db"
@@ -39,6 +40,7 @@ func (r *Server) Stop(ctx context.Context) error {
 // New creates a new web server
 func New(ctx context.Context, db db.DB) (*Server, error) {
 	r := mux.NewRouter()
+	r.Use(handlers.CompressHandler)
 
 	s := &http.Server{
 		Addr:         ":5000",
