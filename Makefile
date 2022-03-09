@@ -1,7 +1,7 @@
 PROJECT_NAME=megabot
 
-build-snapshot:
-	goreleaser build --snapshot --single-target --rm-dist
+build-snapshot: clean
+	goreleaser build --snapshot
 
 clean:
 	rm -Rvf coverage.txt dist gosec.xml megabot pkged.go

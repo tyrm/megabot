@@ -30,6 +30,8 @@ builds:
       - goos: windows
         goarch: arm64
     mod_timestamp: "{{ .CommitTimestamp }}"
+universal_binaries:
+  - replace: true
 archives:
   - replacements:
       darwin: Darwin
