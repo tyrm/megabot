@@ -6,11 +6,7 @@ import (
 )
 
 func TestTextHelloWorld(t *testing.T) {
-	langMod, err := New()
-	if err != nil {
-		t.Errorf("can't get language module: %s", err.Error())
-		return
-	}
+	langMod, _ := New()
 
 	tables := []struct {
 		x string
