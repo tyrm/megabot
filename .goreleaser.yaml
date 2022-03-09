@@ -2,9 +2,11 @@
 # Make sure to check the documentation at https://goreleaser.com
 before:
   hooks:
+    - make clean
     - go mod tidy
     - go fmt ./...
     - go generate ./...
+    - pkger
 builds:
   - main: ./cmd/megabot
     binary: megabot

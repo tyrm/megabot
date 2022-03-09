@@ -4,13 +4,16 @@ build-snapshot:
 	goreleaser build --snapshot --single-target --rm-dist
 
 clean:
-	rm -Rvf dist megabot
+	rm -Rvf dist megabot pkged.go
 
 fmt:
 	go fmt ./...
 
 gosec:
 	gosec ./...
+
+i18n-extract:
+	goi18n extract
 
 lint:
 	golint ./...
