@@ -35,6 +35,7 @@ type Values struct {
 
 	// server
 	ServerExternalHostname string
+	ServerMinifyHTML       bool
 	ServerRoles            []string
 
 	// user
@@ -73,6 +74,7 @@ var Defaults = Values{
 
 	// server
 	ServerExternalHostname: "localhost",
+	ServerMinifyHTML:       true,
 	ServerRoles: []string{
 		ServerRoleGraphQL,
 		ServerRoleWebapp,

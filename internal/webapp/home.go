@@ -22,7 +22,7 @@ func (m *Module) HomeGetHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = m.templates.ExecuteTemplate(w, "home", tmplVars)
+	err = m.executeTemplate(w, "home", tmplVars)
 	if err != nil {
 		logger.Errorf("could not render home template: %s", err.Error())
 	}

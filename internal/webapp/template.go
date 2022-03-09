@@ -1,7 +1,9 @@
 package webapp
 
 import (
+	"bytes"
 	"github.com/gorilla/sessions"
+	"io"
 	"net/http"
 )
 
@@ -56,4 +58,18 @@ func (m *Module) initTemplate(w http.ResponseWriter, r *http.Request, tmpl templ
 	}
 
 	return nil
+}
+
+func (m *Module) executeTemplate(w io.Writer, name string, tmplVars interface{}) error {
+	if m.minify == nil {
+		return m.templates.ExecuteTemplate(w, name, tmplVars)
+	}
+
+	b := new(bytes.Buffer)
+	err := m.templates.ExecuteTemplate(b, name, tmplVars)
+	if err != nil {
+		return err
+	}
+
+	return m.minify.Minify("text/html", w, b)
 }

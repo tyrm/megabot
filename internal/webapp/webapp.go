@@ -9,6 +9,8 @@ import (
 	"github.com/markbates/pkger"
 	"github.com/rbcervilla/redisstore/v8"
 	"github.com/spf13/viper"
+	"github.com/tdewolff/minify/v2"
+	"github.com/tdewolff/minify/v2/html"
 	"github.com/tyrm/go-util/pkgerutil"
 	"github.com/tyrm/megabot/internal/config"
 	"github.com/tyrm/megabot/internal/db"
@@ -39,6 +41,7 @@ var tmplFuncs = template.FuncMap{
 type Module struct {
 	db        db.DB
 	store     sessions.Store
+	minify    *minify.M
 	templates *template.Template
 
 	headLinks []templateHeadLink
@@ -68,7 +71,14 @@ func New(ctx context.Context, db db.DB, r *redis.Client) (web.Module, error) {
 		MaxAge: 86400 * 60,
 	})
 
-	// generate headlinks
+	// minify
+	var m *minify.M
+	if viper.GetBool(config.Keys.ServerMinifyHTML) {
+		m = minify.New()
+		m.AddFunc("text/html", html.Minify)
+	}
+
+	// generate head links
 	var hl []templateHeadLink
 	paths := []string{
 		pathFileBootstrap,
@@ -91,6 +101,7 @@ func New(ctx context.Context, db db.DB, r *redis.Client) (web.Module, error) {
 
 	return &Module{
 		db:        db,
+		minify:    m,
 		templates: t,
 		store:     store,
 
@@ -120,7 +131,7 @@ func getSignature(path string) (string, error) {
 	l := logger.WithField("func", "getSignature")
 	l.Debugf("getting signature for %s", path)
 
-	file, err := pkger.Open(fmt.Sprintf("/%s", path))
+	file, err := pkger.Open(path)
 	if err != nil {
 		l.Errorf("opening file: %s", err.Error())
 		return "", err

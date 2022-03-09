@@ -27,6 +27,7 @@ var usage = config.KeyNames{
 
 	// server
 	ServerExternalHostname: "The external hostname used by the server",
+	ServerMinifyHTML:       "Should the server minify html documents before sending",
 	ServerRoles:            "Server roles that should be started: [graphql, webapp]",
 
 	// user
