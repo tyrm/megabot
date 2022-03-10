@@ -74,7 +74,7 @@ func (l *Localizer) TextLoginInvalid() string {
 
 // TextLoginShort returns a translated phrase.
 func (l *Localizer) TextLoginShort() string {
-	lg := logger.WithField("func", "TextLogin")
+	lg := logger.WithField("func", "TextLoginShort")
 
 	text, err := l.localizer.Localize(&i18n.LocalizeConfig{
 		DefaultMessage: &i18n.Message{

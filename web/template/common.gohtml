@@ -12,43 +12,43 @@
       </button>
       <div class="collapse navbar-collapse" id="navbarText">
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-    {{- range .NavBar -}}
+      {{- range .NavBar -}}
         {{- if .Children }}
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle{{if .Active}} active{{end}}{{if .Disabled}} disabled{{end}}" href="{{.URL}}" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                 {{if .FAIcon}}<i class="fas fa-{{.FAIcon}}"></i> {{end}}{{.Text}}
             </a>
             <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                {{- range .Children}}
-                  <li class="nav-item">
-                    <a class="dropdown-item{{if .Active}} active{{end}}{{if .Disabled}} disabled{{end}}" href="{{.URL}}">
-                        {{if .FAIcon}}<i class="fas fa-{{.FAIcon}}"></i> {{end}}{{.Text}}
-                    </a>
-                  </li>
-                {{- end}}
+            {{- range .Children}}
+              <li class="nav-item">
+                <a class="dropdown-item{{if .Active}} active{{end}}{{if .Disabled}} disabled{{end}}" href="{{.URL}}">
+                  {{if .FAIcon}}<i class="fas fa-{{.FAIcon}}"></i> {{end}}{{.Text}}
+                </a>
+              </li>
+            {{- end}}
             </ul>
           </li>
         {{- else}}
           <li class="nav-item">
             <a class="nav-link{{if .Active}} active{{end}}{{if .Disabled}} disabled{{end}}"{{if .Active}} aria-current="page"{{end}} href="{{.URL}}">
-                {{if .FAIcon}}<i class="fas fa-{{.FAIcon}}"></i> {{end}}{{.Text}}
+              {{if .FAIcon}}<i class="fas fa-{{.FAIcon}}"></i> {{end}}{{.Text}}
             </a>
           </li>
         {{- end -}}
-    {{- end}}
+      {{- end}}
         </ul>
         <span class="d-flex">
-                <ul class="navbar-nav">
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="fas fa-user"></i> User{{/* .User.Username */}}
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownMenuLink">
-                            <li><a class="dropdown-item" href="/app/logout"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
-                        </ul>
-                    </li>
-                </ul>
-            </span>
+          <ul class="navbar-nav">
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fas fa-user"></i> User{{/* .User.Username */}}
+              </a>
+              <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownMenuLink">
+                <li><a class="dropdown-item" href="/app/logout"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+              </ul>
+            </li>
+          </ul>
+        </span>
       </div>
     </div>
   </nav>
