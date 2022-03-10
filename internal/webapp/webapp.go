@@ -145,10 +145,10 @@ func (m *Module) Name() string {
 // Route attaches routes to the web server
 func (m *Module) Route(s *web.Server) error {
 	// Static Files
-	s.PathPrefix("/static/").Handler(http.StripPrefix(
-		"/static/", http.FileServer(pkger.Dir(staticDir))))
+	s.PathPrefix(pathStatic + "/").Handler(http.StripPrefix(
+		pathStatic+"/", http.FileServer(pkger.Dir(staticDir))))
 
-	webapp := s.PathPrefix(pathBase).Subrouter()
+	webapp := s.PathPrefix(pathBase + "/").Subrouter()
 	webapp.Use(m.Middleware)
 
 	// Error Pages
@@ -157,6 +157,7 @@ func (m *Module) Route(s *web.Server) error {
 
 	webapp.HandleFunc(pathLogin, m.LoginGetHandler).Methods("GET")
 	webapp.HandleFunc(pathLogin, m.LoginPostHandler).Methods("POST")
+	webapp.HandleFunc(pathLogout, m.LogoutGetHandler).Methods("GET")
 
 	// Protected Pages
 	protected := webapp.PathPrefix("/").Subrouter()
