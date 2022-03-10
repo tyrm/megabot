@@ -7,12 +7,15 @@ import (
 	"golang.org/x/text/language"
 )
 
+var defaultLanguage = language.English
+
 var translationFiles = map[string]string{
 	"active.es.toml": pkger.Include("/active.es.toml"),
 }
 
 // Module represent the language module for translating text
 type Module struct {
+	lang       language.Tag
 	langBundle *i18n.Bundle
 }
 
@@ -21,7 +24,8 @@ func New() (*Module, error) {
 	l := logger.WithField("func", "New")
 
 	module := Module{
-		langBundle: i18n.NewBundle(language.English),
+		lang:       defaultLanguage,
+		langBundle: i18n.NewBundle(defaultLanguage),
 	}
 
 	module.langBundle.RegisterUnmarshalFunc("toml", toml.Unmarshal)
@@ -54,3 +58,6 @@ func New() (*Module, error) {
 
 	return &module, nil
 }
+
+// Language returns the default language
+func (m Module) Language() language.Tag { return m.lang }

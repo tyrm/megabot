@@ -156,6 +156,7 @@ func (m *Module) Route(s *web.Server) error {
 	webapp.MethodNotAllowedHandler = m.methodNotAllowedHandler()
 
 	webapp.HandleFunc(pathLogin, m.LoginGetHandler).Methods("GET")
+	webapp.HandleFunc(pathLogin, m.LoginPostHandler).Methods("POST")
 
 	// Protected Pages
 	protected := webapp.PathPrefix("/").Subrouter()

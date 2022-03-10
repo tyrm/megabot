@@ -1,6 +1,9 @@
-{{define "head_link" }}<link href="{{ .HRef }}"{{if .Rel}} rel="{{ .Rel }}"{{end}}{{if .Integrity}} integrity="{{ .Integrity }}"{{end}}{{if .Sizes}} sizes="{{ .Sizes }}"{{end}}{{if .CrossOrigin}} crossorigin="{{ .CrossOrigin }}"{{end}}{{if .Type}} type="{{ .Type }}"{{end}}>{{end}}
+{{ define "a_lang_plus" }}{{ if ne . "" }}+lang={{ . }}{{ end }}{{ end }}
+{{ define "a_lang_question" }}{{ if ne . "" }}?lang={{ . }}{{ end }}{{ end }}
 
-{{define "navbar" }}
+{{ define "head_link" }}<link href="{{ .HRef }}"{{if .Rel}} rel="{{ .Rel }}"{{end}}{{if .Integrity}} integrity="{{ .Integrity }}"{{end}}{{if .Sizes}} sizes="{{ .Sizes }}"{{end}}{{if .CrossOrigin}} crossorigin="{{ .CrossOrigin }}"{{end}}{{if .Type}} type="{{ .Type }}"{{end}}>{{ end }}
+
+{{ define "navbar" }}
   <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
     <div class="container-fluid">
       <a class="navbar-brand" href="#">
@@ -52,6 +55,6 @@
       </div>
     </div>
   </nav>
-{{- end}}
+{{- end }}
 
-{{define "script"}}<script src="{{ .Src }}"{{if .Integrity}} integrity="{{ htmlSafe .Integrity }}"{{end}}{{if .CrossOrigin}} crossorigin="{{ .CrossOrigin }}"{{end}}></script>{{end}}
+{{ define "script" }}<script src="{{ .Src }}"{{if .Integrity}} integrity="{{ htmlSafe .Integrity }}"{{end}}{{if .CrossOrigin}} crossorigin="{{ .CrossOrigin }}"{{end}}></script>{{ end }}

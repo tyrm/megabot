@@ -2,6 +2,7 @@ package language
 
 import (
 	"fmt"
+	"golang.org/x/text/language"
 	"testing"
 )
 
@@ -9,12 +10,13 @@ func TestTextLogin(t *testing.T) {
 	langMod, _ := New()
 
 	tables := []struct {
-		x string
+		x language.Tag
 		n string
+		l language.Tag
 	}{
-		{"en", "Login"},
-		{"es", "Iniciar Sesión"},
-		{"in", "Login"},
+		{language.English, "Login", language.English},
+		{language.Spanish, "Iniciar Sesión", language.Spanish},
+		{language.Hindi, "Login", language.English},
 	}
 
 	for i, table := range tables {
@@ -25,15 +27,18 @@ func TestTextLogin(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 
-			localizer, err := langMod.NewLocalizer(table.x)
+			localizer, err := langMod.NewLocalizer(table.x.String())
 			if err != nil {
 				t.Errorf("[%d] can't get localizer for %s: %s", i, table.x, err.Error())
 				return
 			}
 
 			result := localizer.TextLogin()
-			if result != table.n {
-				t.Errorf("[%d] got invalid translation for %s, got: %v, want: %v,", i, table.x, result, table.n)
+			if result.String() != table.n {
+				t.Errorf("[%d] got invalid translation for %s, got: %v, want: %v,", i, table.x, result.String(), table.n)
+			}
+			if result.Language() != table.l {
+				t.Errorf("[%d] got invalid language for %s, got: %v, want: %v,", i, table.x, result.Language(), table.l)
 			}
 		})
 	}
@@ -43,12 +48,13 @@ func TestTextLoginInvalid(t *testing.T) {
 	langMod, _ := New()
 
 	tables := []struct {
-		x string
+		x language.Tag
 		n string
+		l language.Tag
 	}{
-		{"en", "email/password combo invalid"},
-		{"es", "combinación de correo electrónico/contraseña no válida"},
-		{"in", "email/password combo invalid"},
+		{language.English, "email/password combo invalid", language.English},
+		{language.Spanish, "combinación de correo electrónico/contraseña no válida", language.Spanish},
+		{language.Hindi, "email/password combo invalid", language.English},
 	}
 
 	for i, table := range tables {
@@ -59,15 +65,18 @@ func TestTextLoginInvalid(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 
-			localizer, err := langMod.NewLocalizer(table.x)
+			localizer, err := langMod.NewLocalizer(table.x.String())
 			if err != nil {
 				t.Errorf("[%d] can't get localizer for %s: %s", i, table.x, err.Error())
 				return
 			}
 
 			result := localizer.TextLoginInvalid()
-			if result != table.n {
-				t.Errorf("[%d] got invalid translation for %s, got: %v, want: %v,", i, table.x, result, table.n)
+			if result.String() != table.n {
+				t.Errorf("[%d] got invalid translation for %s, got: %v, want: %v,", i, table.x, result.String(), table.n)
+			}
+			if result.Language() != table.l {
+				t.Errorf("[%d] got invalid language for %s, got: %v, want: %v,", i, table.x, result.Language(), table.l)
 			}
 		})
 	}
@@ -77,12 +86,13 @@ func TestTextLoginShort(t *testing.T) {
 	langMod, _ := New()
 
 	tables := []struct {
-		x string
+		x language.Tag
 		n string
+		l language.Tag
 	}{
-		{"en", "Login"},
-		{"es", "Iniciar"},
-		{"in", "Login"},
+		{language.English, "Login", language.English},
+		{language.Spanish, "Iniciar", language.Spanish},
+		{language.Hindi, "Login", language.English},
 	}
 
 	for i, table := range tables {
@@ -93,15 +103,18 @@ func TestTextLoginShort(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 
-			localizer, err := langMod.NewLocalizer(table.x)
+			localizer, err := langMod.NewLocalizer(table.x.String())
 			if err != nil {
 				t.Errorf("[%d] can't get localizer for %s: %s", i, table.x, err.Error())
 				return
 			}
 
 			result := localizer.TextLoginShort()
-			if result != table.n {
-				t.Errorf("[%d] got invalid translation for %s, got: %v, want: %v,", i, table.x, result, table.n)
+			if result.String() != table.n {
+				t.Errorf("[%d] got invalid translation for %s, got: %v, want: %v,", i, table.x, result.String(), table.n)
+			}
+			if result.Language() != table.l {
+				t.Errorf("[%d] got invalid language for %s, got: %v, want: %v,", i, table.x, result.Language(), table.l)
 			}
 		})
 	}

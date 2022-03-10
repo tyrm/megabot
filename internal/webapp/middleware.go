@@ -2,6 +2,7 @@ package webapp
 
 import (
 	"context"
+	"golang.org/x/text/language"
 	"net/http"
 )
 
@@ -58,9 +59,45 @@ func (m *Module) Middleware(next http.Handler) http.Handler {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		ctx = context.WithValue(r.Context(), localizerKey, localizer)
+		ctx = context.WithValue(ctx, localizerKey, localizer)
+
+		// set request language
+		ctx = context.WithValue(ctx, languageKey, getPageLang(lang, accept, m.language.Language().String()))
 
 		// Do Request
 		next.ServeHTTP(wx, r.WithContext(ctx))
 	})
+}
+
+func getPageLang(query, header, defaultLang string) string {
+	l := logger.WithField("func", "getPageLang")
+
+	if query != "" {
+		t, _, err := language.ParseAcceptLanguage(query)
+		if err == nil {
+			l.Debugf("query languages: %v", t)
+			if len(t) > 0 {
+				l.Debugf("returning language: %s", t[0].String())
+				return t[0].String()
+			}
+		} else {
+			l.Debugf("query '%s' did not contain a valid lanaugae: %s", query, err.Error())
+		}
+	}
+
+	if header != "" {
+		t, _, err := language.ParseAcceptLanguage(header)
+		if err == nil {
+			l.Debugf("header languages: %v", t)
+			if len(t) > 0 {
+				l.Debugf("returning language: %s", t[0].String())
+				return t[0].String()
+			}
+		} else {
+			l.Debugf("query '%s' did not contain a valid lanaugae: %s", query, err.Error())
+		}
+	}
+
+	l.Debugf("returning default language: %s", defaultLang)
+	return defaultLang
 }

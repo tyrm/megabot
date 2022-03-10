@@ -2,7 +2,6 @@ package webapp
 
 import (
 	"bytes"
-	"errors"
 	"github.com/gorilla/sessions"
 	"github.com/tyrm/megabot/internal/language"
 	"io"
@@ -13,11 +12,13 @@ import (
 type templateVars interface {
 	AddHeadLink(l templateHeadLink)
 	AddFooterScript(s templateScript)
+	SetLanguage(l string)
 	SetLocalizer(l *language.Localizer)
 	SetNavbar(nodes []templateNavbarNode)
 }
 
 type templateCommon struct {
+	Language  string
 	Localizer *language.Localizer
 
 	HeadLinks     []templateHeadLink
@@ -42,13 +43,18 @@ func (t *templateCommon) AddFooterScript(s templateScript) {
 	return
 }
 
-func (t *templateCommon) SetNavbar(nodes []templateNavbarNode) {
-	t.NavBar = nodes
+func (t *templateCommon) SetLanguage(l string) {
+	t.Language = l
 	return
 }
 
 func (t *templateCommon) SetLocalizer(l *language.Localizer) {
 	t.Localizer = l
+	return
+}
+
+func (t *templateCommon) SetNavbar(nodes []templateNavbarNode) {
+	t.NavBar = nodes
 	return
 }
 
@@ -83,11 +89,12 @@ func (m *Module) initTemplate(w http.ResponseWriter, r *http.Request, tmpl templ
 	l := logger.WithField("func", "initTemplate")
 
 	// set text handler
-	if r.Context().Value(localizerKey) == nil {
-		return errors.New("could not get localizer")
-	}
 	localizer := r.Context().Value(localizerKey).(*language.Localizer)
 	tmpl.SetLocalizer(localizer)
+
+	// set language
+	lang := r.Context().Value(languageKey).(string)
+	tmpl.SetLanguage(lang)
 
 	// add css
 	for _, link := range m.headLinks {
@@ -141,7 +148,7 @@ func makeNavbar(r *http.Request, l *language.Localizer) *[]templateNavbarNode {
 	// create navbar
 	newNavbar := []templateNavbarNode{
 		{
-			Text:     l.TextHomeShort(),
+			Text:     l.TextHomeShort().String(),
 			MatchStr: regexp.MustCompile("^/app/$"),
 			FAIcon:   "home",
 			URL:      "/app/",

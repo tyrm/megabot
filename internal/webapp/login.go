@@ -45,14 +45,14 @@ func (m *Module) LoginPostHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if user == nil {
-		m.displayLoginPage(w, r, formEmail, formPassword, pathFileBotMad, localizer.TextLoginInvalid())
+		m.displayLoginPage(w, r, formEmail, formPassword, pathFileBotMad, localizer.TextLoginInvalid().String())
 		return
 	}
 
 	// check password validity
 	passValid := user.CheckPasswordHash(formPassword)
 	if passValid == false {
-		m.displayLoginPage(w, r, formEmail, formPassword, pathFileBotMad, localizer.TextLoginInvalid())
+		m.displayLoginPage(w, r, formEmail, formPassword, pathFileBotMad, localizer.TextLoginInvalid().String())
 		return
 	}
 
@@ -105,7 +105,7 @@ func (m *Module) displayLoginPage(w http.ResponseWriter, r *http.Request, email,
 		Integrity:   signature,
 	})
 
-	tmplVars.PageTitle = localizer.TextLogin()
+	tmplVars.PageTitle = localizer.TextLogin().String()
 
 	// set bot image
 	tmplVars.BotImage = fmt.Sprintf("%s%s", pathStatic, botImage)
