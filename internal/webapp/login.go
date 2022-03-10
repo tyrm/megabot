@@ -1,7 +1,6 @@
 package webapp
 
 import (
-	"fmt"
 	"github.com/gorilla/sessions"
 	"github.com/tyrm/megabot/internal/language"
 	"net/http"
@@ -71,7 +70,7 @@ func (m *Module) LoginPostHandler(w http.ResponseWriter, r *http.Request) {
 	var ok bool
 	if loginRedirect, ok = val.(string); !ok {
 		// redirect home page if no login-redirect
-		http.Redirect(w, r, "/app/", http.StatusFound)
+		http.Redirect(w, r, pathBase+"/", http.StatusFound)
 		return
 	}
 
@@ -94,12 +93,12 @@ func (m *Module) displayLoginPage(w http.ResponseWriter, r *http.Request, email,
 	}
 
 	// add error css file
-	signature, err := m.getSignatureCached(fmt.Sprintf("%s/%s", staticDir, pathFileLoginCSS))
+	signature, err := m.getSignatureCached(staticDir + pathFileLoginCSS)
 	if err != nil {
 		l.Errorf("getting signature for %s: %s", pathFileLoginCSS, err.Error())
 	}
 	tmplVars.AddHeadLink(templateHeadLink{
-		HRef:        fmt.Sprintf("%s%s", pathStatic, pathFileLoginCSS),
+		HRef:        pathStatic + pathFileLoginCSS,
 		Rel:         "stylesheet",
 		CrossOrigin: "anonymous",
 		Integrity:   signature,
@@ -108,7 +107,7 @@ func (m *Module) displayLoginPage(w http.ResponseWriter, r *http.Request, email,
 	tmplVars.PageTitle = localizer.TextLogin().String()
 
 	// set bot image
-	tmplVars.BotImage = fmt.Sprintf("%s%s", pathStatic, botImage)
+	tmplVars.BotImage = pathStatic + botImage
 
 	// set form values
 	tmplVars.FormError = formError

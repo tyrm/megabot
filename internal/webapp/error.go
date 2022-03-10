@@ -29,12 +29,12 @@ func (m *Module) returnErrorPage(w http.ResponseWriter, r *http.Request, code in
 	}
 
 	// add error css file
-	signature, err := m.getSignatureCached(fmt.Sprintf("%s/%s", staticDir, pathFileErrorCSS))
+	signature, err := m.getSignatureCached(staticDir + pathFileErrorCSS)
 	if err != nil {
 		l.Errorf("getting signature for %s: %s", pathFileErrorCSS, err.Error())
 	}
 	tmplVars.AddHeadLink(templateHeadLink{
-		HRef:        fmt.Sprintf("%s%s", pathStatic, pathFileErrorCSS),
+		HRef:        pathStatic + pathFileErrorCSS,
 		Rel:         "stylesheet",
 		CrossOrigin: "anonymous",
 		Integrity:   signature,
@@ -44,21 +44,21 @@ func (m *Module) returnErrorPage(w http.ResponseWriter, r *http.Request, code in
 	switch code {
 	case http.StatusBadRequest:
 		// 400
-		tmplVars.BotImage = fmt.Sprintf("%s%s", pathStatic, pathFileBotConfused)
+		tmplVars.BotImage = pathStatic + pathFileBotConfused
 	case http.StatusUnauthorized:
 		// 401
-		tmplVars.BotImage = fmt.Sprintf("%s%s", pathStatic, pathFileBotAngry)
+		tmplVars.BotImage = pathStatic + pathFileBotAngry
 	case http.StatusForbidden:
 		// 403
-		tmplVars.BotImage = fmt.Sprintf("%s%s", pathStatic, pathFileBotMad)
+		tmplVars.BotImage = pathStatic + pathFileBotMad
 	case http.StatusNotFound:
 		// 404
-		tmplVars.BotImage = fmt.Sprintf("%s%s", pathStatic, pathFileBotConfused)
+		tmplVars.BotImage = pathStatic + pathFileBotConfused
 	case http.StatusMethodNotAllowed:
 		// 405
-		tmplVars.BotImage = fmt.Sprintf("%s%s", pathStatic, pathFileBotMad)
+		tmplVars.BotImage = pathStatic + pathFileBotMad
 	default:
-		tmplVars.BotImage = fmt.Sprintf("%s%s", pathStatic, pathFileBotOffline)
+		tmplVars.BotImage = pathStatic + pathFileBotOffline
 	}
 
 	// set text
