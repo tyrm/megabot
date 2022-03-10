@@ -16,11 +16,11 @@
         {{- if .Children }}
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle{{if .Active}} active{{end}}{{if .Disabled}} disabled{{end}}" href="{{.URL}}" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                {{if .FAIcon}}<i class="fas fa-{{.FAIcon}}"></i> {{end}}{{.Text}}
+              {{if .FAIcon}}<i class="fas fa-{{.FAIcon}}"></i> {{end}}{{.Text}}
             </a>
             <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
             {{- range .Children}}
-              <li class="nav-item">
+              <li class="nav-itsem">
                 <a class="dropdown-item{{if .Active}} active{{end}}{{if .Disabled}} disabled{{end}}" href="{{.URL}}">
                   {{if .FAIcon}}<i class="fas fa-{{.FAIcon}}"></i> {{end}}{{.Text}}
                 </a>
