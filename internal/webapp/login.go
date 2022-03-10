@@ -82,6 +82,9 @@ func (m *Module) LoginPostHandler(w http.ResponseWriter, r *http.Request) {
 func (m *Module) displayLoginPage(w http.ResponseWriter, r *http.Request, email, password, botImage, formError string) {
 	l := logger.WithField("func", "LoginGetHandler")
 
+	// get localizer
+	localizer := r.Context().Value(localizerKey).(*language.Localizer)
+
 	// Init template variables
 	tmplVars := &LoginTemplate{}
 	err := m.initTemplate(w, r, tmplVars)
@@ -102,7 +105,7 @@ func (m *Module) displayLoginPage(w http.ResponseWriter, r *http.Request, email,
 		Integrity:   signature,
 	})
 
-	tmplVars.PageTitle = "Login"
+	tmplVars.PageTitle = localizer.TextLogin()
 
 	// set bot image
 	tmplVars.BotImage = fmt.Sprintf("%s%s", pathStatic, botImage)

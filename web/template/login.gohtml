@@ -15,12 +15,12 @@
     <form method="post">
       <img class="mb-4" src="{{.BotImage}}" alt="" width="100" height="100">
       <h1 class="h3 mb-3 font-weight-normal">{{ .Localizer.TextLogin }}</h1>
-        {{- if .FormError }}
-          <div class="alert alert-danger alert-dismissible fade show" role="alert">
-              {{.FormError}}
-            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
-          </div>
-        {{- end }}
+{{- if .FormError }}
+      <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        {{.FormError}}
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+{{- end }}
       <input class="form-control" type="text" name="email" {{if .FormEmail}}value="{{.FormEmail}}" {{end}}placeholder="{{ .Localizer.TextEmail }}" aria-label="email">
       <input class="form-control" type="password" name="password" {{if .FormPassword}}value="{{.FormPassword}}" {{end}}placeholder="{{ .Localizer.TextPassword }}" aria-label="password">
       <button type="submit" class="btn btn-lg btn-primary btn-block">{{ .Localizer.TextLoginShort }}</button>
