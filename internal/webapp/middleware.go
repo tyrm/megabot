@@ -2,6 +2,8 @@ package webapp
 
 import (
 	"context"
+	"github.com/gorilla/sessions"
+	"github.com/tyrm/megabot/internal/models"
 	"golang.org/x/text/language"
 	"net/http"
 )
@@ -49,6 +51,12 @@ func (m *Module) Middleware(next http.Handler) http.Handler {
 			return
 		}
 		ctx := context.WithValue(r.Context(), sessionKey, us)
+
+		// Retrieve our user and type-assert it
+		val := us.Values["user"]
+		if user, ok := val.(models.User); ok {
+			ctx = context.WithValue(ctx, userKey, &user)
+		}
 
 		// create localizer
 		lang := r.FormValue("lang")
@@ -100,4 +108,33 @@ func getPageLang(query, header, defaultLang string) string {
 
 	l.Debugf("returning default language: %s", defaultLang)
 	return defaultLang
+}
+
+func (m *Module) MiddlewareRequireAuth(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		us := r.Context().Value(sessionKey).(*sessions.Session)
+
+		if r.Context().Value(userKey) == nil {
+			// Save current page
+			us.Values["login-redirect"] = r.URL.Path
+			err := us.Save(r, w)
+			if err != nil {
+				m.returnErrorPage(w, r, http.StatusInternalServerError, err.Error())
+				return
+			}
+
+			// redirect to login
+			http.Redirect(w, r, pathBase+pathLogin, http.StatusFound)
+			return
+		}
+
+		// Check for SuperAdmin
+		user := r.Context().Value(userKey).(*models.User)
+		if user.InGroup(models.GroupSuperAdmin()) {
+			next.ServeHTTP(w, r)
+			return
+		}
+
+		m.returnErrorPage(w, r, http.StatusUnauthorized, "You aren't authorized")
+	})
 }

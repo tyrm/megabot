@@ -2,8 +2,85 @@ package models
 
 import (
 	"fmt"
+	"github.com/google/uuid"
 	"testing"
 )
+
+func TestUserInGroup(t *testing.T) {
+	user1 := &User{
+		Groups: []*GroupMembership{},
+	}
+	user2 := &User{
+		Groups: []*GroupMembership{
+			{
+				GroupID: uuid.MustParse("35326c82-adac-43f6-a03f-000000000001"),
+			},
+		},
+	}
+	user3 := &User{
+		Groups: []*GroupMembership{
+			{
+				GroupID: uuid.MustParse("35326c82-adac-43f6-a03f-000000000001"),
+			},
+			{
+				GroupID: uuid.MustParse("35326c82-adac-43f6-a03f-000000000002"),
+			},
+			{
+				GroupID: uuid.MustParse("35326c82-adac-43f6-a03f-000000000003"),
+			},
+			{
+				GroupID: uuid.MustParse("35326c82-adac-43f6-a03f-000000000004"),
+			},
+			{
+				GroupID: uuid.MustParse("35326c82-adac-43f6-a03f-000000000005"),
+			},
+		},
+	}
+
+	tables := []struct {
+		x *User
+		y []uuid.UUID
+		n bool
+	}{
+		{user1, []uuid.UUID{}, false},
+		{user2, []uuid.UUID{}, false},
+		{user3, []uuid.UUID{}, false},
+		{user1, []uuid.UUID{uuid.MustParse("35326c82-adac-43f6-a03f-000000000001")}, false},
+		{user2, []uuid.UUID{uuid.MustParse("35326c82-adac-43f6-a03f-000000000001")}, true},
+		{user3, []uuid.UUID{uuid.MustParse("35326c82-adac-43f6-a03f-000000000001")}, true},
+		{user1, []uuid.UUID{uuid.MustParse("35326c82-adac-43f6-a03f-000000000002")}, false},
+		{user2, []uuid.UUID{uuid.MustParse("35326c82-adac-43f6-a03f-000000000002")}, false},
+		{user3, []uuid.UUID{uuid.MustParse("35326c82-adac-43f6-a03f-000000000002")}, true},
+		{user1, []uuid.UUID{uuid.MustParse("35326c82-adac-43f6-a03f-000000000008")}, false},
+		{user2, []uuid.UUID{uuid.MustParse("35326c82-adac-43f6-a03f-000000000008")}, false},
+		{user3, []uuid.UUID{uuid.MustParse("35326c82-adac-43f6-a03f-000000000008")}, false},
+		{user1, []uuid.UUID{uuid.MustParse("35326c82-adac-43f6-a03f-000000000008"), uuid.MustParse("35326c82-adac-43f6-a03f-000000000009")}, false},
+		{user2, []uuid.UUID{uuid.MustParse("35326c82-adac-43f6-a03f-000000000008"), uuid.MustParse("35326c82-adac-43f6-a03f-000000000009")}, false},
+		{user3, []uuid.UUID{uuid.MustParse("35326c82-adac-43f6-a03f-000000000008"), uuid.MustParse("35326c82-adac-43f6-a03f-000000000009")}, false},
+		{user1, []uuid.UUID{uuid.MustParse("35326c82-adac-43f6-a03f-000000000007"), uuid.MustParse("35326c82-adac-43f6-a03f-000000000010"), uuid.MustParse("35326c82-adac-43f6-a03f-000000000001")}, false},
+		{user2, []uuid.UUID{uuid.MustParse("35326c82-adac-43f6-a03f-000000000007"), uuid.MustParse("35326c82-adac-43f6-a03f-000000000010"), uuid.MustParse("35326c82-adac-43f6-a03f-000000000001")}, true},
+		{user3, []uuid.UUID{uuid.MustParse("35326c82-adac-43f6-a03f-000000000006"), uuid.MustParse("35326c82-adac-43f6-a03f-000000000010"), uuid.MustParse("35326c82-adac-43f6-a03f-000000000001")}, true},
+		{user1, []uuid.UUID{uuid.MustParse("35326c82-adac-43f6-a03f-000000000006"), uuid.MustParse("35326c82-adac-43f6-a03f-000000000002"), uuid.MustParse("35326c82-adac-43f6-a03f-000000000011")}, false},
+		{user2, []uuid.UUID{uuid.MustParse("35326c82-adac-43f6-a03f-000000000006"), uuid.MustParse("35326c82-adac-43f6-a03f-000000000002"), uuid.MustParse("35326c82-adac-43f6-a03f-000000000011")}, false},
+		{user3, []uuid.UUID{uuid.MustParse("35326c82-adac-43f6-a03f-000000000006"), uuid.MustParse("35326c82-adac-43f6-a03f-000000000002"), uuid.MustParse("35326c82-adac-43f6-a03f-000000000011")}, true},
+	}
+
+	for i, table := range tables {
+		i := i
+		table := table
+
+		name := fmt.Sprintf("[%d] Running InGroup %v to %s", i, table.x, table.y)
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+
+			result := table.x.InGroup(table.y...)
+			if result != table.n {
+				t.Errorf("[%d] InGroup wrong for %v, got: %v, want: %v,", i, table.y, result, table.n)
+			}
+
+		})
+	}
+}
 
 func TestUserPasswordHash(t *testing.T) {
 	tables := []struct {

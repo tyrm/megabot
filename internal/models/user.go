@@ -1,6 +1,7 @@
 package models
 
 import (
+	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 	"time"
 )
@@ -21,6 +22,18 @@ type User struct {
 func (u *User) CheckPasswordHash(password string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(u.EncryptedPassword), []byte(password))
 	return err == nil
+}
+
+// InGroup returns true if user is member of group
+func (u *User) InGroup(g ...uuid.UUID) bool {
+	for _, group := range u.Groups {
+		for _, needle := range g {
+			if group.GroupID == needle {
+				return true
+			}
+		}
+	}
+	return false
 }
 
 // SetPassword updates the user object's password hash

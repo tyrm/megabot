@@ -5,9 +5,10 @@ import "golang.org/x/text/language"
 type contextKey int
 
 const (
-	sessionKey   contextKey = 0
-	localizerKey contextKey = 1
-	languageKey  contextKey = 2
+	sessionKey contextKey = iota
+	localizerKey
+	languageKey
+	userKey
 )
 
 var defaultLanguage = language.English
