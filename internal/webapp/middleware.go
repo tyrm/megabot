@@ -110,6 +110,7 @@ func getPageLang(query, header, defaultLang string) string {
 	return defaultLang
 }
 
+// MiddlewareRequireAuth will redirect a user to login page if user not in context
 func (m *Module) MiddlewareRequireAuth(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		us := r.Context().Value(sessionKey).(*sessions.Session)
@@ -128,13 +129,6 @@ func (m *Module) MiddlewareRequireAuth(next http.Handler) http.Handler {
 			return
 		}
 
-		// Check for SuperAdmin
-		user := r.Context().Value(userKey).(*models.User)
-		if user.InGroup(models.GroupSuperAdmin()) {
-			next.ServeHTTP(w, r)
-			return
-		}
-
-		m.returnErrorPage(w, r, http.StatusUnauthorized, "You aren't authorized")
+		next.ServeHTTP(w, r)
 	})
 }
