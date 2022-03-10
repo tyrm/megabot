@@ -1,3 +1,27 @@
+[Email]
+description = "the common phrase for email"
+other = "Email"
+
 [HelloWorld]
 description = "the phrase: Hello World!"
 other = "Hello World!"
+
+[HomeShort]
+description = "a single word representation of home, as in home page."
+other = "Home"
+
+[Login]
+description = "the common phrase for logging in"
+other = "Login"
+
+[LoginInvalid]
+description = "Explains to the user that the email and password combination are invalid."
+other = "email/password combo invalid"
+
+[LoginShort]
+description = "a single word representation of logging in"
+other = "Login"
+
+[Password]
+description = "the common phrase for password"
+other = "Password"

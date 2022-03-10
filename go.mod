@@ -8,18 +8,22 @@ require (
 	github.com/go-redis/redis/v8 v8.11.4
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/google/uuid v1.3.0
+	github.com/gorilla/handlers v1.5.1
 	github.com/gorilla/mux v1.8.0
+	github.com/gorilla/sessions v1.2.0
 	github.com/graphql-go/graphql v0.8.0
 	github.com/jackc/pgconn v1.11.0
 	github.com/jackc/pgx/v4 v4.15.0
 	github.com/markbates/pkger v0.17.1
 	github.com/nicksnyder/go-i18n/v2 v2.2.0
 	github.com/oklog/ulid v1.3.1
+	github.com/rbcervilla/redisstore/v8 v8.1.0
 	github.com/sirupsen/logrus v1.4.2
 	github.com/spf13/cobra v1.3.0
 	github.com/spf13/pflag v1.0.5
 	github.com/spf13/viper v1.10.1
-	github.com/tyrm/go-util v0.1.0
+	github.com/tdewolff/minify/v2 v2.10.0
+	github.com/tyrm/go-util v0.2.0
 	github.com/uptrace/bun v1.1.1
 	github.com/uptrace/bun/dbfixture v1.1.1
 	github.com/uptrace/bun/dialect/pgdialect v1.1.1
@@ -32,10 +36,12 @@ require (
 require (
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
+	github.com/felixge/httpsnoop v1.0.1 // indirect
 	github.com/fsnotify/fsnotify v1.5.1 // indirect
 	github.com/go-playground/locales v0.14.0 // indirect
 	github.com/go-playground/universal-translator v0.18.0 // indirect
-	github.com/gobuffalo/here v0.6.0 // indirect
+	github.com/gobuffalo/here v0.6.5 // indirect
+	github.com/gorilla/securecookie v1.1.1 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
 	github.com/jackc/chunkreader/v2 v2.0.1 // indirect
@@ -57,6 +63,7 @@ require (
 	github.com/spf13/cast v1.4.1 // indirect
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/subosito/gotenv v1.2.0 // indirect
+	github.com/tdewolff/parse/v2 v2.5.27 // indirect
 	github.com/tmthrgd/go-hex v0.0.0-20190904060850-447a3041c3bc // indirect
 	github.com/vmihailenco/msgpack/v5 v5.3.5 // indirect
 	github.com/vmihailenco/tagparser/v2 v2.0.0 // indirect

@@ -2,6 +2,7 @@ package web
 
 import (
 	"context"
+	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/sirupsen/logrus"
 	"github.com/tyrm/megabot/internal/db"
@@ -20,6 +21,11 @@ func (r *Server) HandleFunc(path string, f func(http.ResponseWriter, *http.Reque
 	return r.router.HandleFunc(path, f)
 }
 
+// PathPrefix attaches a new route url path prefix
+func (r *Server) PathPrefix(tpl string) *mux.Route {
+	return r.router.PathPrefix(tpl)
+}
+
 // Start starts the web server
 func (r *Server) Start() error {
 	logrus.Infof("listening on %s", r.srv.Addr)
@@ -34,6 +40,7 @@ func (r *Server) Stop(ctx context.Context) error {
 // New creates a new web server
 func New(ctx context.Context, db db.DB) (*Server, error) {
 	r := mux.NewRouter()
+	r.Use(handlers.CompressHandler)
 
 	s := &http.Server{
 		Addr:         ":5000",

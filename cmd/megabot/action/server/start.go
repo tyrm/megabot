@@ -12,7 +12,9 @@ import (
 	"github.com/tyrm/megabot/internal/graphql"
 	"github.com/tyrm/megabot/internal/jwt"
 	"github.com/tyrm/megabot/internal/kv/redis"
+	"github.com/tyrm/megabot/internal/language"
 	"github.com/tyrm/megabot/internal/web"
+	"github.com/tyrm/megabot/internal/webapp"
 	"os"
 	"os/signal"
 	"syscall"
@@ -57,19 +59,38 @@ var Start action.Action = func(ctx context.Context) error {
 		}
 	}()
 
+	languageMod, err := language.New()
+	if err != nil {
+		logrus.Errorf("language: %s", err.Error())
+		return err
+	}
+
 	webServer, err := web.New(ctx, dbClient)
 	if err != nil {
 		logrus.Errorf("web server: %s", err.Error())
 		return err
 	}
 
-	var modGraphQL web.Module
-	if util.ContainsString(viper.GetStringSlice(config.Keys.ServerRoles), config.ServerRoleGraphql) {
-		logrus.Infof("adding graphql")
-		modGraphQL = graphql.New(dbClient, jwtModule)
-		err := modGraphQL.Route(webServer)
+	var webModules []web.Module
+	if util.ContainsString(viper.GetStringSlice(config.Keys.ServerRoles), config.ServerRoleGraphQL) {
+		logrus.Infof("adding graphql module")
+		webMod := graphql.New(dbClient, jwtModule)
+		webModules = append(webModules, webMod)
+	}
+	if util.ContainsString(viper.GetStringSlice(config.Keys.ServerRoles), config.ServerRoleWebapp) {
+		logrus.Infof("adding webapp module")
+		webMod, err := webapp.New(ctx, dbClient, redisClient, languageMod)
 		if err != nil {
-			logrus.Errorf("graphql module: %s", err.Error())
+			logrus.Errorf("webapp module: %s", err.Error())
+			return err
+		}
+		webModules = append(webModules, webMod)
+	}
+
+	for _, mod := range webModules {
+		err := mod.Route(webServer)
+		if err != nil {
+			logrus.Errorf("loading %s module: %s", mod.Name(), err.Error())
 			return err
 		}
 	}

@@ -32,7 +32,9 @@ type KeyNames struct {
 	RefreshSecret     string
 
 	// server
-	ServerRoles string
+	ServerExternalHostname string
+	ServerMinifyHTML       string
+	ServerRoles            string
 
 	// user
 	UserEmail    string
@@ -72,7 +74,9 @@ var Keys = KeyNames{
 	RefreshSecret:     "refresh-secret",
 
 	// server
-	ServerRoles: "server-role",
+	ServerExternalHostname: "external-hostname",
+	ServerMinifyHTML:       "minify-html",
+	ServerRoles:            "server-role",
 
 	// user
 	UserEmail:    "email",

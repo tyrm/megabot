@@ -3,6 +3,7 @@
 before:
   hooks:
     - make clean
+    - make npm-scss
     - go mod tidy
     - go fmt ./...
     - go generate ./...

@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"github.com/graphql-go/graphql"
+	"github.com/tyrm/megabot/internal/config"
 	"github.com/tyrm/megabot/internal/db"
 	"github.com/tyrm/megabot/internal/jwt"
 	"github.com/tyrm/megabot/internal/web"
@@ -30,6 +31,11 @@ func New(db db.DB, jwt *jwt.Module) web.Module {
 		db:  db,
 		jwt: jwt,
 	}
+}
+
+// Name return the module name
+func (m *Module) Name() string {
+	return config.ServerRoleGraphQL
 }
 
 // Route attaches routes to the web server

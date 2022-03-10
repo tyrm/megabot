@@ -33,3 +33,8 @@ func New(ctx context.Context) (*Client, error) {
 func (c *Client) Close(ctx context.Context) error {
 	return c.redis.Close()
 }
+
+// RedisClient returns the redis client
+func (c *Client) RedisClient() *redis.Client {
+	return c.redis
+}

@@ -1,4 +1,34 @@
+[Email]
+description = "the common phrase for email"
+hash = "sha1-bfe223cf5cbcf352e3de19444b8ceeeb957310d3"
+other = "Correo Electrónico"
+
 [HelloWorld]
 description = "the phrase: Hello World!"
 hash = "sha1-e85aea673b99861bc135e8d3f2a2d75a8ff0031d"
 other = "¡Hola mundo!"
+
+[HomeShort]
+description = "a single word representation of home, as in home page."
+hash = "sha1-405bb6c6d4344057db88d7fc5f9be0aba19bfb8a"
+other = "Inicio"
+
+[Login]
+description = "the common phrase for logging in"
+hash = "sha1-d851ff5b49a2282ef318c005b87f50946c8900d9"
+other = "Iniciar Sesión"
+
+[LoginInvalid]
+description = "Explains to the user that the email and password combination are invalid."
+hash = "sha1-370532bf567848f81cc2c6f1c4c330f0232c2efa"
+other = "combinación de correo electrónico/contraseña no válida"
+
+[LoginShort]
+description = "a single word representation of logging in"
+hash = "sha1-c9d9e30a5b007d3c7a12dc19ee76b0eb0cfbb3b1"
+other = "Iniciar"
+
+[Password]
+description = "the common phrase for password"
+hash = "sha1-819398bdaf1193ecee2849241fb4c3d6fdaf879c"
+other = "Contraseña"

@@ -26,7 +26,9 @@ var usage = config.KeyNames{
 	RedisPassword: "Redis password, optional",
 
 	// server
-	ServerRoles: "Server roles that should be started: [graphql]",
+	ServerExternalHostname: "The external hostname used by the server",
+	ServerMinifyHTML:       "Should the server minify html documents before sending",
+	ServerRoles:            "Server roles that should be started: [graphql, webapp]",
 
 	// user
 	UserEmail:    "User email address",

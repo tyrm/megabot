@@ -34,7 +34,9 @@ type Values struct {
 	RefreshSecret     string
 
 	// server
-	ServerRoles []string
+	ServerExternalHostname string
+	ServerMinifyHTML       bool
+	ServerRoles            []string
 
 	// user
 	UserEmail    string
@@ -71,5 +73,10 @@ var Defaults = Values{
 	RefreshExpiration: time.Hour * 24 * 7,
 
 	// server
-	ServerRoles: []string{ServerRoleGraphql},
+	ServerExternalHostname: "localhost",
+	ServerMinifyHTML:       true,
+	ServerRoles: []string{
+		ServerRoleGraphQL,
+		ServerRoleWebapp,
+	},
 }

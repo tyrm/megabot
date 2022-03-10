@@ -2,3 +2,9 @@
 dist/
 /megabot
 /pkged.go
+
+/web/bootstrap/node_modules
+/web/static/css/bootstrap.css
+/web/static/js/bootstrap.bundle.js
+
+/translate.*.toml
