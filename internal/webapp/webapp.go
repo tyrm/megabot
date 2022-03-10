@@ -6,6 +6,7 @@ import (
 	"encoding/base64"
 	"encoding/gob"
 	"fmt"
+	"github.com/google/uuid"
 	"github.com/gorilla/sessions"
 	"github.com/markbates/pkger"
 	"github.com/rbcervilla/redisstore/v8"
@@ -30,6 +31,9 @@ var tmplFuncs = template.FuncMap{
 	"dec": func(i int) int {
 		i--
 		return i
+	},
+	"groupSuperAdmin": func() uuid.UUID {
+		return models.GroupSuperAdmin()
 	},
 	"htmlSafe": func(html string) template.HTML {
 		/* #nosec G203 */
