@@ -21,9 +21,9 @@
             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
           </div>
         {{- end }}
-      <input class="form-control" type="text" name="email" {{if .FormEmail}}value="{{.FormEmail}}" {{end}}placeholder="Username" aria-label="email">
-      <input class="form-control" type="password" name="password" {{if .FormPassword}}value="{{.FormPassword}}" {{end}}placeholder="Password" aria-label="password">
-      <button type="submit" class="btn btn-lg btn-primary btn-block">{{ .Localizer.TextLogin }}</button>
+      <input class="form-control" type="text" name="email" {{if .FormEmail}}value="{{.FormEmail}}" {{end}}placeholder="{{ .Localizer.TextEmail }}" aria-label="email">
+      <input class="form-control" type="password" name="password" {{if .FormPassword}}value="{{.FormPassword}}" {{end}}placeholder="{{ .Localizer.TextPassword }}" aria-label="password">
+      <button type="submit" class="btn btn-lg btn-primary btn-block">{{ .Localizer.TextLoginShort }}</button>
     </form>
   </div>
 {{- range $link := .FooterScripts}}
