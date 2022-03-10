@@ -5,6 +5,7 @@ import (
 	"net/http"
 )
 
+// ErrorPageTemplate contains the variables for the "error" template.
 type ErrorPageTemplate struct {
 	templateCommon
 
@@ -27,11 +28,11 @@ func (m *Module) returnErrorPage(w http.ResponseWriter, r *http.Request, code in
 		return
 	}
 
+	// add error css file
 	signature, err := m.getSignatureCached(fmt.Sprintf("%s/%s", staticDir, pathFileErrorCSS))
 	if err != nil {
 		l.Errorf("getting signature for %s: %s", pathFileErrorCSS, err.Error())
 	}
-
 	tmplVars.AddHeadLink(templateHeadLink{
 		HRef:        fmt.Sprintf("%s%s", pathStatic, pathFileErrorCSS),
 		Rel:         "stylesheet",
@@ -83,14 +84,14 @@ func (m *Module) returnErrorPage(w http.ResponseWriter, r *http.Request, code in
 	}
 }
 
-func (m *Module) MethodNotAllowedHandler() http.Handler {
+func (m *Module) methodNotAllowedHandler() http.Handler {
 	// wrap in middleware since middlware isn't run on error pages
 	return m.Middleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		m.returnErrorPage(w, r, http.StatusMethodNotAllowed, r.Method)
 	}))
 }
 
-func (m *Module) NotFoundHandler() http.Handler {
+func (m *Module) notFoundHandler() http.Handler {
 	// wrap in middleware since middlware isn't run on error pages
 	return m.Middleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		m.returnErrorPage(w, r, http.StatusNotFound, fmt.Sprintf("page not found: %s", r.URL.Path))

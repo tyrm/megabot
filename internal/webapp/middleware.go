@@ -49,6 +49,17 @@ func (m *Module) Middleware(next http.Handler) http.Handler {
 		}
 		ctx := context.WithValue(r.Context(), sessionKey, us)
 
+		// create localizer
+		lang := r.FormValue("lang")
+		accept := r.Header.Get("Accept-Language")
+		localizer, err := m.language.NewLocalizer(lang, accept)
+		if err != nil {
+			l.Errorf("could get localizer: %s", err.Error())
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		ctx = context.WithValue(r.Context(), localizerKey, localizer)
+
 		// Do Request
 		next.ServeHTTP(wx, r.WithContext(ctx))
 	})

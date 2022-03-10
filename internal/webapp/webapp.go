@@ -152,11 +152,17 @@ func (m *Module) Route(s *web.Server) error {
 	webapp.Use(m.Middleware)
 
 	// Error Pages
-	webapp.NotFoundHandler = m.NotFoundHandler()
-	webapp.MethodNotAllowedHandler = m.MethodNotAllowedHandler()
+	webapp.NotFoundHandler = m.notFoundHandler()
+	webapp.MethodNotAllowedHandler = m.methodNotAllowedHandler()
 
-	webapp.HandleFunc(pathHome, m.HomeGetHandler).Methods("GET")
+	webapp.HandleFunc(pathLogin, m.LoginGetHandler).Methods("GET")
 
+	// Protected Pages
+	protected := webapp.PathPrefix("/").Subrouter()
+	protected.NotFoundHandler = m.notFoundHandler()
+	protected.MethodNotAllowedHandler = m.methodNotAllowedHandler()
+
+	protected.HandleFunc(pathHome, m.HomeGetHandler).Methods("GET")
 	return nil
 }
 
