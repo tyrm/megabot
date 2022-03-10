@@ -12,6 +12,7 @@ import (
 	"github.com/tyrm/megabot/internal/graphql"
 	"github.com/tyrm/megabot/internal/jwt"
 	"github.com/tyrm/megabot/internal/kv/redis"
+	"github.com/tyrm/megabot/internal/language"
 	"github.com/tyrm/megabot/internal/web"
 	"github.com/tyrm/megabot/internal/webapp"
 	"os"
@@ -58,6 +59,12 @@ var Start action.Action = func(ctx context.Context) error {
 		}
 	}()
 
+	languageMod, err := language.New()
+	if err != nil {
+		logrus.Errorf("language: %s", err.Error())
+		return err
+	}
+
 	webServer, err := web.New(ctx, dbClient)
 	if err != nil {
 		logrus.Errorf("web server: %s", err.Error())
@@ -72,7 +79,7 @@ var Start action.Action = func(ctx context.Context) error {
 	}
 	if util.ContainsString(viper.GetStringSlice(config.Keys.ServerRoles), config.ServerRoleWebapp) {
 		logrus.Infof("adding webapp module")
-		webMod, err := webapp.New(ctx, dbClient, redisClient)
+		webMod, err := webapp.New(ctx, dbClient, redisClient, languageMod)
 		if err != nil {
 			logrus.Errorf("webapp module: %s", err.Error())
 			return err

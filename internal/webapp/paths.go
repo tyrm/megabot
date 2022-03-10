@@ -1,6 +1,8 @@
 package webapp
 
 const (
+	staticDir = "/web/static"
+
 	pathBase   = "/app/"
 	pathStatic = "/static/"
 

@@ -16,6 +16,7 @@ import (
 	"github.com/tyrm/megabot/internal/db"
 	"github.com/tyrm/megabot/internal/kv"
 	"github.com/tyrm/megabot/internal/kv/redis"
+	"github.com/tyrm/megabot/internal/language"
 	"github.com/tyrm/megabot/internal/web"
 	"html/template"
 	"io/ioutil"
@@ -41,6 +42,7 @@ var tmplFuncs = template.FuncMap{
 type Module struct {
 	db        db.DB
 	store     sessions.Store
+	language  *language.Module
 	minify    *minify.M
 	templates *template.Template
 
@@ -48,7 +50,7 @@ type Module struct {
 }
 
 // New returns a new webapp module
-func New(ctx context.Context, db db.DB, r *redis.Client) (web.Module, error) {
+func New(ctx context.Context, db db.DB, r *redis.Client, lMod *language.Module) (web.Module, error) {
 	l := logger.WithField("func", "New")
 
 	// Load Templates
@@ -101,6 +103,7 @@ func New(ctx context.Context, db db.DB, r *redis.Client) (web.Module, error) {
 
 	return &Module{
 		db:        db,
+		language:  lMod,
 		minify:    m,
 		templates: t,
 		store:     store,
@@ -118,7 +121,7 @@ func (m *Module) Name() string {
 func (m *Module) Route(s *web.Server) error {
 	// Static Files
 	s.PathPrefix("/static/").Handler(http.StripPrefix(
-		"/static/", http.FileServer(pkger.Dir("/web/static"))))
+		"/static/", http.FileServer(pkger.Dir(staticDir))))
 
 	webapp := s.PathPrefix(pathBase).Subrouter()
 	webapp.Use(m.Middleware)

@@ -3,15 +3,19 @@ package webapp
 import (
 	"bytes"
 	"github.com/gorilla/sessions"
+	"github.com/tyrm/megabot/internal/language"
 	"io"
 	"net/http"
 )
 
 type templateVars interface {
 	AddHeadLink(l templateHeadLink)
+	SetLocalizer(l *language.Localizer)
 }
 
 type templateCommon struct {
+	Localizer *language.Localizer
+
 	HeadLinks []templateHeadLink
 	PageTitle string
 }
@@ -21,6 +25,11 @@ func (t *templateCommon) AddHeadLink(l templateHeadLink) {
 		t.HeadLinks = []templateHeadLink{}
 	}
 	t.HeadLinks = append(t.HeadLinks, l)
+	return
+}
+
+func (t *templateCommon) SetLocalizer(l *language.Localizer) {
+	t.Localizer = l
 	return
 }
 
@@ -40,6 +49,16 @@ func (m *Module) initTemplate(w http.ResponseWriter, r *http.Request, tmpl templ
 	for _, link := range m.headLinks {
 		tmpl.AddHeadLink(link)
 	}
+
+	// set text handler
+	lang := r.FormValue("lang")
+	accept := r.Header.Get("Accept-Language")
+	localizer, err := m.language.NewLocalizer(lang, accept)
+	if err != nil {
+		l.Warningf("initTemplate could get localizer: %s", err.Error())
+		return err
+	}
+	tmpl.SetLocalizer(localizer)
 
 	// try to read session data
 	if r.Context().Value(sessionKey) == nil {
