@@ -82,6 +82,13 @@ type templateScript struct {
 func (m *Module) initTemplate(w http.ResponseWriter, r *http.Request, tmpl templateVars) error {
 	l := logger.WithField("func", "initTemplate")
 
+	// set text handler
+	if r.Context().Value(localizerKey) == nil {
+		return errors.New("could not get localizer")
+	}
+	localizer := r.Context().Value(localizerKey).(*language.Localizer)
+	tmpl.SetLocalizer(localizer)
+
 	// add css
 	for _, link := range m.headLinks {
 		tmpl.AddHeadLink(link)
@@ -93,15 +100,8 @@ func (m *Module) initTemplate(w http.ResponseWriter, r *http.Request, tmpl templ
 	}
 
 	// navbar
-	navbar := makeNavbar(r)
+	navbar := makeNavbar(r, localizer)
 	tmpl.SetNavbar(*navbar)
-
-	// set text handler
-	if r.Context().Value(localizerKey) == nil {
-		return errors.New("could not get localizer")
-	}
-	localizer := r.Context().Value(localizerKey).(*language.Localizer)
-	tmpl.SetLocalizer(localizer)
 
 	// try to read session data
 	if r.Context().Value(sessionKey) == nil {
@@ -136,12 +136,12 @@ func (m *Module) executeTemplate(w io.Writer, name string, tmplVars interface{})
 	return m.minify.Minify("text/html", w, b)
 }
 
-func makeNavbar(r *http.Request) *[]templateNavbarNode {
+func makeNavbar(r *http.Request, l *language.Localizer) *[]templateNavbarNode {
 
 	// create navbar
 	newNavbar := []templateNavbarNode{
 		{
-			Text:     "Home",
+			Text:     l.TextHomeShort(),
 			MatchStr: regexp.MustCompile("^/app/$"),
 			FAIcon:   "home",
 			URL:      "/app/",

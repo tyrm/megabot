@@ -6,6 +6,10 @@ other = "Email"
 description = "the phrase: Hello World!"
 other = "Hello World!"
 
+[HomeShort]
+description = "a single word representation of home, as in home page."
+other = "Home"
+
 [Login]
 description = "the common phrase for logging in"
 other = "Login"
