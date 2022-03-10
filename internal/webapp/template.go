@@ -10,14 +10,16 @@ import (
 
 type templateVars interface {
 	AddHeadLink(l templateHeadLink)
+	AddFooterScript(s templateScript)
 	SetLocalizer(l *language.Localizer)
 }
 
 type templateCommon struct {
 	Localizer *language.Localizer
 
-	HeadLinks []templateHeadLink
-	PageTitle string
+	HeadLinks     []templateHeadLink
+	PageTitle     string
+	FooterScripts []templateScript
 }
 
 func (t *templateCommon) AddHeadLink(l templateHeadLink) {
@@ -25,6 +27,14 @@ func (t *templateCommon) AddHeadLink(l templateHeadLink) {
 		t.HeadLinks = []templateHeadLink{}
 	}
 	t.HeadLinks = append(t.HeadLinks, l)
+	return
+}
+
+func (t *templateCommon) AddFooterScript(s templateScript) {
+	if t.FooterScripts == nil {
+		t.FooterScripts = []templateScript{}
+	}
+	t.FooterScripts = append(t.FooterScripts, s)
 	return
 }
 
@@ -42,12 +52,23 @@ type templateHeadLink struct {
 	Type        string
 }
 
+type templateScript struct {
+	Src         string
+	Integrity   string
+	CrossOrigin string
+}
+
 func (m *Module) initTemplate(w http.ResponseWriter, r *http.Request, tmpl templateVars) error {
 	l := logger.WithField("func", "initTemplate")
 
 	// add css
 	for _, link := range m.headLinks {
 		tmpl.AddHeadLink(link)
+	}
+
+	// add scripts
+	for _, script := range m.footerScripts {
+		tmpl.AddFooterScript(script)
 	}
 
 	// set text handler

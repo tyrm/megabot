@@ -21,6 +21,7 @@ import (
 	"html/template"
 	"io/ioutil"
 	"net/http"
+	"sync"
 )
 
 var tmplFuncs = template.FuncMap{
@@ -46,7 +47,11 @@ type Module struct {
 	minify    *minify.M
 	templates *template.Template
 
-	headLinks []templateHeadLink
+	headLinks     []templateHeadLink
+	footerScripts []templateScript
+
+	sigCache     map[string]string
+	sigCacheLock sync.RWMutex
 }
 
 // New returns a new webapp module
@@ -83,19 +88,36 @@ func New(ctx context.Context, db db.DB, r *redis.Client, lMod *language.Module) 
 	// generate head links
 	var hl []templateHeadLink
 	paths := []string{
-		pathFileBootstrap,
+		pathFileBootstrapCSS,
 		pathFileFontAwesome,
 	}
 	for _, path := range paths {
-		signature, err := getSignature(fmt.Sprintf("/web/static/%s", path))
+		signature, err := getSignature(fmt.Sprintf("%s/%s", staticDir, path))
 		if err != nil {
 			l.Errorf("getting signature for %s: %s", path, err.Error())
 		}
-		l.Debugf("signature for %s: %s", path, signature)
 
 		hl = append(hl, templateHeadLink{
 			HRef:        fmt.Sprintf("%s%s", pathStatic, path),
 			Rel:         "stylesheet",
+			CrossOrigin: "anonymous",
+			Integrity:   signature,
+		})
+	}
+
+	// generate head links
+	var fs []templateScript
+	scriptPaths := []string{
+		pathFileBootstrapJS,
+	}
+	for _, path := range scriptPaths {
+		signature, err := getSignature(fmt.Sprintf("%s/%s", staticDir, path))
+		if err != nil {
+			l.Errorf("getting signature for %s: %s", path, err.Error())
+		}
+
+		fs = append(fs, templateScript{
+			Src:         fmt.Sprintf("%s%s", pathStatic, path),
 			CrossOrigin: "anonymous",
 			Integrity:   signature,
 		})
@@ -108,7 +130,10 @@ func New(ctx context.Context, db db.DB, r *redis.Client, lMod *language.Module) 
 		templates: t,
 		store:     store,
 
-		headLinks: hl,
+		headLinks:     hl,
+		footerScripts: fs,
+
+		sigCache: map[string]string{},
 	}, nil
 }
 
@@ -125,9 +150,42 @@ func (m *Module) Route(s *web.Server) error {
 
 	webapp := s.PathPrefix(pathBase).Subrouter()
 	webapp.Use(m.Middleware)
+
+	// Error Pages
+	webapp.NotFoundHandler = m.NotFoundHandler()
+	webapp.MethodNotAllowedHandler = m.MethodNotAllowedHandler()
+
 	webapp.HandleFunc(pathHome, m.HomeGetHandler).Methods("GET")
 
 	return nil
+}
+
+func (m *Module) getSignatureCached(path string) (string, error) {
+	if sig, ok := m.readCachedSignature(path); ok {
+		return sig, nil
+	}
+	sig, err := getSignature(path)
+	if err != nil {
+		return "", err
+	}
+	m.writeCachedSignature(path, sig)
+	return sig, nil
+}
+
+func (m *Module) readCachedSignature(path string) (string, bool) {
+	m.sigCacheLock.RLock()
+	defer m.sigCacheLock.RUnlock()
+
+	val, ok := m.sigCache[path]
+	return val, ok
+}
+
+func (m *Module) writeCachedSignature(path string, sig string) {
+	m.sigCacheLock.Lock()
+	defer m.sigCacheLock.Unlock()
+
+	m.sigCache[path] = sig
+	return
 }
 
 func getSignature(path string) (string, error) {
