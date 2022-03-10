@@ -4,7 +4,9 @@ import (
 	"context"
 	"crypto/sha512"
 	"encoding/base64"
+	"encoding/gob"
 	"fmt"
+	"github.com/google/uuid"
 	"github.com/gorilla/sessions"
 	"github.com/markbates/pkger"
 	"github.com/rbcervilla/redisstore/v8"
@@ -17,6 +19,7 @@ import (
 	"github.com/tyrm/megabot/internal/kv"
 	"github.com/tyrm/megabot/internal/kv/redis"
 	"github.com/tyrm/megabot/internal/language"
+	"github.com/tyrm/megabot/internal/models"
 	"github.com/tyrm/megabot/internal/web"
 	"html/template"
 	"io/ioutil"
@@ -28,6 +31,9 @@ var tmplFuncs = template.FuncMap{
 	"dec": func(i int) int {
 		i--
 		return i
+	},
+	"groupSuperAdmin": func() uuid.UUID {
+		return models.GroupSuperAdmin()
 	},
 	"htmlSafe": func(html string) template.HTML {
 		/* #nosec G203 */
@@ -77,6 +83,9 @@ func New(ctx context.Context, db db.DB, r *redis.Client, lMod *language.Module) 
 		Domain: viper.GetString(config.Keys.ServerExternalHostname),
 		MaxAge: 86400 * 60,
 	})
+
+	// Register models for GOB
+	gob.Register(models.User{})
 
 	// minify
 	var m *minify.M
@@ -150,8 +159,6 @@ func (m *Module) Route(s *web.Server) error {
 
 	webapp := s.PathPrefix(pathBase + "/").Subrouter()
 	webapp.Use(m.Middleware)
-
-	// Error Pages
 	webapp.NotFoundHandler = m.notFoundHandler()
 	webapp.MethodNotAllowedHandler = m.methodNotAllowedHandler()
 
@@ -161,6 +168,7 @@ func (m *Module) Route(s *web.Server) error {
 
 	// Protected Pages
 	protected := webapp.PathPrefix("/").Subrouter()
+	protected.Use(m.MiddlewareRequireAuth)
 	protected.NotFoundHandler = m.notFoundHandler()
 	protected.MethodNotAllowedHandler = m.methodNotAllowedHandler()
 

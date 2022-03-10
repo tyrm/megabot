@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"github.com/gorilla/sessions"
 	"github.com/tyrm/megabot/internal/language"
+	"github.com/tyrm/megabot/internal/models"
 	"io"
 	"net/http"
 	"regexp"
@@ -15,16 +16,18 @@ type templateVars interface {
 	SetLanguage(l string)
 	SetLocalizer(l *language.Localizer)
 	SetNavbar(nodes []templateNavbarNode)
+	SetUser(user *models.User)
 }
 
 type templateCommon struct {
 	Language  string
 	Localizer *language.Localizer
 
+	FooterScripts []templateScript
 	HeadLinks     []templateHeadLink
 	NavBar        []templateNavbarNode
 	PageTitle     string
-	FooterScripts []templateScript
+	User          *models.User
 }
 
 func (t *templateCommon) AddHeadLink(l templateHeadLink) {
@@ -55,6 +58,11 @@ func (t *templateCommon) SetLocalizer(l *language.Localizer) {
 
 func (t *templateCommon) SetNavbar(nodes []templateNavbarNode) {
 	t.NavBar = nodes
+	return
+}
+
+func (t *templateCommon) SetUser(user *models.User) {
+	t.User = user
 	return
 }
 
@@ -109,6 +117,11 @@ func (m *Module) initTemplate(w http.ResponseWriter, r *http.Request, tmpl templ
 	// navbar
 	navbar := makeNavbar(r, localizer)
 	tmpl.SetNavbar(*navbar)
+
+	if r.Context().Value(userKey) != nil {
+		user := r.Context().Value(userKey).(*models.User)
+		tmpl.SetUser(user)
+	}
 
 	// try to read session data
 	if r.Context().Value(sessionKey) == nil {
