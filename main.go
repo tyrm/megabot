@@ -9,5 +9,6 @@ import "embed"
 //go:embed web/static/js/*
 //go:embed web/static/vendor/fontawesome-free-6.0.0-web/css/all.min.css
 //go:embed web/static/vendor/fontawesome-free-6.0.0-web/webfonts/*
+//go:embed web/static/vendor/fontawesome-free-6.0.0-web/LICENSE.txt
 //go:embed web/template/*
 var Files embed.FS
