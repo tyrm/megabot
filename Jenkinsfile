@@ -31,6 +31,7 @@ pipeline {
             make clean-npm
             make npm-install-jenkins
             make npm-scss
+            make minify-static
             go get -t -v ./...
             go test -race -coverprofile=coverage.txt -covermode=atomic ./...
             RESULT=\$?
