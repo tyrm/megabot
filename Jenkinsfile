@@ -17,7 +17,7 @@ pipeline {
           sh """#!/bin/bash
           make clean
           make clean-npm
-          make npm-install-jenkins
+          make npm-install
           make npm-scss
           make minify-static
           """
