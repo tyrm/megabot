@@ -11,6 +11,20 @@ pipeline {
 
   stages {
 
+    stage('Build Static Assets') {
+      steps {
+        script {
+          sh """#!/bin/bash
+          make clean
+          make clean-npm
+          make npm-install-jenkins
+          make npm-scss
+          make minify-static
+          """
+        }
+      }
+    }
+
     stage('Test') {
       agent {
         docker {
@@ -27,11 +41,6 @@ pipeline {
           ]) {
             sh """#!/bin/bash
             echo $PATH
-            make clean
-            make clean-npm
-            make npm-install-jenkins
-            make npm-scss
-            make minify-static
             go get -t -v ./...
             go test -race -coverprofile=coverage.txt -covermode=atomic ./...
             RESULT=\$?
