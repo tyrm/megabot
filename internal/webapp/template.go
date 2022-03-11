@@ -2,12 +2,14 @@ package webapp
 
 import (
 	"bytes"
+	"crypto/sha512"
+	"encoding/base64"
+	"fmt"
 	"github.com/gorilla/sessions"
 	"github.com/tyrm/megabot"
 	"github.com/tyrm/megabot/internal/language"
 	"github.com/tyrm/megabot/internal/models"
 	"html/template"
-	"io"
 	"io/ioutil"
 	"net/http"
 	"regexp"
@@ -186,17 +188,21 @@ func (m *Module) initTemplate(w http.ResponseWriter, r *http.Request, tmpl templ
 	return nil
 }
 
-func (m *Module) executeTemplate(w io.Writer, name string, tmplVars interface{}) error {
-	if m.minify == nil {
-		return m.templates.ExecuteTemplate(w, name, tmplVars)
-	}
-
+func (m *Module) executeTemplate(w http.ResponseWriter, name string, tmplVars interface{}) error {
 	b := new(bytes.Buffer)
 	err := m.templates.ExecuteTemplate(b, name, tmplVars)
 	if err != nil {
 		return err
 	}
 
+	h := sha512.New()
+	h.Write(b.Bytes())
+	w.Header().Set("Digest", fmt.Sprintf("sha-512=%s", base64.StdEncoding.EncodeToString(h.Sum(nil))))
+
+	if m.minify == nil {
+		_, err := w.Write(b.Bytes())
+		return err
+	}
 	return m.minify.Minify("text/html", w, b)
 }
 
