@@ -4,7 +4,7 @@ build-snapshot: clean
 	goreleaser build --snapshot
 
 clean:
-	rm -Rvf coverage.txt dist gosec.xml megabot pkged.go
+	rm -Rvf coverage.txt dist gosec.xml megabot
 
 clean-npm:
 	rm -Rvf web/static/css/bootstrap.css web/static/js/bootstrap.bundle.js

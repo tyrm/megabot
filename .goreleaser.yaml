@@ -8,7 +8,6 @@ before:
     - go mod tidy
     - go fmt ./...
     - go generate ./...
-    - pkger
 builds:
   - main: ./cmd/megabot
     binary: megabot
