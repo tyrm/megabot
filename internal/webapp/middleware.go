@@ -2,10 +2,12 @@ package webapp
 
 import (
 	"context"
+	"github.com/go-http-utils/etag"
 	"github.com/gorilla/sessions"
 	"github.com/tyrm/megabot/internal/models"
 	"golang.org/x/text/language"
 	"net/http"
+	"time"
 )
 
 // ResponseWriterX is a ResponseWriter that keeps track of status and body size
@@ -34,8 +36,9 @@ func (r *ResponseWriterX) WriteHeader(status int) {
 
 // Middleware runs on every http request
 func (m *Module) Middleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	return etag.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		l := logger.WithField("func", "Middleware")
+		start := time.Now()
 
 		wx := &ResponseWriterX{
 			ResponseWriter: w,
@@ -74,7 +77,9 @@ func (m *Module) Middleware(next http.Handler) http.Handler {
 
 		// Do Request
 		next.ServeHTTP(wx, r.WithContext(ctx))
-	})
+
+		l.Debugf("rendering %s took %d ms", r.URL.Path, time.Since(start).Milliseconds())
+	}), false)
 }
 
 func getPageLang(query, header, defaultLang string) string {
