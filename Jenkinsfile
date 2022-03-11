@@ -1,5 +1,6 @@
 pipeline {
   environment {
+    PATH = '/go/bin:~/go/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/usr/local/go/bin'
     registry = 'tyrm/megabot'
     registryCredential = 'docker-io-tyrm'
     dockerImage = ''
@@ -33,7 +34,7 @@ pipeline {
             go get -t -v ./...
             go test -race -coverprofile=coverage.txt -covermode=atomic ./...
             RESULT=\$?
-            /go/bin/gosec -fmt=junit-xml -out=gosec.xml  ./...
+            gosec -fmt=junit-xml -out=gosec.xml  ./...
             bash <(curl -s https://codecov.io/bash)
             exit \$RESULT
             """
@@ -52,7 +53,8 @@ pipeline {
           withCredentials([
             usernamePassword(credentialsId: 'gihub-tyrm-pat', usernameVariable: 'GITHUB_USER', passwordVariable: 'GITHUB_TOKEN')
           ]) {
-            sh '~/go/bin/goreleaser'
+            echo $PATH
+            sh 'goreleaser'
           }
         }
       }
