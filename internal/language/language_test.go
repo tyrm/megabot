@@ -18,4 +18,9 @@ func TestNew(t *testing.T) {
 		t.Errorf("language module's bundle is nil")
 		return
 	}
+
+	if langMod.Language() != defaultLanguage {
+		t.Errorf("got invalid language, got: %v, want: %v,", langMod.Language().String(), defaultLanguage.String())
+		return
+	}
 }
