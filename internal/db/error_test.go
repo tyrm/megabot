@@ -27,7 +27,7 @@ func TestNewErrAlreadyExists(t *testing.T) {
 
 			err := NewErrAlreadyExists(table.x)
 			if err.Error() != table.x {
-				t.Errorf("[%d] got wrong error text for '%s', got: '%s', want: '%s',", i, table.x, err.Error(), table.x)
+				t.Errorf("[%d] got wrong error text for '%s', got: '%s', want: '%s'", i, table.x, err.Error(), table.x)
 			}
 
 		})
