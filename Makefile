@@ -5,6 +5,7 @@ build-snapshot: clean
 
 clean:
 	rm -Rvf coverage.txt dist gosec.xml megabot
+	find . -name ".DS_Store" -exec rm -v {} \;
 
 clean-npm:
 	rm -Rvf web/static/css/bootstrap.css web/static/js/bootstrap.bundle.js

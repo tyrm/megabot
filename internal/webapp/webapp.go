@@ -21,6 +21,7 @@ import (
 	"github.com/tyrm/megabot/internal/models"
 	"github.com/tyrm/megabot/internal/web"
 	"html/template"
+	"io/fs"
 	"io/ioutil"
 	"net/http"
 	"sync"
@@ -154,9 +155,13 @@ func (m *Module) Name() string {
 
 // Route attaches routes to the web server
 func (m *Module) Route(s *web.Server) error {
+	staticFS, err := fs.Sub(megabot.Files, staticDir)
+	if err != nil {
+		return err
+	}
+
 	// Static Files
-	s.PathPrefix(pathStatic + "/").Handler(http.StripPrefix(
-		pathStatic+"/", http.FileServer(http.FS(megabot.Files))))
+	s.PathPrefix(pathStatic + "/").Handler(http.StripPrefix(pathStatic+"/", http.FileServer(http.FS(staticFS))))
 
 	webapp := s.PathPrefix(pathBase + "/").Subrouter()
 	webapp.Use(m.Middleware)
