@@ -30,6 +30,7 @@ pipeline {
         docker {
           image 'gobuild:1.17'
           args '-e GOCACHE=/gocache -e HOME=${WORKSPACE} -v /var/lib/jenkins/gocache:/gocache -v /var/lib/jenkins/go:/go -v /var/lib/jenkins/.npm:/.npm'
+          reuseNode true
         }
       }
       steps {
