@@ -2,16 +2,14 @@ package language
 
 import (
 	"github.com/BurntSushi/toml"
-	"github.com/markbates/pkger"
 	"github.com/nicksnyder/go-i18n/v2/i18n"
+	"github.com/tyrm/megabot"
 	"golang.org/x/text/language"
+	"io/ioutil"
+	"strings"
 )
 
 var defaultLanguage = language.English
-
-var translationFiles = map[string]string{
-	"active.es.toml": pkger.Include("/active.es.toml"),
-}
 
 // Module represent the language module for translating text
 type Module struct {
@@ -30,30 +28,29 @@ func New() (*Module, error) {
 
 	module.langBundle.RegisterUnmarshalFunc("toml", toml.Unmarshal)
 
-	for filename, file := range translationFiles {
-		langFile, err := pkger.Open(file)
-		if err != nil {
-			l.Errorf("opening file: %s", err.Error())
-			return nil, err
+	dir, err := megabot.Files.ReadDir(".")
+	if err != nil {
+		return nil, err
+	}
+	for _, d := range dir {
+		if d.IsDir() || !strings.HasSuffix(d.Name(), ".toml") {
+			continue
 		}
-		defer langFile.Close()
+		l.Debugf("loading language file: %s", d.Name())
 
-		fileinfo, err := langFile.Stat()
+		// open it
+		file, err := megabot.Files.Open(d.Name())
 		if err != nil {
-			l.Errorf("stating file: %s", err.Error())
-			return nil, err
-		}
-
-		filesize := fileinfo.Size()
-		buffer := make([]byte, filesize)
-
-		_, err = langFile.Read(buffer)
-		if err != nil {
-			l.Errorf("reading buffer: %s", err.Error())
 			return nil, err
 		}
 
-		module.langBundle.MustParseMessageFileBytes(buffer, filename)
+		// read it
+		buffer, err := ioutil.ReadAll(file)
+		if err != nil {
+			return nil, err
+		}
+
+		module.langBundle.MustParseMessageFileBytes(buffer, d.Name())
 	}
 
 	return &module, nil
