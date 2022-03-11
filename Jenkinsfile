@@ -26,6 +26,8 @@ pipeline {
           ]) {
             sh """#!/bin/bash
             make clean
+            make clean-npm
+            make npm-scss
             go get -t -v ./...
             go test -race -coverprofile=coverage.txt -covermode=atomic ./...
             RESULT=\$?
