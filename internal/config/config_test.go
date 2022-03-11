@@ -2,12 +2,12 @@ package config
 
 import (
 	"github.com/spf13/pflag"
+	"github.com/spf13/viper"
 	"testing"
 )
 
 func TestInit(t *testing.T) {
-	flags := &pflag.FlagSet{}
-	err := Init(flags)
+	err := Init(&pflag.FlagSet{})
 
 	if err != nil {
 		t.Errorf("unexpected error initializing config: %s", err.Error())
@@ -15,9 +15,9 @@ func TestInit(t *testing.T) {
 }
 
 func TestReadConfigFile(t *testing.T) {
-	flags := &pflag.FlagSet{}
-	flags.Set("config-path", "test/test-config.yml")
-	Init(flags)
+	Init(&pflag.FlagSet{})
+
+	viper.Set("config-path", "../../test/test-config.yml")
 
 	err := ReadConfigFile()
 	if err != nil {
