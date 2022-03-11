@@ -1,7 +1,8 @@
 package webapp
 
 const (
-	staticDir = "/web/static"
+	templateDir = "web/template"
+	staticDir   = "web/static"
 
 	pathBase   = "/app"
 	pathStatic = "/static"

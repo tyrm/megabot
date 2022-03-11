@@ -14,7 +14,6 @@ require (
 	github.com/graphql-go/graphql v0.8.0
 	github.com/jackc/pgconn v1.11.0
 	github.com/jackc/pgx/v4 v4.15.0
-	github.com/markbates/pkger v0.17.1
 	github.com/nicksnyder/go-i18n/v2 v2.2.0
 	github.com/oklog/ulid v1.3.1
 	github.com/rbcervilla/redisstore/v8 v8.1.0
@@ -40,7 +39,6 @@ require (
 	github.com/fsnotify/fsnotify v1.5.1 // indirect
 	github.com/go-playground/locales v0.14.0 // indirect
 	github.com/go-playground/universal-translator v0.18.0 // indirect
-	github.com/gobuffalo/here v0.6.5 // indirect
 	github.com/gorilla/securecookie v1.1.1 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect

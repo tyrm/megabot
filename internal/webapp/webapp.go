@@ -8,12 +8,11 @@ import (
 	"fmt"
 	"github.com/google/uuid"
 	"github.com/gorilla/sessions"
-	"github.com/markbates/pkger"
 	"github.com/rbcervilla/redisstore/v8"
 	"github.com/spf13/viper"
 	"github.com/tdewolff/minify/v2"
 	"github.com/tdewolff/minify/v2/html"
-	"github.com/tyrm/go-util/pkgerutil"
+	"github.com/tyrm/megabot"
 	"github.com/tyrm/megabot/internal/config"
 	"github.com/tyrm/megabot/internal/db"
 	"github.com/tyrm/megabot/internal/kv"
@@ -65,7 +64,7 @@ func New(ctx context.Context, db db.DB, r *redis.Client, lMod *language.Module) 
 	l := logger.WithField("func", "New")
 
 	// Load Templates
-	t, err := pkgerutil.CompileTemplates(pkger.Include("/web/template"), "", &tmplFuncs)
+	t, err := compileTemplates(templateDir, ".gohtml", &tmplFuncs)
 	if err != nil {
 		return nil, err
 	}
@@ -101,13 +100,14 @@ func New(ctx context.Context, db db.DB, r *redis.Client, lMod *language.Module) 
 		pathFileFontAwesome,
 	}
 	for _, path := range paths {
-		signature, err := getSignature(fmt.Sprintf("%s/%s", staticDir, path))
+		filePath := staticDir + path
+		signature, err := getSignature(filePath)
 		if err != nil {
-			l.Errorf("getting signature for %s: %s", path, err.Error())
+			l.Errorf("getting signature for %s: %s", filePath, err.Error())
 		}
 
 		hl = append(hl, templateHeadLink{
-			HRef:        fmt.Sprintf("%s%s", pathStatic, path),
+			HRef:        pathStatic + path,
 			Rel:         "stylesheet",
 			CrossOrigin: "anonymous",
 			Integrity:   signature,
@@ -120,13 +120,14 @@ func New(ctx context.Context, db db.DB, r *redis.Client, lMod *language.Module) 
 		pathFileBootstrapJS,
 	}
 	for _, path := range scriptPaths {
-		signature, err := getSignature(fmt.Sprintf("%s/%s", staticDir, path))
+		filePath := staticDir + path
+		signature, err := getSignature(filePath)
 		if err != nil {
-			l.Errorf("getting signature for %s: %s", path, err.Error())
+			l.Errorf("getting signature for %s: %s", filePath, err.Error())
 		}
 
 		fs = append(fs, templateScript{
-			Src:         fmt.Sprintf("%s%s", pathStatic, path),
+			Src:         pathStatic + path,
 			CrossOrigin: "anonymous",
 			Integrity:   signature,
 		})
@@ -155,7 +156,7 @@ func (m *Module) Name() string {
 func (m *Module) Route(s *web.Server) error {
 	// Static Files
 	s.PathPrefix(pathStatic + "/").Handler(http.StripPrefix(
-		pathStatic+"/", http.FileServer(pkger.Dir(staticDir))))
+		pathStatic+"/", http.FileServer(http.FS(megabot.Files))))
 
 	webapp := s.PathPrefix(pathBase + "/").Subrouter()
 	webapp.Use(m.Middleware)
@@ -206,9 +207,8 @@ func (m *Module) writeCachedSignature(path string, sig string) {
 
 func getSignature(path string) (string, error) {
 	l := logger.WithField("func", "getSignature")
-	l.Debugf("getting signature for %s", path)
 
-	file, err := pkger.Open(path)
+	file, err := megabot.Files.Open(path)
 	if err != nil {
 		l.Errorf("opening file: %s", err.Error())
 		return "", err

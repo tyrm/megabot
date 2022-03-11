@@ -3,11 +3,15 @@ package webapp
 import (
 	"bytes"
 	"github.com/gorilla/sessions"
+	"github.com/tyrm/megabot"
 	"github.com/tyrm/megabot/internal/language"
 	"github.com/tyrm/megabot/internal/models"
+	"html/template"
 	"io"
+	"io/ioutil"
 	"net/http"
 	"regexp"
+	"strings"
 )
 
 type templateVars interface {
@@ -91,6 +95,46 @@ type templateScript struct {
 	Src         string
 	Integrity   string
 	CrossOrigin string
+}
+
+func compileTemplates(path string, suffix string, funcs *template.FuncMap) (*template.Template, error) {
+	///l := logger.WithField("func", "compileTemplates")
+
+	tpl := template.New("")
+	if funcs != nil {
+		tpl.Funcs(*funcs)
+	}
+
+	dir, err := megabot.Files.ReadDir(path)
+	if err != nil {
+		return nil, err
+	}
+	for _, d := range dir {
+		filePath := path + "/" + d.Name()
+		if d.IsDir() || !strings.HasSuffix(d.Name(), suffix) {
+			continue
+		}
+
+		// open it
+		file, err := megabot.Files.Open(filePath)
+		if err != nil {
+			return nil, err
+		}
+
+		// read it
+		tmplData, err := ioutil.ReadAll(file)
+		if err != nil {
+			return nil, err
+		}
+
+		// It can now be parsed as a string.
+		_, err = tpl.Parse(string(tmplData))
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return tpl, err
 }
 
 func (m *Module) initTemplate(w http.ResponseWriter, r *http.Request, tmpl templateVars) error {
