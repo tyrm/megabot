@@ -40,7 +40,6 @@ pipeline {
             string(credentialsId: 'integration-redis-test', variable: 'REDIS_PASSWORD')
           ]) {
             sh """#!/bin/bash
-            echo $PATH
             go get -t -v ./...
             go test -race -coverprofile=coverage.txt -covermode=atomic ./...
             RESULT=\$?
@@ -63,7 +62,6 @@ pipeline {
           withCredentials([
             usernamePassword(credentialsId: 'gihub-tyrm-pat', usernameVariable: 'GITHUB_USER', passwordVariable: 'GITHUB_TOKEN')
           ]) {
-            echo $PATH
             sh 'goreleaser'
           }
         }
