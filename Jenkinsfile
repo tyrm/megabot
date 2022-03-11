@@ -25,6 +25,7 @@ pipeline {
             string(credentialsId: 'integration-redis-test', variable: 'REDIS_PASSWORD')
           ]) {
             sh """#!/bin/bash
+            echo $PATH
             make clean
             make clean-npm
             make npm-install-jenkins
