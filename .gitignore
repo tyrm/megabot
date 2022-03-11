@@ -10,4 +10,4 @@ dist/
 /web/static/css/error.min.css
 /web/static/js/bootstrap.bundle.min.js
 
-/translate.*.toml
+/locales/translate.*.toml
