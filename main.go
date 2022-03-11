@@ -1,3 +1,6 @@
 package megabot
 
-// WORKAROUND: pkger expects a module in this directory. local tests fail if this file isn't present
+import "embed"
+
+//go:embed web/static/* web/template/*
+var Files embed.FS
