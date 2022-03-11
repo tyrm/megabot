@@ -14,7 +14,7 @@ pipeline {
       agent {
         docker {
           image 'gobuild:1.17'
-          args '-e GOCACHE=/gocache -e HOME=${WORKSPACE} -v /var/lib/jenkins/gocache:/gocache -v /var/lib/jenkins/go:/go'
+          args '-e GOCACHE=/gocache -e HOME=${WORKSPACE} -v /var/lib/jenkins/gocache:/gocache -v /var/lib/jenkins/go:/go -v /var/lib/jenkins/.npm:/.npm'
         }
       }
       steps {
@@ -27,9 +27,8 @@ pipeline {
             sh """#!/bin/bash
             make clean
             make clean-npm
+            make npm-install-jenkins
             make npm-scss
-            ls -lah /
-            ls -lah ~/
             go get -t -v ./...
             go test -race -coverprofile=coverage.txt -covermode=atomic ./...
             RESULT=\$?

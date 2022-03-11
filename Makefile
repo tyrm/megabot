@@ -24,7 +24,10 @@ lint:
 npm-install:
 	cd web/bootstrap && npm install
 
-npm-scss: npm-install clean-npm
+npm-install-jenkins:
+	cd web/bootstrap && npm install --cache=/.npm
+
+npm-scss: clean-npm
 	cd web/bootstrap && npm run scss
 
 test-docker-restart: test-docker-stop test-docker-start
