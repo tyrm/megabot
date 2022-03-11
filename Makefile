@@ -19,7 +19,13 @@ gosec:
 	gosec ./...
 
 i18n-extract:
-	goi18n extract
+	goi18n extract -outdir locales
+
+i18n-merge:
+	goi18n merge -outdir locales locales/active.*.toml locales/translate.*.toml
+
+i18n-translations:
+	goi18n merge -outdir locales locales/active.*.toml
 
 lint:
 	golint ./...

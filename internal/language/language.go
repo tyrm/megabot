@@ -28,7 +28,7 @@ func New() (*Module, error) {
 
 	module.langBundle.RegisterUnmarshalFunc("toml", toml.Unmarshal)
 
-	dir, err := megabot.Files.ReadDir(".")
+	dir, err := megabot.Files.ReadDir("locales")
 	if err != nil {
 		return nil, err
 	}
@@ -39,7 +39,7 @@ func New() (*Module, error) {
 		l.Debugf("loading language file: %s", d.Name())
 
 		// open it
-		file, err := megabot.Files.Open(d.Name())
+		file, err := megabot.Files.Open("locales/" + d.Name())
 		if err != nil {
 			return nil, err
 		}
