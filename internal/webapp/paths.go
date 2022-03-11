@@ -7,11 +7,11 @@ const (
 	pathBase   = "/app"
 	pathStatic = "/static"
 
-	pathFileBootstrapCSS = "/css/bootstrap.css"
-	pathFileBootstrapJS  = "/js/bootstrap.bundle.js"
-	pathFileErrorCSS     = "/css/error.css"
+	pathFileBootstrapCSS = "/css/bootstrap.min.css"
+	pathFileBootstrapJS  = "/js/bootstrap.bundle.min.js"
+	pathFileErrorCSS     = "/css/error.min.css"
 	pathFileFontAwesome  = "/vendor/fontawesome-free-6.0.0-web/css/all.min.css"
-	pathFileLoginCSS     = "/css/login.css"
+	pathFileLoginCSS     = "/css/login.min.css"
 
 	pathFileBotAngry    = "/img/bot/noun_angry-bot_black.svg"
 	pathFileBotConfused = "/img/bot/noun_confused-bot_black.svg"

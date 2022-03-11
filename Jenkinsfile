@@ -1,5 +1,6 @@
 pipeline {
   environment {
+    PATH = '/go/bin:~/go/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/usr/local/go/bin'
     registry = 'tyrm/megabot'
     registryCredential = 'docker-io-tyrm'
     dockerImage = ''
@@ -10,11 +11,26 @@ pipeline {
 
   stages {
 
+    stage('Build Static Assets') {
+      steps {
+        script {
+          sh """#!/bin/bash
+          make clean
+          make clean-npm
+          make npm-install
+          make npm-scss
+          make minify-static
+          """
+        }
+      }
+    }
+
     stage('Test') {
       agent {
         docker {
           image 'gobuild:1.17'
           args '-e GOCACHE=/gocache -e HOME=${WORKSPACE} -v /var/lib/jenkins/gocache:/gocache -v /var/lib/jenkins/go:/go -v /var/lib/jenkins/.npm:/.npm'
+          reuseNode true
         }
       }
       steps {
@@ -25,14 +41,10 @@ pipeline {
             string(credentialsId: 'integration-redis-test', variable: 'REDIS_PASSWORD')
           ]) {
             sh """#!/bin/bash
-            make clean
-            make clean-npm
-            make npm-install-jenkins
-            make npm-scss
             go get -t -v ./...
             go test -race -coverprofile=coverage.txt -covermode=atomic ./...
             RESULT=\$?
-            /go/bin/gosec -fmt=junit-xml -out=gosec.xml  ./...
+            gosec -fmt=junit-xml -out=gosec.xml  ./...
             bash <(curl -s https://codecov.io/bash)
             exit \$RESULT
             """
@@ -51,7 +63,7 @@ pipeline {
           withCredentials([
             usernamePassword(credentialsId: 'gihub-tyrm-pat', usernameVariable: 'GITHUB_USER', passwordVariable: 'GITHUB_TOKEN')
           ]) {
-            sh '~/go/bin/goreleaser'
+            sh 'goreleaser'
           }
         }
       }

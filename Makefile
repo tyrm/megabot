@@ -1,5 +1,7 @@
 PROJECT_NAME=megabot
 
+.DEFAULT_GOAL := test
+
 build-snapshot: clean
 	goreleaser build --snapshot
 
@@ -8,7 +10,7 @@ clean:
 	find . -name ".DS_Store" -exec rm -v {} \;
 
 clean-npm:
-	rm -Rvf web/static/css/bootstrap.css web/static/js/bootstrap.bundle.js
+	rm -Rvf web/bootstrap/dist web/static/css/bootstrap.min.css web/static/js/bootstrap.bundle.min.js
 
 fmt:
 	go fmt ./...
@@ -21,6 +23,12 @@ i18n-extract:
 
 lint:
 	golint ./...
+
+minify-static:
+	minify web/static-src/css/error.css > web/static/css/error.min.css
+	minify web/static-src/css/login.css > web/static/css/login.min.css
+	minify web/bootstrap/dist/bootstrap.css > web/static/css/bootstrap.min.css
+	minify web/bootstrap/node_modules/bootstrap/dist/js/bootstrap.bundle.js > web/static/js/bootstrap.bundle.min.js
 
 npm-install:
 	cd web/bootstrap && npm install

@@ -4,7 +4,9 @@ before:
   hooks:
     - make clean
     - make clean-npm
+    - npm-install
     - make npm-scss
+    - make minify-static
     - go mod tidy
     - go fmt ./...
     - go generate ./...
