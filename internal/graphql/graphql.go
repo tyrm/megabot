@@ -39,7 +39,7 @@ func (m *Module) Name() string {
 }
 
 // Route attaches routes to the web server
-func (m *Module) Route(s *web.Server) error {
+func (m *Module) Route(s web.Server) error {
 	s.HandleFunc(pathGraphQL, m.graphqlHandler).Methods("POST")
 	return nil
 }

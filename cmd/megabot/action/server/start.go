@@ -65,7 +65,7 @@ var Start action.Action = func(ctx context.Context) error {
 		return err
 	}
 
-	webServer, err := web.New(ctx, dbClient)
+	webServer, err := web.New2(ctx, dbClient)
 	if err != nil {
 		logrus.Errorf("web server: %s", err.Error())
 		return err
