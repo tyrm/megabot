@@ -49,3 +49,21 @@ func TestNewRandomULID(t *testing.T) {
 		})
 	}
 }
+
+func BenchmarkNewULID(b *testing.B) {
+	for n := 0; n < b.N; n++ {
+		_, err := NewULID()
+		if err != nil {
+			panic(err)
+		}
+	}
+}
+
+func BenchmarkNewRandomULID(b *testing.B) {
+	for n := 0; n < b.N; n++ {
+		_, err := NewRandomULID()
+		if err != nil {
+			panic(err)
+		}
+	}
+}

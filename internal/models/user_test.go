@@ -117,3 +117,28 @@ func TestUserPasswordHash(t *testing.T) {
 		})
 	}
 }
+
+func BenchmarkUser_CheckPasswordHash(b *testing.B) {
+	user := User{
+		EncryptedPassword: "$2a$14$iU.0NmiiQ5vdQefC77RTMeWpEbBUFsmyOOddo0srZHqXJF7oVC7ye",
+	}
+
+	b.ResetTimer()
+	for n := 0; n < b.N; n++ {
+		if !user.CheckPasswordHash("password") {
+			panic("wrong answer")
+		}
+	}
+}
+
+func BenchmarkUser_SetPassword(b *testing.B) {
+	user := User{}
+
+	b.ResetTimer()
+	for n := 0; n < b.N; n++ {
+		err := user.SetPassword("password")
+		if err != nil {
+			panic(err)
+		}
+	}
+}
