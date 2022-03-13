@@ -1,5 +1,9 @@
 package webapp
 
-import "github.com/sirupsen/logrus"
+import (
+	"github.com/tyrm/megabot/internal/log"
+)
 
-var logger = logrus.WithField("module", "webapp")
+type empty struct{}
+
+var logger = log.WithPackageField(empty{})

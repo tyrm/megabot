@@ -2,7 +2,6 @@ package user
 
 import (
 	"context"
-	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 	"github.com/tyrm/megabot/cmd/megabot/action"
 	"github.com/tyrm/megabot/internal/config"
@@ -13,7 +12,7 @@ import (
 
 // Show displays info about a user
 var Show action.Action = func(ctx context.Context) error {
-	l := logrus.WithField("func", "Show")
+	l := logger.WithField("func", "Show")
 
 	l.Infof("reading user %s", viper.GetString(config.Keys.UserEmail))
 	dbClient, err := bun.New(ctx)

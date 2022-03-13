@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"github.com/tyrm/megabot/cmd/megabot/action"
@@ -19,6 +18,8 @@ var Version string
 var Commit string
 
 func main() {
+	l := logger.WithField("func", "main")
+
 	var v string
 	if len(Commit) < 7 {
 		v = Version
@@ -42,7 +43,7 @@ func main() {
 
 	err := viper.BindPFlag(config.Keys.ConfigPath, rootCmd.PersistentFlags().Lookup(config.Keys.ConfigPath))
 	if err != nil {
-		logrus.Fatalf("error binding config flag: %s", err)
+		l.Fatalf("error binding config flag: %s", err)
 	}
 
 	// add commands
@@ -52,7 +53,7 @@ func main() {
 
 	err = rootCmd.Execute()
 	if err != nil {
-		logrus.Fatalf("error executing command: %s", err)
+		l.Fatalf("error executing command: %s", err)
 	}
 }
 

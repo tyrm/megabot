@@ -4,7 +4,6 @@ import (
 	"context"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
-	"github.com/sirupsen/logrus"
 	"github.com/tyrm/megabot/internal/db"
 	"net/http"
 	"time"
@@ -28,7 +27,8 @@ func (r *Server2) PathPrefix(tpl string) *mux.Route {
 
 // Start starts the web server
 func (r *Server2) Start() error {
-	logrus.Infof("listening on %s", r.srv.Addr)
+	l := logger.WithField("func", "Start")
+	l.Infof("listening on %s", r.srv.Addr)
 	return r.srv.ListenAndServe()
 }
 

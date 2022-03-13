@@ -1,7 +1,9 @@
 package server
 
 import (
-	"github.com/sirupsen/logrus"
+	"github.com/tyrm/megabot/internal/log"
 )
 
-var logger = logrus.WithField("module", "cmd.megabot.action.server")
+type empty struct{}
+
+var logger = log.WithPackageField(empty{})
