@@ -11,6 +11,8 @@ func Server(cmd *cobra.Command, values config.Values) {
 
 	// server
 	cmd.PersistentFlags().String(config.Keys.ServerExternalHostname, values.ServerExternalHostname, usage.ServerExternalHostname)
+	cmd.PersistentFlags().Bool(config.Keys.ServerHTTP2, values.ServerHTTP2, usage.ServerHTTP2)
+	cmd.PersistentFlags().Bool(config.Keys.ServerHTTP3, values.ServerHTTP3, usage.ServerHTTP3)
 	cmd.PersistentFlags().Bool(config.Keys.ServerMinifyHTML, values.ServerMinifyHTML, usage.ServerMinifyHTML)
 	cmd.PersistentFlags().StringArray(config.Keys.ServerRoles, values.ServerRoles, usage.ServerRoles)
 

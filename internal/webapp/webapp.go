@@ -154,7 +154,7 @@ func (m *Module) Name() string {
 }
 
 // Route attaches routes to the web server
-func (m *Module) Route(s *web.Server) error {
+func (m *Module) Route(s web.Server) error {
 	staticFS, err := fs.Sub(megabot.Files, staticDir)
 	if err != nil {
 		return err
