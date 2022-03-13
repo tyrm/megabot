@@ -6,6 +6,8 @@ import "fmt"
 type Error error
 
 var (
+	// ErrGenID is returned when creating a new ID can't be generated for a new model.
+	ErrGenID Error = fmt.Errorf("can't generate id")
 	// ErrNoEntries is returned when a caller expected an entry for a query, but none was found.
 	ErrNoEntries Error = fmt.Errorf("no entries")
 	// ErrMultipleEntries is returned when a caller expected ONE entry for a query, but multiples were found.

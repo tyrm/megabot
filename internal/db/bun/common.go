@@ -22,8 +22,16 @@ func (c *commonDB) Close(ctx context.Context) db.Error {
 }
 
 // Create inserts an object into the database
-func (c *commonDB) Create(ctx context.Context, i interface{}) db.Error {
-	_, err := c.bun.NewInsert().Model(i).Exec(ctx)
+func (c *commonDB) Create(ctx context.Context, i db.Creatable) db.Error {
+	l := logger.WithField("func", "Create")
+
+	err := i.GenID()
+	if err != nil {
+		l.Errorf("generating new id: %s", err.Error())
+		return db.ErrGenID
+	}
+
+	_, err = c.bun.NewInsert().Model(i).Exec(ctx)
 	return c.bun.ProcessError(err)
 }
 

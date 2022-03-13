@@ -12,6 +12,7 @@ var testUser1 = models.User{
 	Email:             "test@test.com",
 	EncryptedPassword: "$2a$14$iU.0NmiiQ5vdQefC77RTMeWpEbBUFsmyOOddo0srZHqXJF7oVC7ye",
 }
+
 var testUser2 = models.User{
 	ID:                "01FX740C6CFRQYW5QP0JEJF20K",
 	Email:             "test2@example.com",

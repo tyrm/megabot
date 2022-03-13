@@ -2,6 +2,7 @@ package models
 
 import (
 	"github.com/google/uuid"
+	"github.com/tyrm/megabot/internal/id"
 	"time"
 )
 
@@ -13,6 +14,32 @@ type GroupMembership struct {
 	UserID    string    `validate:"required,ulid" bun:"type:CHAR(26),unique:groupmembership,notnull,nullzero"`
 	User      *User     `validate:"-" bun:"rel:belongs-to"`
 	GroupID   uuid.UUID `validate:"required,uuid" bun:",unique:groupmembership,notnull,nullzero"`
+}
+
+// GenID generates a new id for the object
+func (g *GroupMembership) GenID() error {
+	if g.ID == "" {
+		newID, err := id.NewULID()
+		if err != nil {
+			return err
+		}
+		g.ID = newID
+	}
+	return nil
+}
+
+// GroupMemberships contains multiple groups
+type GroupMemberships []*GroupMembership
+
+// GenID generates a new id for the object
+func (g *GroupMemberships) GenID() error {
+	for _, group := range *g {
+		err := group.GenID()
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 // groupSuperAdmin is the uuid of the Super Administrators group
