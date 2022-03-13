@@ -1,3 +1,6 @@
+/server.crt
+/server.key
+
 /coverage.txt
 dist/
 /megabot
