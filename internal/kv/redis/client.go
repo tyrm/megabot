@@ -3,7 +3,6 @@ package redis
 import (
 	"context"
 	"github.com/go-redis/redis/v8"
-	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 	"github.com/tyrm/megabot/internal/config"
 )
@@ -15,6 +14,8 @@ type Client struct {
 
 // New creates a new redis client.
 func New(ctx context.Context) (*Client, error) {
+	l := logger.WithField("func", "New")
+
 	c := Client{
 		redis: redis.NewClient(&redis.Options{
 			Addr:     viper.GetString(config.Keys.RedisAddress),
@@ -24,7 +25,7 @@ func New(ctx context.Context) (*Client, error) {
 	}
 
 	resp := c.redis.Ping(ctx)
-	logrus.Debugf("%s", resp.String())
+	l.Debugf("%s", resp.String())
 
 	return &c, nil
 }

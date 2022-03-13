@@ -9,6 +9,8 @@ type HomeTemplate struct {
 
 // HomeGetHandler serves the home page
 func (m *Module) HomeGetHandler(w http.ResponseWriter, r *http.Request) {
+	l := logger.WithField("func", "HomeGetHandler")
+
 	// Init template variables
 	tmplVars := &HomeTemplate{
 		templateCommon{
@@ -24,7 +26,7 @@ func (m *Module) HomeGetHandler(w http.ResponseWriter, r *http.Request) {
 
 	err = m.executeTemplate(w, "home", tmplVars)
 	if err != nil {
-		logger.Errorf("could not render home template: %s", err.Error())
+		l.Errorf("could not render home template: %s", err.Error())
 	}
 
 }

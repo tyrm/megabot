@@ -1,5 +1,9 @@
 package graphql
 
-import "github.com/sirupsen/logrus"
+import (
+	"github.com/tyrm/megabot/internal/log"
+)
 
-var logger = logrus.WithField("module", "graphql")
+type empty struct{}
+
+var logger = log.WithPackageField(empty{})

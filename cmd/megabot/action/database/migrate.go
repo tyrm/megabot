@@ -2,7 +2,6 @@ package database
 
 import (
 	"context"
-	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 	"github.com/tyrm/megabot/cmd/megabot/action"
 	"github.com/tyrm/megabot/internal/config"
@@ -11,7 +10,7 @@ import (
 
 // Migrate runs database migrations
 var Migrate action.Action = func(ctx context.Context) error {
-	l := logrus.WithField("func", "Migrate")
+	l := logger.WithField("func", "Migrate")
 
 	l.Info("running database migration")
 	dbClient, err := bun.New(ctx)

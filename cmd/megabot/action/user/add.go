@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"github.com/google/uuid"
-	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 	"github.com/tyrm/megabot/cmd/megabot/action"
 	"github.com/tyrm/megabot/internal/config"
@@ -16,7 +15,7 @@ import (
 
 // Add adds a user from the command line
 var Add action.Action = func(ctx context.Context) error {
-	l := logrus.WithField("func", "Add")
+	l := logger.WithField("func", "Add")
 
 	l.Infof("adding user %s", viper.GetString(config.Keys.UserEmail))
 	dbClient, err := bun.New(ctx)

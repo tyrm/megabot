@@ -1,4 +1,4 @@
-package language
+package web
 
 import (
 	"github.com/tyrm/megabot/internal/log"

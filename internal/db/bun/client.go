@@ -10,7 +10,6 @@ import (
 	"fmt"
 	"github.com/jackc/pgx/v4"
 	"github.com/jackc/pgx/v4/stdlib"
-	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 	"github.com/tyrm/megabot/internal/config"
 	"github.com/tyrm/megabot/internal/db"
@@ -83,6 +82,8 @@ func New(ctx context.Context) (db.DB, error) {
 }
 
 func sqliteConn(ctx context.Context) (*Bun, error) {
+	l := logger.WithField("func", "sqliteConn")
+
 	// validate bun address has actually been set
 	dbAddress := viper.GetString(config.Keys.DbAddress)
 	if dbAddress == "" {
@@ -108,7 +109,7 @@ func sqliteConn(ctx context.Context) (*Bun, error) {
 	setConnectionValues(sqldb)
 
 	if dbAddress == "file::memory:?cache=shared" {
-		logrus.Warn("sqlite in-memory database should only be used for debugging")
+		l.Warn("sqlite in-memory database should only be used for debugging")
 		// don't close connections on disconnect -- otherwise
 		// the SQLite database will be deleted when there
 		// are no active connections
@@ -125,11 +126,13 @@ func sqliteConn(ctx context.Context) (*Bun, error) {
 		return nil, fmt.Errorf("sqlite ping: %s", err)
 	}
 
-	logrus.Info("connected to SQLITE database")
+	l.Info("connected to SQLITE database")
 	return conn, nil
 }
 
 func pgConn(ctx context.Context) (*Bun, error) {
+	l := logger.WithField("func", "pgConn")
+
 	opts, err := deriveBunDBPGOptions()
 	if err != nil {
 		return nil, fmt.Errorf("could not create bundb postgres options: %s", err)
@@ -146,7 +149,7 @@ func pgConn(ctx context.Context) (*Bun, error) {
 		return nil, fmt.Errorf("postgres ping: %s", err)
 	}
 
-	logrus.Info("connected to POSTGRES database")
+	l.Info("connected to POSTGRES database")
 	return conn, nil
 }
 

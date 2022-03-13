@@ -5,7 +5,6 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/lucas-clemente/quic-go"
 	"github.com/lucas-clemente/quic-go/http3"
-	"github.com/sirupsen/logrus"
 	"github.com/tyrm/megabot/internal/db"
 	"net/http"
 	"time"
@@ -29,7 +28,8 @@ func (r *Server3) PathPrefix(tpl string) *mux.Route {
 
 // Start starts the web server
 func (r *Server3) Start() error {
-	logrus.Infof("listening on %s", r.srv.Addr)
+	l := logger.WithField("func", "Start")
+	l.Infof("listening on %s", r.srv.Addr)
 	return r.srv.ListenAndServe()
 }
 
