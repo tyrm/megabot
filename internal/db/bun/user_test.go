@@ -84,3 +84,70 @@ func TestUserDB_ReadUserByID(t *testing.T) {
 		})
 	}
 }
+
+func TestUserDB_ReadUserByEmail(t *testing.T) {
+	client, err := testNewTestClient()
+	if err != nil {
+		t.Errorf("unexpected error initializing pg options: %s", err.Error())
+		return
+	}
+
+	tables := []struct {
+		user   *models.User
+		exists bool
+	}{
+		{
+			user:   &testUser1,
+			exists: true,
+		},
+		{
+			user:   &testUser2,
+			exists: true,
+		},
+		{
+			user: &models.User{
+				Email: "notexist@test.com",
+			},
+			exists: false,
+		},
+	}
+
+	for i, table := range tables {
+		i := i
+		table := table
+
+		name := fmt.Sprintf("[%d] Running ReadUserByID %v", i, table.user.ID)
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+
+			user, err := client.ReadUserByEmail(context.Background(), table.user.Email)
+			if err != nil {
+				t.Errorf("[%d] got error reading user %s: %s", i, table.user.ID, err.Error())
+				return
+			}
+
+			if table.exists {
+				if user == nil {
+					t.Errorf("[%d] expected user: got 'nil'", i)
+					return
+				}
+
+				if user.ID != table.user.ID {
+					t.Errorf("[%d] wrong id for user: got '%s', want '%s'", i, user.ID, table.user.ID)
+				}
+				if user.Email != table.user.Email {
+					t.Errorf("[%d] wrong email for user: got '%s', want '%s'", i, user.Email, table.user.Email)
+				}
+				if user.EncryptedPassword != table.user.EncryptedPassword {
+					t.Errorf("[%d] wrong id for user: got '%s', want '%s'", i, user.EncryptedPassword, table.user.EncryptedPassword)
+				}
+			} else {
+				if user != nil {
+					t.Errorf("[%d] unexpected user: got '%v'", i, user)
+					return
+				}
+			}
+
+		})
+	}
+}
