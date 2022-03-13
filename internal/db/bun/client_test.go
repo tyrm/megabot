@@ -3,7 +3,9 @@ package bun
 import (
 	"context"
 	"crypto/tls"
+	"database/sql"
 	"fmt"
+	"github.com/jackc/pgconn"
 	"github.com/spf13/viper"
 	"github.com/tyrm/megabot/internal/config"
 	"github.com/tyrm/megabot/internal/db"
@@ -335,4 +337,40 @@ func testNewTestClient() (db.DB, error) {
 	}
 
 	return client, nil
+}
+
+func TestProcessError(t *testing.T) {
+	bun := &Bun{
+		errProc: processPostgresError,
+	}
+
+	tables := []struct {
+		x error
+		n error
+	}{
+		{nil, nil},
+		{sql.ErrNoRows, db.ErrNoEntries},
+		{&pgconn.PgError{Severity: "ERROR", Message: "unique_violation", Code: "23505"}, db.NewErrAlreadyExists("unique_violation")},
+	}
+
+	for i, table := range tables {
+		i := i
+		table := table
+
+		name := fmt.Sprintf("[%d] Running processPostgresError for %v", i, table.x)
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+
+			err := bun.ProcessError(table.x)
+			if table.x != nil {
+				if err.Error() != table.n.Error() {
+					t.Errorf("[%d] invalid error, got: '%s', want: '%s'", i, err.Error(), table.n.Error())
+				}
+			} else {
+				if err != nil {
+					t.Errorf("[%d] invalid error, got: '%s', want: 'nil'", i, err.Error())
+				}
+			}
+		})
+	}
 }
