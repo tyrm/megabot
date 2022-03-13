@@ -244,6 +244,17 @@ func TestDeriveBunDBPGOptions_NoType(t *testing.T) {
 	}
 }
 
+func TestPgConn_NoConfig(t *testing.T) {
+	viper.Reset()
+
+	_, err := pgConn(context.Background())
+	errText := "could not create bundb postgres options: expected bun type of POSTGRES but got "
+	if err.Error() != errText {
+		t.Errorf("unexpected error initializing pg connection, got: '%s', want: '%s'", err.Error(), errText)
+		return
+	}
+}
+
 func TestSqliteConn(t *testing.T) {
 	viper.Reset()
 

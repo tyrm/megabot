@@ -56,6 +56,9 @@ test-docker-stop:
 test: tidy fmt lint gosec
 	go test -cover ./...
 
+test-ext: tidy fmt lint gosec
+	go test --tags=postgres -cover ./...
+
 test-race: tidy fmt lint gosec
 	go test -race -cover ./...
 
