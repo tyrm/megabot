@@ -17,6 +17,7 @@ import (
 	"github.com/tyrm/megabot/internal/webapp"
 	"os"
 	"os/signal"
+	"reflect"
 	"syscall"
 )
 
@@ -65,10 +66,25 @@ var Start action.Action = func(ctx context.Context) error {
 		return err
 	}
 
-	webServer, err := web.New2(ctx, dbClient)
-	if err != nil {
-		logrus.Errorf("web server: %s", err.Error())
-		return err
+	var webServers []web.Server
+	if viper.GetBool(config.Keys.ServerHTTP2) {
+		logrus.Debugf("creating http2 server")
+		server2, err := web.New2(ctx, dbClient)
+		if err != nil {
+			logrus.Errorf("http2 server: %s", err.Error())
+			return err
+		}
+		webServers = append(webServers, server2)
+	}
+	logrus.Infof("%v", viper.GetBool(config.Keys.ServerHTTP3))
+	if viper.GetBool(config.Keys.ServerHTTP3) {
+		logrus.Debugf("creating http3 server")
+		server3, err := web.New3(ctx, dbClient)
+		if err != nil {
+			logrus.Errorf("http3 server: %s", err.Error())
+			return err
+		}
+		webServers = append(webServers, server3)
 	}
 
 	var webModules []web.Module
@@ -87,11 +103,13 @@ var Start action.Action = func(ctx context.Context) error {
 		webModules = append(webModules, webMod)
 	}
 
-	for _, mod := range webModules {
-		err := mod.Route(webServer)
-		if err != nil {
-			logrus.Errorf("loading %s module: %s", mod.Name(), err.Error())
-			return err
+	for _, server := range webServers {
+		for _, mod := range webModules {
+			err := mod.Route(server)
+			if err != nil {
+				logrus.Errorf("loading %s module: %s", mod.Name(), err.Error())
+				return err
+			}
 		}
 	}
 
@@ -100,16 +118,21 @@ var Start action.Action = func(ctx context.Context) error {
 
 	// start web server
 	logrus.Infof("starting web server")
-	go func(errChan chan error) {
-		err := webServer.Start()
-		if err != nil {
-			errChan <- fmt.Errorf("web server: %s", err.Error())
-		}
-	}(errChan)
+	for _, server := range webServers {
+		go func(s web.Server, errChan chan error) {
+			logrus.Debugf("starting %s", reflect.TypeOf(s).String())
+			err := s.Start()
+			if err != nil {
+				errChan <- fmt.Errorf("web server: %s", err.Error())
+			}
+		}(server, errChan)
+	}
 	defer func() {
-		err := webServer.Stop(ctx)
-		if err != nil {
-			logrus.Errorf("stopping web server: %s", err.Error())
+		for _, server := range webServers {
+			err := server.Stop(ctx)
+			if err != nil {
+				logrus.Errorf("stopping web server: %s", err.Error())
+			}
 		}
 	}()
 

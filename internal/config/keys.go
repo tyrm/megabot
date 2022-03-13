@@ -33,6 +33,8 @@ type KeyNames struct {
 
 	// server
 	ServerExternalHostname string
+	ServerHTTP2            string
+	ServerHTTP3            string
 	ServerMinifyHTML       string
 	ServerRoles            string
 
@@ -75,6 +77,8 @@ var Keys = KeyNames{
 
 	// server
 	ServerExternalHostname: "external-hostname",
+	ServerHTTP2:            "http2",
+	ServerHTTP3:            "http3",
 	ServerMinifyHTML:       "minify-html",
 	ServerRoles:            "server-role",
 
