@@ -23,78 +23,82 @@ import (
 
 // Start starts the server
 var Start action.Action = func(ctx context.Context) error {
-	logrus.Infof("starting")
+	l := logger.WithField("func", "Start")
+
+	l.Infof("starting")
 	dbClient, err := bun.New(ctx)
 	if err != nil {
-		logrus.Errorf("db: %s", err.Error())
+		l.Errorf("db: %s", err.Error())
 		return err
 	}
 	defer func() {
 		err := dbClient.Close(ctx)
 		if err != nil {
-			logrus.Errorf("closing db: %s", err.Error())
+			l.Errorf("closing db: %s", err.Error())
 		}
 	}()
 
 	redisClient, err := redis.New(ctx)
 	if err != nil {
-		logrus.Errorf("redis: %s", err.Error())
+		l.Errorf("redis: %s", err.Error())
 		return err
 	}
 	defer func() {
 		err := redisClient.Close(ctx)
 		if err != nil {
-			logrus.Errorf("closing redis: %s", err.Error())
+			l.Errorf("closing redis: %s", err.Error())
 		}
 	}()
 
 	jwtModule, err := jwt.New(dbClient, redisClient)
 	if err != nil {
-		logrus.Errorf("jwt: %s", err.Error())
+		l.Errorf("jwt: %s", err.Error())
 		return err
 	}
 	defer func() {
 		err := jwtModule.Close()
 		if err != nil {
-			logrus.Errorf("closing jwt: %s", err.Error())
+			l.Errorf("closing jwt: %s", err.Error())
 		}
 	}()
 
 	languageMod, err := language.New()
 	if err != nil {
-		logrus.Errorf("language: %s", err.Error())
+		l.Errorf("language: %s", err.Error())
 		return err
 	}
 
+	// create web servers
 	var webServers []web.Server
 	if viper.GetBool(config.Keys.ServerHTTP2) {
-		logrus.Debugf("creating http2 server")
+		l.Debugf("creating http2 server")
 		server2, err := web.New2(ctx, dbClient)
 		if err != nil {
-			logrus.Errorf("http2 server: %s", err.Error())
+			l.Errorf("http2 server: %s", err.Error())
 			return err
 		}
 		webServers = append(webServers, server2)
 	}
-	logrus.Infof("%v", viper.GetBool(config.Keys.ServerHTTP3))
+	l.Infof("%v", viper.GetBool(config.Keys.ServerHTTP3))
 	if viper.GetBool(config.Keys.ServerHTTP3) {
-		logrus.Debugf("creating http3 server")
+		l.Debugf("creating http3 server")
 		server3, err := web.New3(ctx, dbClient)
 		if err != nil {
-			logrus.Errorf("http3 server: %s", err.Error())
+			l.Errorf("http3 server: %s", err.Error())
 			return err
 		}
 		webServers = append(webServers, server3)
 	}
 
+	// create web modules
 	var webModules []web.Module
 	if util.ContainsString(viper.GetStringSlice(config.Keys.ServerRoles), config.ServerRoleGraphQL) {
-		logrus.Infof("adding graphql module")
+		l.Infof("adding graphql module")
 		webMod := graphql.New(dbClient, jwtModule)
 		webModules = append(webModules, webMod)
 	}
 	if util.ContainsString(viper.GetStringSlice(config.Keys.ServerRoles), config.ServerRoleWebapp) {
-		logrus.Infof("adding webapp module")
+		l.Infof("adding webapp module")
 		webMod, err := webapp.New(ctx, dbClient, redisClient, languageMod)
 		if err != nil {
 			logrus.Errorf("webapp module: %s", err.Error())
@@ -103,11 +107,12 @@ var Start action.Action = func(ctx context.Context) error {
 		webModules = append(webModules, webMod)
 	}
 
+	// add modules to servers
 	for _, server := range webServers {
 		for _, mod := range webModules {
 			err := mod.Route(server)
 			if err != nil {
-				logrus.Errorf("loading %s module: %s", mod.Name(), err.Error())
+				l.Errorf("loading %s module: %s", mod.Name(), err.Error())
 				return err
 			}
 		}
@@ -117,10 +122,10 @@ var Start action.Action = func(ctx context.Context) error {
 	errChan := make(chan error)
 
 	// start web server
-	logrus.Infof("starting web server")
+	l.Infof("starting web server")
 	for _, server := range webServers {
 		go func(s web.Server, errChan chan error) {
-			logrus.Debugf("starting %s", reflect.TypeOf(s).String())
+			l.Debugf("starting %s", reflect.TypeOf(s).String())
 			err := s.Start()
 			if err != nil {
 				errChan <- fmt.Errorf("web server: %s", err.Error())
@@ -131,7 +136,7 @@ var Start action.Action = func(ctx context.Context) error {
 		for _, server := range webServers {
 			err := server.Stop(ctx)
 			if err != nil {
-				logrus.Errorf("stopping web server: %s", err.Error())
+				l.Errorf("stopping web server: %s", err.Error())
 			}
 		}
 	}()
@@ -142,11 +147,11 @@ var Start action.Action = func(ctx context.Context) error {
 
 	select {
 	case sig := <-nch:
-		logrus.Infof("got sig: %s", sig)
+		l.Infof("got sig: %s", sig)
 	case err := <-errChan:
-		logrus.Fatal(err.Error())
+		l.Fatal(err.Error())
 	}
 
-	logrus.Infof("done")
+	l.Infof("done")
 	return nil
 }
