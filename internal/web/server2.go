@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-// Server2 is the web server
+// Server2 is a http 2 web server
 type Server2 struct {
 	router *mux.Router
 	srv    *http.Server
@@ -37,7 +37,7 @@ func (r *Server2) Stop(ctx context.Context) error {
 	return r.srv.Shutdown(ctx)
 }
 
-// New2 creates a new http2 web server
+// New2 creates a new http 2 web server
 func New2(ctx context.Context, db db.DB) (Server, error) {
 	r := mux.NewRouter()
 	r.Use(handlers.CompressHandler)
