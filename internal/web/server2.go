@@ -21,8 +21,8 @@ func (r *Server2) HandleFunc(path string, f func(http.ResponseWriter, *http.Requ
 }
 
 // PathPrefix attaches a new route url path prefix
-func (r *Server2) PathPrefix(tpl string) *mux.Route {
-	return r.router.PathPrefix(tpl)
+func (r *Server2) PathPrefix(path string) *mux.Route {
+	return r.router.PathPrefix(path)
 }
 
 // Start starts the web server

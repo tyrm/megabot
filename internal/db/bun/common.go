@@ -2,12 +2,12 @@ package bun
 
 import (
 	"context"
+	"github.com/tyrm/megabot"
 	"github.com/tyrm/megabot/internal/db"
 	"github.com/tyrm/megabot/internal/db/bun/migrations"
 	"github.com/tyrm/megabot/internal/models"
 	"github.com/uptrace/bun/dbfixture"
 	"github.com/uptrace/bun/migrate"
-	"os"
 )
 
 type commonDB struct {
@@ -67,7 +67,7 @@ func (c *commonDB) LoadTestData(ctx context.Context) db.Error {
 	fixture := dbfixture.New(c.bun.DB, dbfixture.WithTruncateTables())
 
 	// Load fixtures.
-	if err := fixture.Load(ctx, os.DirFS("test"), "fixture.yml"); err != nil {
+	if err := fixture.Load(ctx, megabot.Files, "test/fixture.yml"); err != nil {
 		l.Errorf("loading test data: %s", err.Error())
 		return err
 	}

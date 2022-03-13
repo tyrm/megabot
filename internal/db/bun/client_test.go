@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/spf13/viper"
 	"github.com/tyrm/megabot/internal/config"
+	"github.com/tyrm/megabot/internal/db"
 	"testing"
 )
 
@@ -233,6 +234,23 @@ func TestDeriveBunDBPGOptions_NoDatabase(t *testing.T) {
 	}
 }
 
+func TestNew(t *testing.T) {
+	viper.Reset()
+
+	viper.Set(config.Keys.DbType, "sqlite")
+	viper.Set(config.Keys.DbAddress, ":memory:")
+
+	bun, err := New(context.Background())
+	if err != nil {
+		t.Errorf("unexpected error initializing bun connection: %s", err.Error())
+		return
+	}
+	if bun == nil {
+		t.Errorf("client is nil")
+		return
+	}
+}
+
 func TestDeriveBunDBPGOptions_NoType(t *testing.T) {
 	viper.Reset()
 
@@ -293,4 +311,28 @@ func TestSqliteConn_BadPath(t *testing.T) {
 		t.Errorf("unexpected error initializing sqlite connection, got: '%s', want: '%s'", err.Error(), errText)
 		return
 	}
+}
+
+func testNewTestClient() (db.DB, error) {
+	viper.Reset()
+
+	viper.Set(config.Keys.DbType, "sqlite")
+	viper.Set(config.Keys.DbAddress, ":memory:")
+
+	client, err := New(context.Background())
+	if err != nil {
+		return nil, err
+	}
+
+	err = client.DoMigration(context.Background())
+	if err != nil {
+		return nil, err
+	}
+
+	err = client.LoadTestData(context.Background())
+	if err != nil {
+		return nil, err
+	}
+
+	return client, nil
 }

@@ -4,6 +4,7 @@ import "embed"
 
 // Files contains static files required by the application
 //go:embed locales/active.*.toml
+//go:embed test/fixture.yml
 //go:embed web/static/css/*
 //go:embed web/static/img/*
 //go:embed web/static/js/*
