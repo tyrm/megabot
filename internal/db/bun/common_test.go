@@ -10,10 +10,24 @@ import (
 	"time"
 )
 
+func TestCommonDB_Close(t *testing.T) {
+	client, err := testNewTestClient()
+	if err != nil {
+		t.Errorf("init: %s", err.Error())
+		return
+	}
+
+	err = client.Close(context.Background())
+	if err != nil {
+		t.Errorf("unexpected error closing: %s", err.Error())
+		return
+	}
+}
+
 func TestCommonDB_Create(t *testing.T) {
 	client, err := testNewTestClient()
 	if err != nil {
-		t.Errorf("unexpected error initializing pg options: %s", err.Error())
+		t.Errorf("init: %s", err.Error())
 		return
 	}
 
