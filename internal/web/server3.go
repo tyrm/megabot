@@ -35,7 +35,7 @@ func (r *Server3) Start() error {
 
 // Stop shuts down the web server
 func (r *Server3) Stop(ctx context.Context) error {
-	return r.srv.Shutdown(ctx)
+	return r.srv.Close()
 }
 
 // New3 creates a new http 3 web server
