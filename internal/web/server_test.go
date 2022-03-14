@@ -119,8 +119,7 @@ func TestServer_HandleFunc(t *testing.T) {
 
 			go func(s Server, st string) {
 				t.Logf("starting %s server", st)
-				err := s.Start()
-				t.Logf("%s server stopped: %s", st, err)
+				_ = s.Start()
 			}(server, expectedType.String())
 			time.Sleep(100 * time.Millisecond)
 
@@ -170,8 +169,7 @@ func TestServer_PathPrefix(t *testing.T) {
 
 			go func(s Server, st string) {
 				t.Logf("starting %s server", st)
-				err := s.Start()
-				t.Logf("%s server stopped: %s", st, err)
+				_ = s.Start()
 			}(server, expectedType.String())
 			time.Sleep(100 * time.Millisecond)
 
