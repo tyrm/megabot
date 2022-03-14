@@ -39,6 +39,8 @@ type Values struct {
 	ServerHTTP3            bool
 	ServerMinifyHTML       bool
 	ServerRoles            []string
+	ServerTLSCertPath      string
+	ServerTLSKeyPath       string
 
 	// user
 	UserEmail    string
@@ -83,4 +85,6 @@ var Defaults = Values{
 		ServerRoleGraphQL,
 		ServerRoleWebapp,
 	},
+	ServerTLSCertPath: "server.crt",
+	ServerTLSKeyPath:  "server.key",
 }

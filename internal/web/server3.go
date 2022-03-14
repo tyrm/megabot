@@ -5,6 +5,8 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/lucas-clemente/quic-go"
 	"github.com/lucas-clemente/quic-go/http3"
+	"github.com/spf13/viper"
+	"github.com/tyrm/megabot/internal/config"
 	"net/http"
 	"time"
 )
@@ -29,7 +31,11 @@ func (r *Server3) PathPrefix(path string) *mux.Route {
 func (r *Server3) Start() error {
 	l := logger.WithField("func", "Start")
 	l.Infof("listening on %s", r.srv.Addr)
-	return r.srv.ListenAndServe()
+
+	keys := config.Keys
+	certFile := viper.GetString(keys.ServerTLSCertPath)
+	keyFile := viper.GetString(keys.ServerTLSKeyPath)
+	return r.srv.ListenAndServeTLS(certFile, keyFile)
 }
 
 // Stop shuts down the web server

@@ -49,7 +49,9 @@ pipeline {
       steps {
         script {
           withCredentials([
-            string(credentialsId: 'codecov-tyrm-megabot', variable: 'CODECOV_TOKEN')
+            string(credentialsId: 'codecov-tyrm-megabot', variable: 'CODECOV_TOKEN'),
+            file(credentialsId: 'tls-localhost-crt', variable: 'MB_TLS_CERT'),
+            file(credentialsId: 'tls-localhost-key', variable: 'MB_TLS_KEY')
           ]) {
             sh """#!/bin/bash
             go get -t -v ./...

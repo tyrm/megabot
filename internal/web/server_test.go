@@ -2,10 +2,24 @@ package web
 
 import (
 	"context"
+	"crypto/tls"
 	"fmt"
+	"github.com/lucas-clemente/quic-go"
+	"github.com/lucas-clemente/quic-go/http3"
+	"github.com/spf13/pflag"
+	"github.com/spf13/viper"
+	"github.com/tyrm/megabot/internal/config"
+	"io/ioutil"
+	"net/http"
 	"reflect"
 	"testing"
 	"time"
+)
+
+const (
+	testPath         = "/test"
+	testPathPrefix   = "/prefix"
+	testResponseBody = "hello world!"
 )
 
 func TestNew(t *testing.T) {
@@ -29,7 +43,7 @@ func TestNew(t *testing.T) {
 
 			server, err := table.new(context.Background())
 			if err != nil {
-				t.Errorf("unexpected error initializing http 2 server: %s", err.Error())
+				t.Errorf("unexpected error initializing %s server: %s", expectedType.String(), err.Error())
 				return
 			}
 			if server == nil {
@@ -48,28 +62,167 @@ func TestNew(t *testing.T) {
 }
 
 func testNewValidateServer2(t *testing.T, s Server) {
-	server2 := s.(*Server2)
+	server := s.(*Server2)
 
-	if server2.router == nil {
+	if server.router == nil {
 		t.Errorf("router is nil")
 	}
-	if server2.srv == nil {
+	if server.srv == nil {
 		t.Errorf("server is nil")
 	}
 }
 
 func testNewValidateServer3(t *testing.T, s Server) {
-	server2 := s.(*Server3)
+	server := s.(*Server3)
 
-	if server2.router == nil {
+	if server.router == nil {
 		t.Errorf("router is nil")
 	}
-	if server2.srv == nil {
+	if server.srv == nil {
 		t.Errorf("server is nil")
 	}
 }
 
+func TestServer_HandleFunc(t *testing.T) {
+	viper.Reset()
+	err := config.Init(&pflag.FlagSet{})
+	if err != nil {
+		t.Errorf("init: %s", err.Error())
+		return
+	}
+
+	tables := []struct {
+		t   interface{}
+		new func(ctx context.Context) (Server, error)
+	}{
+		{&Server2{}, New2},
+		{&Server3{}, New3},
+	}
+
+	for i, table := range tables {
+		i := i
+		table := table
+		expectedType := reflect.TypeOf(table.t)
+
+		name := fmt.Sprintf("[%d] Running new on %s", i, expectedType.String())
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+
+			server, err := table.new(context.Background())
+			if err != nil {
+				t.Errorf("unexpected error initializing http 2 server: %s", err.Error())
+				return
+			}
+
+			server.HandleFunc(testPath, testHTTPHandler).Methods("GET")
+		})
+	}
+}
+
+func TestServer_PathPrefix(t *testing.T) {
+	viper.Reset()
+	err := config.Init(&pflag.FlagSet{})
+	if err != nil {
+		t.Errorf("init: %s", err.Error())
+		return
+	}
+
+	tables := []struct {
+		t        interface{}
+		new      func(ctx context.Context) (Server, error)
+		validate func(t *testing.T, path, body string)
+	}{
+		{&Server2{}, New2, testServerValidateServer2},
+		{&Server3{}, New3, testServerValidateServer3},
+	}
+
+	for i, table := range tables {
+		i := i
+		table := table
+		expectedType := reflect.TypeOf(table.t)
+
+		name := fmt.Sprintf("[%d] Running new on %s", i, expectedType.String())
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+
+			server, err := table.new(context.Background())
+			if err != nil {
+				t.Errorf("unexpected error initializing http 2 server: %s", err.Error())
+				return
+			}
+
+			server.PathPrefix(testPathPrefix).Subrouter().HandleFunc(testPath, testHTTPHandler).Methods("GET")
+
+			go func(s Server, st string) {
+				t.Logf("starting %s server", st)
+				err := s.Start()
+				t.Logf("%s server stopped: %s", st, err.Error())
+			}(server, expectedType.String())
+			time.Sleep(100 * time.Millisecond)
+
+			table.validate(t, testPathPrefix+testPath, testResponseBody)
+
+			err = server.Stop(context.Background())
+			if err != nil {
+				t.Errorf("unexpected error stopping %s server: %s", expectedType.String(), err.Error())
+			}
+		})
+	}
+}
+
+func testServerValidateServer2(t *testing.T, path, body string) {
+	resp, err := http.Get("http://localhost:5000" + path)
+	if err != nil {
+		t.Errorf("http 2 request error: %s", err.Error())
+		return
+	}
+
+	b, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		t.Errorf("http 2 request error: %s", err.Error())
+		return
+	}
+	if string(b) != body {
+		t.Errorf("http 2 request got wrong body, got: '%s' , want: '%s'", string(b), body)
+		return
+	}
+}
+
+func testServerValidateServer3(t *testing.T, path, body string) {
+	client := &http.Client{
+		Transport: &http3.RoundTripper{
+			TLSClientConfig: &tls.Config{
+				InsecureSkipVerify: true,
+			},
+			QuicConfig: &quic.Config{},
+		},
+	}
+
+	resp, err := client.Get("https://localhost:5000" + path)
+	if err != nil {
+		t.Errorf("http 3 request error: %s", err.Error())
+		return
+	}
+
+	b, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		t.Errorf("http 3 request error: %s", err.Error())
+		return
+	}
+	if string(b) != body {
+		t.Errorf("http 3 request got wrong body, got: '%s' , want: '%s'", string(b), body)
+		return
+	}
+}
+
 func TestServer_StartStop(t *testing.T) {
+	viper.Reset()
+	err := config.Init(&pflag.FlagSet{})
+	if err != nil {
+		t.Errorf("init: %s", err.Error())
+		return
+	}
+
 	tables := []struct {
 		t               interface{}
 		new             func(ctx context.Context) (Server, error)
@@ -95,13 +248,12 @@ func TestServer_StartStop(t *testing.T) {
 			}
 
 			errChan := make(chan error)
-			doneChan := make(chan bool)
-			go func(s Server, e chan error, d chan bool) {
+			go func(s Server, e chan error) {
 				t.Logf("starting %s server", expectedType.String())
 				err := server.Start()
 				t.Logf("%s server stopped", expectedType.String())
 				e <- err
-			}(server, errChan, doneChan)
+			}(server, errChan)
 
 			time.Sleep(100 * time.Millisecond)
 
@@ -123,4 +275,8 @@ func TestServer_StartStop(t *testing.T) {
 			}
 		})
 	}
+}
+
+func testHTTPHandler(w http.ResponseWriter, r *http.Request) {
+	w.Write([]byte("hello world!"))
 }
