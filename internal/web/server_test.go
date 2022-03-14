@@ -92,11 +92,12 @@ func TestServer_HandleFunc(t *testing.T) {
 	}
 
 	tables := []struct {
-		t   interface{}
-		new func(ctx context.Context) (Server, error)
+		t        interface{}
+		new      func(ctx context.Context) (Server, error)
+		validate func(t *testing.T, path, body string)
 	}{
-		{&Server2{}, New2},
-		{&Server3{}, New3},
+		{&Server2{}, New2, testServerValidateServer2},
+		{&Server3{}, New3, testServerValidateServer3},
 	}
 
 	for i, table := range tables {
@@ -115,6 +116,20 @@ func TestServer_HandleFunc(t *testing.T) {
 			}
 
 			server.HandleFunc(testPath, testHTTPHandler).Methods("GET")
+
+			go func(s Server, st string) {
+				t.Logf("starting %s server", st)
+				err := s.Start()
+				t.Logf("%s server stopped: %s", st, err)
+			}(server, expectedType.String())
+			time.Sleep(100 * time.Millisecond)
+
+			table.validate(t, testPath, testResponseBody)
+
+			err = server.Stop(context.Background())
+			if err != nil {
+				t.Errorf("unexpected error stopping %s server: %s", expectedType.String(), err.Error())
+			}
 		})
 	}
 }
@@ -156,7 +171,7 @@ func TestServer_PathPrefix(t *testing.T) {
 			go func(s Server, st string) {
 				t.Logf("starting %s server", st)
 				err := s.Start()
-				t.Logf("%s server stopped: %s", st, err.Error())
+				t.Logf("%s server stopped: %s", st, err)
 			}(server, expectedType.String())
 			time.Sleep(100 * time.Millisecond)
 
