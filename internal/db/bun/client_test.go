@@ -181,6 +181,8 @@ func TestDeriveBunDBPGOptions_TLSRequire(t *testing.T) {
 	viper.Set(config.Keys.DbTLSMode, dbTLSMode)
 	viper.Set(config.Keys.DbUser, dbUser)
 
+	viper.Set(config.Keys.DbTLSCACert, "../../../test/certificate.pem")
+
 	opts, err := deriveBunDBPGOptions()
 	if err != nil {
 		t.Errorf("unexpected error initializing pg options: %s", err.Error())
@@ -236,7 +238,20 @@ func TestDeriveBunDBPGOptions_NoDatabase(t *testing.T) {
 	}
 }
 
-func TestNew(t *testing.T) {
+func TestNew_Invalid(t *testing.T) {
+	viper.Reset()
+
+	viper.Set(config.Keys.DbType, "invalid")
+
+	_, err := New(context.Background())
+	errText := "database type invalid not supported for bundb"
+	if err.Error() != errText {
+		t.Errorf("unexpected error initializing sqlite connection, got: '%s', want: '%s'", err.Error(), errText)
+		return
+	}
+}
+
+func TestNew_Sqlite(t *testing.T) {
 	viper.Reset()
 
 	viper.Set(config.Keys.DbType, "sqlite")
