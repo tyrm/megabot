@@ -6,41 +6,8 @@ import (
 	"time"
 )
 
-func TestNew3(t *testing.T) {
-	dbClient, err := testNewTestDBClient()
-	if err != nil {
-		t.Errorf("init: %s", err.Error())
-		return
-	}
-
-	server, err := New3(context.Background(), dbClient)
-	if err != nil {
-		t.Errorf("unexpected error initializing http 3 server: %s", err.Error())
-		return
-	}
-	if server == nil {
-		t.Errorf("http 3 server is nil")
-		return
-	}
-
-	server3 := server.(*Server3)
-
-	if server3.router == nil {
-		t.Errorf("router is nil")
-	}
-	if server3.srv == nil {
-		t.Errorf("server is nil")
-	}
-}
-
 func TestServer3_StartStop(t *testing.T) {
-	dbClient, err := testNewTestDBClient()
-	if err != nil {
-		t.Errorf("unexpected error initializing pg options: %s", err.Error())
-		return
-	}
-
-	server, err := New3(context.Background(), dbClient)
+	server, err := New3(context.Background())
 	if err != nil {
 		t.Errorf("unexpected error initializing http 3 server: %s", err.Error())
 		return

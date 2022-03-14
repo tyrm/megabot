@@ -5,7 +5,6 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/lucas-clemente/quic-go"
 	"github.com/lucas-clemente/quic-go/http3"
-	"github.com/tyrm/megabot/internal/db"
 	"net/http"
 	"time"
 )
@@ -39,7 +38,7 @@ func (r *Server3) Stop(ctx context.Context) error {
 }
 
 // New3 creates a new http 3 web server
-func New3(ctx context.Context, db db.DB) (Server, error) {
+func New3(ctx context.Context) (Server, error) {
 	r := mux.NewRouter()
 
 	quicConf := &quic.Config{}

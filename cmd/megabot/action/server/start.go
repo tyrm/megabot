@@ -72,7 +72,7 @@ var Start action.Action = func(ctx context.Context) error {
 	var webServers []web.Server
 	if viper.GetBool(config.Keys.ServerHTTP2) {
 		l.Debugf("creating http2 server")
-		server2, err := web.New2(ctx, dbClient)
+		server2, err := web.New2(ctx)
 		if err != nil {
 			l.Errorf("http2 server: %s", err.Error())
 			return err
@@ -82,7 +82,7 @@ var Start action.Action = func(ctx context.Context) error {
 	l.Infof("%v", viper.GetBool(config.Keys.ServerHTTP3))
 	if viper.GetBool(config.Keys.ServerHTTP3) {
 		l.Debugf("creating http3 server")
-		server3, err := web.New3(ctx, dbClient)
+		server3, err := web.New3(ctx)
 		if err != nil {
 			l.Errorf("http3 server: %s", err.Error())
 			return err
