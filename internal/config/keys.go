@@ -37,6 +37,8 @@ type KeyNames struct {
 	ServerHTTP3            string
 	ServerMinifyHTML       string
 	ServerRoles            string
+	ServerTLSCertPath      string
+	ServerTLSKeyPath       string
 
 	// user
 	UserEmail    string
@@ -81,6 +83,8 @@ var Keys = KeyNames{
 	ServerHTTP3:            "http3",
 	ServerMinifyHTML:       "minify-html",
 	ServerRoles:            "server-role",
+	ServerTLSCertPath:      "tls-cert",
+	ServerTLSKeyPath:       "tls-key",
 
 	// user
 	UserEmail:    "email",

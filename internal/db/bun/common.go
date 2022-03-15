@@ -2,12 +2,12 @@ package bun
 
 import (
 	"context"
+	"github.com/tyrm/megabot"
 	"github.com/tyrm/megabot/internal/db"
 	"github.com/tyrm/megabot/internal/db/bun/migrations"
 	"github.com/tyrm/megabot/internal/models"
 	"github.com/uptrace/bun/dbfixture"
 	"github.com/uptrace/bun/migrate"
-	"os"
 )
 
 type commonDB struct {
@@ -22,8 +22,16 @@ func (c *commonDB) Close(ctx context.Context) db.Error {
 }
 
 // Create inserts an object into the database
-func (c *commonDB) Create(ctx context.Context, i interface{}) db.Error {
-	_, err := c.bun.NewInsert().Model(i).Exec(ctx)
+func (c *commonDB) Create(ctx context.Context, i db.Creatable) db.Error {
+	l := logger.WithField("func", "Create")
+
+	err := i.GenID()
+	if err != nil {
+		l.Errorf("generating new id: %s", err.Error())
+		return db.ErrGenID
+	}
+
+	_, err = c.bun.NewInsert().Model(i).Exec(ctx)
 	return c.bun.ProcessError(err)
 }
 
@@ -67,7 +75,7 @@ func (c *commonDB) LoadTestData(ctx context.Context) db.Error {
 	fixture := dbfixture.New(c.bun.DB, dbfixture.WithTruncateTables())
 
 	// Load fixtures.
-	if err := fixture.Load(ctx, os.DirFS("test"), "fixture.yml"); err != nil {
+	if err := fixture.Load(ctx, megabot.Files, "test/fixture.yml"); err != nil {
 		l.Errorf("loading test data: %s", err.Error())
 		return err
 	}

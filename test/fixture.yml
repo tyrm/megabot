@@ -3,7 +3,7 @@
   rows:
     - _id: test
       id: 01FX66G84MXP9DA4N3P9RVXVMB
-      email: test@test.com
+      email: test@example.com
       encrypted_password: $2a$14$iU.0NmiiQ5vdQefC77RTMeWpEbBUFsmyOOddo0srZHqXJF7oVC7ye
       created_at: 2022-03-02 20:52:48
       updated_at: 2022-03-02 20:52:48

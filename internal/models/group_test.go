@@ -2,6 +2,7 @@ package models
 
 import (
 	"fmt"
+	"github.com/go-playground/validator/v10"
 	"github.com/google/uuid"
 	"testing"
 )
@@ -75,6 +76,68 @@ func TestGroupTitle(t *testing.T) {
 			title := GroupTitle(table.x)
 			if title != table.n {
 				t.Errorf("[%d] got bad title for %s, got: %v, want: %v,", i, table.x, title, table.n)
+			}
+		})
+	}
+}
+
+func TestGroupMembership_GenID(t *testing.T) {
+	validate := validator.New()
+
+	for n := 0; n < 5; n++ {
+		i := n
+
+		name := fmt.Sprintf("[%d] Running user GenID", i)
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+
+			gm := GroupMembership{}
+
+			err := gm.GenID()
+			if err != nil {
+				t.Errorf("[%d] got error generating id; %s", i, err)
+				return
+			}
+
+			err = validate.Var(gm.ID, "required,ulid")
+			if err != nil {
+				t.Errorf("[%d] id '%s' is invalid: %s", i, gm.ID, err.Error())
+				return
+			}
+		})
+	}
+}
+
+func TestGroupMemberships_GenID(t *testing.T) {
+	validate := validator.New()
+
+	for n := 0; n < 5; n++ {
+		i := n
+
+		name := fmt.Sprintf("[%d] Running user GenID", i)
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+
+			gms := GroupMemberships{
+				{},
+				{},
+				{},
+				{},
+				{},
+			}
+
+			err := gms.GenID()
+			if err != nil {
+				t.Errorf("[%d] got error generating id; %s", i, err)
+				return
+			}
+
+			for _, gm := range gms {
+				err = validate.Var(gm.ID, "required,ulid")
+				if err != nil {
+					t.Errorf("[%d] id '%s' is invalid: %s", i, gm.ID, err.Error())
+					return
+				}
 			}
 		})
 	}

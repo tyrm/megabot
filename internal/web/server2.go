@@ -4,7 +4,6 @@ import (
 	"context"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
-	"github.com/tyrm/megabot/internal/db"
 	"net/http"
 	"time"
 )
@@ -21,8 +20,8 @@ func (r *Server2) HandleFunc(path string, f func(http.ResponseWriter, *http.Requ
 }
 
 // PathPrefix attaches a new route url path prefix
-func (r *Server2) PathPrefix(tpl string) *mux.Route {
-	return r.router.PathPrefix(tpl)
+func (r *Server2) PathPrefix(path string) *mux.Route {
+	return r.router.PathPrefix(path)
 }
 
 // Start starts the web server
@@ -38,7 +37,7 @@ func (r *Server2) Stop(ctx context.Context) error {
 }
 
 // New2 creates a new http 2 web server
-func New2(ctx context.Context, db db.DB) (Server, error) {
+func New2(ctx context.Context) (Server, error) {
 	r := mux.NewRouter()
 	r.Use(handlers.CompressHandler)
 

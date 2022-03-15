@@ -2,20 +2,33 @@ package models
 
 import (
 	"github.com/google/uuid"
+	"github.com/tyrm/megabot/internal/id"
 	"golang.org/x/crypto/bcrypt"
 	"time"
 )
 
 // User represents a human user.
 type User struct {
-	ID                string             `validate:"required,ulid" bun:"type:CHAR(26),pk,nullzero,notnull,unique"`
-	CreatedAt         time.Time          `validate:"-" bun:"type:timestamptz,nullzero,notnull,default:current_timestamp"`
-	UpdatedAt         time.Time          `validate:"-" bun:"type:timestamptz,nullzero,notnull,default:current_timestamp"`
-	Email             string             `validate:"-" bun:",nullzero,notnull,unique"`
-	EncryptedPassword string             `validate:"-" bun:""`
-	SignInCount       int                `validate:"min=0" bun:",notnull,default:0"`
-	Groups            []*GroupMembership `validate:"-" bun:"rel:has-many,join:id=user_id"`
-	Disabled          bool               `validate:"-" bun:",notnull,default:false"`
+	ID                string           `validate:"required,ulid" bun:"type:CHAR(26),pk,nullzero,notnull,unique"`
+	CreatedAt         time.Time        `validate:"-" bun:"type:timestamptz,nullzero,notnull,default:current_timestamp"`
+	UpdatedAt         time.Time        `validate:"-" bun:"type:timestamptz,nullzero,notnull,default:current_timestamp"`
+	Email             string           `validate:"-" bun:",nullzero,notnull,unique"`
+	EncryptedPassword string           `validate:"-" bun:""`
+	SignInCount       int              `validate:"min=0" bun:",notnull,default:0"`
+	Groups            GroupMemberships `validate:"-" bun:"rel:has-many,join:id=user_id"`
+	Disabled          bool             `validate:"-" bun:",notnull,default:false"`
+}
+
+// GenID generates a new id for the object
+func (u *User) GenID() error {
+	if u.ID == "" {
+		newID, err := id.NewULID()
+		if err != nil {
+			return err
+		}
+		u.ID = newID
+	}
+	return nil
 }
 
 // CheckPasswordHash is used to validate that a given password matches the stored hash

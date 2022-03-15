@@ -2,11 +2,39 @@ package models
 
 import (
 	"fmt"
+	"github.com/go-playground/validator/v10"
 	"github.com/google/uuid"
 	"testing"
 )
 
-func TestUserInGroup(t *testing.T) {
+func TestUser_GenID(t *testing.T) {
+	validate := validator.New()
+
+	for n := 0; n < 5; n++ {
+		i := n
+
+		name := fmt.Sprintf("[%d] Running user GenID", i)
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+
+			user := User{}
+
+			err := user.GenID()
+			if err != nil {
+				t.Errorf("[%d] got error generating id; %s", i, err)
+				return
+			}
+
+			err = validate.Var(user.ID, "required,ulid")
+			if err != nil {
+				t.Errorf("[%d] invalid id: %s", i, err)
+				return
+			}
+		})
+	}
+}
+
+func TestUser_InGroup(t *testing.T) {
 	user1 := &User{
 		Groups: []*GroupMembership{},
 	}
@@ -82,7 +110,7 @@ func TestUserInGroup(t *testing.T) {
 	}
 }
 
-func TestUserPasswordHash(t *testing.T) {
+func TestUser_PasswordHash(t *testing.T) {
 	tables := []struct {
 		x string
 		y string
