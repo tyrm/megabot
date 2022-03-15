@@ -9,7 +9,7 @@ import (
 
 var testUser1 = models.User{
 	ID:                "01FX66G84MXP9DA4N3P9RVXVMB",
-	Email:             "test@test.com",
+	Email:             "test@example.com",
 	EncryptedPassword: "$2a$14$iU.0NmiiQ5vdQefC77RTMeWpEbBUFsmyOOddo0srZHqXJF7oVC7ye",
 }
 
