@@ -85,6 +85,10 @@ func testNewValidateServer3(t *testing.T, s Server) {
 
 func TestServer_HandleFunc(t *testing.T) {
 	viper.Reset()
+
+	viper.Set(config.Keys.ServerHTTP2Bind, ":24526")
+	viper.Set(config.Keys.ServerHTTP3Bind, ":24526")
+
 	err := config.Init(&pflag.FlagSet{})
 	if err != nil {
 		t.Errorf("init: %s", err.Error())
@@ -135,6 +139,10 @@ func TestServer_HandleFunc(t *testing.T) {
 
 func TestServer_PathPrefix(t *testing.T) {
 	viper.Reset()
+
+	viper.Set(config.Keys.ServerHTTP2Bind, ":24526")
+	viper.Set(config.Keys.ServerHTTP3Bind, ":24526")
+
 	err := config.Init(&pflag.FlagSet{})
 	if err != nil {
 		t.Errorf("init: %s", err.Error())
@@ -184,7 +192,7 @@ func TestServer_PathPrefix(t *testing.T) {
 }
 
 func testServerValidateServer2(t *testing.T, path, body string) {
-	resp, err := http.Get("http://localhost:5000" + path)
+	resp, err := http.Get("http://localhost:24526" + path)
 	if err != nil {
 		t.Errorf("http 2 request error: %s", err.Error())
 		return
@@ -211,7 +219,7 @@ func testServerValidateServer3(t *testing.T, path, body string) {
 		},
 	}
 
-	resp, err := client.Get("https://localhost:5000" + path)
+	resp, err := client.Get("https://localhost:24526" + path)
 	if err != nil {
 		t.Errorf("http 3 request error: %s", err.Error())
 		return
@@ -230,6 +238,10 @@ func testServerValidateServer3(t *testing.T, path, body string) {
 
 func TestServer_StartStop(t *testing.T) {
 	viper.Reset()
+
+	viper.Set(config.Keys.ServerHTTP2Bind, ":24526")
+	viper.Set(config.Keys.ServerHTTP3Bind, ":24526")
+
 	err := config.Init(&pflag.FlagSet{})
 	if err != nil {
 		t.Errorf("init: %s", err.Error())

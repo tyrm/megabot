@@ -36,7 +36,9 @@ type Values struct {
 	// server
 	ServerExternalHostname string
 	ServerHTTP2            bool
+	ServerHTTP2Bind        string
 	ServerHTTP3            bool
+	ServerHTTP3Bind        string
 	ServerMinifyHTML       bool
 	ServerRoles            []string
 	ServerTLSCertPath      string
@@ -79,7 +81,9 @@ var Defaults = Values{
 	// server
 	ServerExternalHostname: "localhost",
 	ServerHTTP2:            true,
+	ServerHTTP2Bind:        ":5000",
 	ServerHTTP3:            false,
+	ServerHTTP3Bind:        ":5000",
 	ServerMinifyHTML:       true,
 	ServerRoles: []string{
 		ServerRoleGraphQL,

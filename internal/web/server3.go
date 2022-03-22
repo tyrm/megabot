@@ -51,7 +51,7 @@ func New3(ctx context.Context) (Server, error) {
 
 	s := &http3.Server{
 		Server: &http.Server{
-			Addr:         ":5000",
+			Addr:         viper.GetString(config.Keys.ServerHTTP3Bind),
 			Handler:      r,
 			WriteTimeout: 15 * time.Second,
 			ReadTimeout:  15 * time.Second,

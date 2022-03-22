@@ -4,6 +4,8 @@ import (
 	"context"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
+	"github.com/spf13/viper"
+	"github.com/tyrm/megabot/internal/config"
 	"net/http"
 	"time"
 )
@@ -42,7 +44,7 @@ func New2(ctx context.Context) (Server, error) {
 	r.Use(handlers.CompressHandler)
 
 	s := &http.Server{
-		Addr:         ":5000",
+		Addr:         viper.GetString(config.Keys.ServerHTTP2Bind),
 		Handler:      r,
 		WriteTimeout: 15 * time.Second,
 		ReadTimeout:  15 * time.Second,

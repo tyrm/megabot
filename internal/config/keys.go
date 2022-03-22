@@ -34,7 +34,9 @@ type KeyNames struct {
 	// server
 	ServerExternalHostname string
 	ServerHTTP2            string
+	ServerHTTP2Bind        string
 	ServerHTTP3            string
+	ServerHTTP3Bind        string
 	ServerMinifyHTML       string
 	ServerRoles            string
 	ServerTLSCertPath      string
@@ -80,7 +82,9 @@ var Keys = KeyNames{
 	// server
 	ServerExternalHostname: "external-hostname",
 	ServerHTTP2:            "http2",
+	ServerHTTP2Bind:        "http2-bind",
 	ServerHTTP3:            "http3",
+	ServerHTTP3Bind:        "http3-bind",
 	ServerMinifyHTML:       "minify-html",
 	ServerRoles:            "server-role",
 	ServerTLSCertPath:      "tls-cert",
