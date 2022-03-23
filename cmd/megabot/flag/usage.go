@@ -20,15 +20,23 @@ var usage = config.KeyNames{
 	DbTLSCACert:    "Path to CA cert for db tls connection",
 	DbLoadTestData: "Should test data be loaded into the database",
 
-	// redis
-	RedisAddress:  "Redis address: eg. localhost:6379",
-	RedisDB:       "Redis db",
-	RedisPassword: "Redis password, optional",
+	// s3
+	S3Endpoint:               "S3 Endpoint",
+	S3Region:                 "S3 Region",
+	S3AccessKeyID:            "S3 Access ID",
+	S3SecretAccessKey:        "S3 Secret Key",
+	S3UseSSL:                 "S3 Use SSL",
+	S3Bucket:                 "S3 Bucket",
+	S3PresignedURLExpiration: "S3 Presigned Expiration Duration",
 
 	// server
 	ServerExternalHostname: "The external hostname used by the server",
+	ServerHTTP2:            "Enable HTTP2 Server",
+	ServerHTTP3:            "Enable HTTP3 Server",
 	ServerMinifyHTML:       "Should the server minify html documents before sending",
 	ServerRoles:            "Server roles that should be started: [graphql, webapp]",
+	ServerTLSCertPath:      "TLS server cert path",
+	ServerTLSKeyPath:       "TLS server key path",
 
 	// user
 	UserEmail:    "User email address",
