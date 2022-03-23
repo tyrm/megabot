@@ -53,22 +53,22 @@ test-docker-start:
 test-docker-stop:
 	docker-compose --project-name ${PROJECT_NAME} -f deployments/docker-compose-test.yaml down
 
-test: tidy fmt lint gosec
+test: tidy fmt lint #gosec
 	MB_TLS_CERT=../../server.crt MB_TLS_KEY=../../server.key go test -cover ./...
 
-test-ext: tidy fmt lint gosec
+test-ext: tidy fmt lint #gosec
 	MB_TLS_CERT=../../server.crt MB_TLS_KEY=../../server.key go test --tags=postgres -cover ./...
 
-test-race: tidy fmt lint gosec
+test-race: tidy fmt lint #gosec
 	MB_TLS_CERT=../../server.crt MB_TLS_KEY=../../server.key go test -race -cover ./...
 
-test-race-ext: tidy fmt lint gosec
+test-race-ext: tidy fmt lint #gosec
 	MB_TLS_CERT=../../server.crt MB_TLS_KEY=../../server.key go test --tags=postgres -race -count=1 -cover ./...
 
-test-verbose: tidy fmt lint gosec
+test-verbose: tidy fmt lint #gosec
 	MB_TLS_CERT=../../server.crt MB_TLS_KEY=../../server.key go test -v -cover ./...
 
 tidy:
-	go mod tidy -compat=1.17
+	go mod tidy -compat=1.18
 
-.PHONY: fmt lint test
+.PHONY: fmt lint test test-ext

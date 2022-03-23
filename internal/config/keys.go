@@ -31,6 +31,15 @@ type KeyNames struct {
 	RefreshExpiration string
 	RefreshSecret     string
 
+	// s3
+	S3Endpoint               string
+	S3Region                 string
+	S3AccessKeyID            string
+	S3SecretAccessKey        string
+	S3UseSSL                 string
+	S3Bucket                 string
+	S3PresignedURLExpiration string
+
 	// server
 	ServerExternalHostname string
 	ServerHTTP2            string
@@ -78,6 +87,15 @@ var Keys = KeyNames{
 	AccessSecret:      "access-secret",
 	RefreshExpiration: "refresh-expiration",
 	RefreshSecret:     "refresh-secret",
+
+	// s3
+	S3Endpoint:               "s3-endpoint",
+	S3Region:                 "s3-region",
+	S3AccessKeyID:            "s3-access-id",
+	S3SecretAccessKey:        "s3-secret-key",
+	S3UseSSL:                 "s3-ssl",
+	S3Bucket:                 "s3-bucket",
+	S3PresignedURLExpiration: "s3-url-expiration",
 
 	// server
 	ServerExternalHostname: "external-hostname",
