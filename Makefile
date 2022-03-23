@@ -51,8 +51,8 @@ npm-install:
 npm-install-jenkins:
 	cd web/bootstrap && npm install --cache=/.npm
 
-npm-scss: clean-npm
-	cd web/bootstrap && npm run scss
+npm-scss:
+	cd web/bootstrap && npm run sass
 
 test-docker-restart: test-docker-stop test-docker-start
 

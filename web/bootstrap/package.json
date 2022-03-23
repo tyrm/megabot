@@ -5,12 +5,11 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "scss": "./node_modules/node-sass/bin/node-sass src/bootstrap.scss dist/bootstrap.css"
+    "sass": "sass src/bootstrap.scss dist/bootstrap.css"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "bootstrap": "^5.0.0",
-    "node-sass": "*"
+    "bootstrap": "^5.0.0"
   }
 }
