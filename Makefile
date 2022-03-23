@@ -1,7 +1,9 @@
 PROJECT_NAME=megabot
 
-.DEFAULT_GOAL := test
 BUN_TIMESTAMP := $(shell date +%Y%m%d%H%M%S | head -c 14)
+MYCODE := $(shell go list ./... | grep -v /vendor/)
+
+.DEFAULT_GOAL := test
 
 build-snapshot: clean
 	goreleaser build --snapshot
@@ -18,7 +20,8 @@ clean-npm:
 	rm -Rvf web/bootstrap/dist web/static/css/bootstrap.min.css web/static/js/bootstrap.bundle.min.js
 
 fmt:
-	go fmt ./...
+	@echo formatting
+	@go fmt ${MYCODE}
 
 gosec:
 	gosec ./...
@@ -33,7 +36,8 @@ i18n-translations:
 	goi18n merge -outdir locales locales/active.*.toml
 
 lint:
-	golint ./...
+	@echo linting
+	@golint ${MYCODE}
 
 minify-static:
 	minify web/static-src/css/error.css > web/static/css/error.min.css
@@ -76,4 +80,7 @@ test-verbose: tidy fmt lint #gosec
 tidy:
 	go mod tidy -compat=1.18
 
-.PHONY: bun-new-migration fmt lint test test-ext
+vendor: tidy
+	go mod vendor
+
+.PHONY: bun-new-migration fmt lint test test-ext tidy vendor
