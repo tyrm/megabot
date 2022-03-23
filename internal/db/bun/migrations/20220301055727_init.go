@@ -8,17 +8,19 @@ import (
 
 func init() {
 	up := func(ctx context.Context, db *bun.DB) error {
-		modelList := []interface{}{
-			&models.User{},
-			&models.GroupMembership{},
-		}
-		for _, i := range modelList {
-			if _, err := db.NewCreateTable().Model(i).IfNotExists().Exec(ctx); err != nil {
-				return err
+		return db.RunInTx(ctx, nil, func(ctx context.Context, tx bun.Tx) error {
+			modelList := []interface{}{
+				&models.User{},
+				&models.GroupMembership{},
 			}
-		}
+			for _, i := range modelList {
+				if _, err := tx.NewCreateTable().Model(i).IfNotExists().Exec(ctx); err != nil {
+					return err
+				}
+			}
 
-		return nil
+			return nil
+		})
 	}
 
 	down := func(ctx context.Context, db *bun.DB) error {
