@@ -81,6 +81,14 @@ type templateHeadLink struct {
 	Type        string
 }
 
+type templateImage struct {
+	Src    string
+	Alt    string
+	Height int
+	Width  int
+	Class  string
+}
+
 type templateNavbarNode struct {
 	Text     string
 	URL      string

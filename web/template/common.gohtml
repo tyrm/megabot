@@ -3,6 +3,8 @@
 
 {{ define "head_link" }}<link href="{{ .HRef }}"{{if .Rel}} rel="{{ .Rel }}"{{end}}{{if .Integrity}} integrity="{{ .Integrity }}"{{end}}{{if .Sizes}} sizes="{{ .Sizes }}"{{end}}{{if .CrossOrigin}} crossorigin="{{ .CrossOrigin }}"{{end}}{{if .Type}} type="{{ .Type }}"{{end}}>{{ end }}
 
+{{ define "image" }}<img src="{{ .Src }}"{{ if .Alt }} alt="{{ .Alt }}"{{ end }}{{ if gt .Height 0 }} height="{{ .Height }}"{{ end }}{{ if gt .Width 0 }} width="{{ .Width }}"{{ end }}{{ if .Class }} class="{{ .Class }}"{{ end }}>{{ end }}
+
 {{ define "navbar" }}
   <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
     <div class="container-fluid">
