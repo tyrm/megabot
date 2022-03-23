@@ -1,9 +1,14 @@
 PROJECT_NAME=megabot
 
 .DEFAULT_GOAL := test
+BUN_TIMESTAMP := $(shell date +%Y%m%d%H%M%S | head -c 14)
 
 build-snapshot: clean
 	goreleaser build --snapshot
+
+bun-new-migration:
+	touch internal/db/bun/migrations/${BUN_TIMESTAMP}_new.go
+	cat internal/db/bun/migrations/migration.go.tmpl > internal/db/bun/migrations/${BUN_TIMESTAMP}_new.go
 
 clean:
 	rm -Rvf coverage.txt dist gosec.xml megabot
@@ -71,4 +76,4 @@ test-verbose: tidy fmt lint #gosec
 tidy:
 	go mod tidy -compat=1.18
 
-.PHONY: fmt lint test test-ext
+.PHONY: bun-new-migration fmt lint test test-ext
