@@ -3,6 +3,8 @@ package redis
 import (
 	"context"
 	"github.com/go-redis/redis/v8"
+	"github.com/go-redsync/redsync/v4"
+	"github.com/go-redsync/redsync/v4/redis/goredis/v8"
 	"github.com/spf13/viper"
 	"github.com/tyrm/megabot/internal/config"
 )
@@ -10,18 +12,23 @@ import (
 // Client represents a redis client
 type Client struct {
 	redis *redis.Client
+	sync  *redsync.Redsync
 }
 
 // New creates a new redis client.
 func New(ctx context.Context) (*Client, error) {
 	l := logger.WithField("func", "New")
 
+	r := redis.NewClient(&redis.Options{
+		Addr:     viper.GetString(config.Keys.RedisAddress),
+		Password: viper.GetString(config.Keys.RedisPassword),
+		DB:       viper.GetInt(config.Keys.RedisDB),
+	})
+
+	pool := goredis.NewPool(r)
 	c := Client{
-		redis: redis.NewClient(&redis.Options{
-			Addr:     viper.GetString(config.Keys.RedisAddress),
-			Password: viper.GetString(config.Keys.RedisPassword),
-			DB:       viper.GetInt(config.Keys.RedisDB),
-		}),
+		redis: r,
+		sync:  redsync.New(pool),
 	}
 
 	resp := c.redis.Ping(ctx)
