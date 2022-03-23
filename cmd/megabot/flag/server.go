@@ -8,6 +8,7 @@ import (
 // Server adds all flags for running the server.
 func Server(cmd *cobra.Command, values config.Values) {
 	Redis(cmd, values)
+	S3(cmd, values)
 
 	// server
 	cmd.PersistentFlags().String(config.Keys.ServerExternalHostname, values.ServerExternalHostname, usage.ServerExternalHostname)
