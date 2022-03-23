@@ -33,6 +33,15 @@ type Values struct {
 	RefreshExpiration time.Duration
 	RefreshSecret     string
 
+	// s3
+	S3Endpoint               string
+	S3Region                 string
+	S3AccessKeyID            string
+	S3SecretAccessKey        string
+	S3UseSSL                 bool
+	S3Bucket                 string
+	S3PresignedURLExpiration time.Duration
+
 	// server
 	ServerExternalHostname string
 	ServerHTTP2            bool
@@ -77,6 +86,13 @@ var Defaults = Values{
 	// auth
 	AccessExpiration:  time.Minute * 15,
 	RefreshExpiration: time.Hour * 24 * 7,
+
+	// s3
+	S3Endpoint:               "play.min.io",
+	S3Region:                 "us-east-1",
+	S3UseSSL:                 true,
+	S3Bucket:                 "megabot",
+	S3PresignedURLExpiration: 10 * time.Second,
 
 	// server
 	ServerExternalHostname: "localhost",
