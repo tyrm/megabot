@@ -69,6 +69,6 @@ test-verbose: tidy fmt lint gosec
 	MB_TLS_CERT=../../server.crt MB_TLS_KEY=../../server.key go test -v -cover ./...
 
 tidy:
-	go mod tidy -compat=1.17
+	go mod tidy -compat=1.18
 
 .PHONY: fmt lint test
