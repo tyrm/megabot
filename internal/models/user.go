@@ -1,32 +1,55 @@
 package models
 
 import (
+	"context"
 	"github.com/google/uuid"
 	"github.com/tyrm/megabot/internal/id"
+	"github.com/uptrace/bun"
 	"golang.org/x/crypto/bcrypt"
 	"time"
 )
 
 // User represents a human user.
 type User struct {
-	ID                string           `validate:"required,ulid" bun:"type:CHAR(26),pk,nullzero,notnull,unique"`
-	CreatedAt         time.Time        `validate:"-" bun:"type:timestamptz,nullzero,notnull,default:current_timestamp"`
-	UpdatedAt         time.Time        `validate:"-" bun:"type:timestamptz,nullzero,notnull,default:current_timestamp"`
-	Email             string           `validate:"-" bun:",nullzero,notnull,unique"`
-	EncryptedPassword string           `validate:"-" bun:""`
-	SignInCount       int              `validate:"min=0" bun:",notnull,default:0"`
-	Groups            GroupMemberships `validate:"-" bun:"rel:has-many,join:id=user_id"`
-	Disabled          bool             `validate:"-" bun:",notnull,default:false"`
+	ID                string             `validate:"required,ulid" bun:"type:CHAR(26),pk,nullzero,notnull,unique"`
+	CreatedAt         time.Time          `validate:"-" bun:"type:timestamptz,nullzero,notnull,default:current_timestamp"`
+	UpdatedAt         time.Time          `validate:"-" bun:"type:timestamptz,nullzero,notnull,default:current_timestamp"`
+	Email             string             `validate:"-" bun:",nullzero,notnull,unique"`
+	EncryptedPassword string             `validate:"-" bun:""`
+	SignInCount       int                `validate:"min=0" bun:",notnull,default:0"`
+	Groups            []*GroupMembership `validate:"-" bun:"rel:has-many,join:id=user_id"`
+	Disabled          bool               `validate:"-" bun:",notnull,default:false"`
 }
 
-// GenID generates a new id for the object
-func (u *User) GenID() error {
-	if u.ID == "" {
-		newID, err := id.NewULID()
+var _ bun.BeforeAppendModelHook = (*User)(nil)
+
+// BeforeAppendModel runs before a bun append operation
+func (u *User) BeforeAppendModel(_ context.Context, query bun.Query) error {
+	switch query.(type) {
+	case *bun.InsertQuery:
+		if u.ID == "" {
+			newID, err := id.NewULID()
+			if err != nil {
+				return err
+			}
+			u.ID = newID
+		}
+
+		now := time.Now()
+		u.CreatedAt = now
+		u.UpdatedAt = now
+
+		err := validate.Struct(u)
 		if err != nil {
 			return err
 		}
-		u.ID = newID
+	case *bun.UpdateQuery:
+		u.UpdatedAt = time.Now()
+
+		err := validate.Struct(u)
+		if err != nil {
+			return err
+		}
 	}
 	return nil
 }

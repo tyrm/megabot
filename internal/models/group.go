@@ -1,8 +1,10 @@
 package models
 
 import (
+	"context"
 	"github.com/google/uuid"
 	"github.com/tyrm/megabot/internal/id"
+	"github.com/uptrace/bun"
 	"time"
 )
 
@@ -13,28 +15,35 @@ type GroupMembership struct {
 	UpdatedAt time.Time `validate:"-" bun:"type:timestamptz,nullzero,notnull,default:current_timestamp"`
 	UserID    string    `validate:"required,ulid" bun:"type:CHAR(26),unique:groupmembership,notnull,nullzero"`
 	User      *User     `validate:"-" bun:"rel:belongs-to"`
-	GroupID   uuid.UUID `validate:"required,uuid" bun:",unique:groupmembership,notnull,nullzero"`
+	GroupID   uuid.UUID `validate:"required" bun:",unique:groupmembership,notnull,nullzero"`
 }
 
-// GenID generates a new id for the object
-func (g *GroupMembership) GenID() error {
-	if g.ID == "" {
-		newID, err := id.NewULID()
+var _ bun.BeforeAppendModelHook = (*GroupMembership)(nil)
+
+// BeforeAppendModel runs before a bun append operation
+func (gm *GroupMembership) BeforeAppendModel(_ context.Context, query bun.Query) error {
+	switch query.(type) {
+	case *bun.InsertQuery:
+		if gm.ID == "" {
+			newID, err := id.NewULID()
+			if err != nil {
+				return err
+			}
+			gm.ID = newID
+		}
+
+		now := time.Now()
+		gm.CreatedAt = now
+		gm.UpdatedAt = now
+
+		err := validate.Struct(gm)
 		if err != nil {
 			return err
 		}
-		g.ID = newID
-	}
-	return nil
-}
+	case *bun.UpdateQuery:
+		gm.UpdatedAt = time.Now()
 
-// GroupMemberships contains multiple groups
-type GroupMemberships []*GroupMembership
-
-// GenID generates a new id for the object
-func (g *GroupMemberships) GenID() error {
-	for _, group := range *g {
-		err := group.GenID()
+		err := validate.Struct(gm)
 		if err != nil {
 			return err
 		}
