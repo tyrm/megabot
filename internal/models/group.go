@@ -14,7 +14,7 @@ type GroupMembership struct {
 	CreatedAt time.Time `validate:"-" bun:"type:timestamptz,nullzero,notnull,default:current_timestamp"`
 	UpdatedAt time.Time `validate:"-" bun:"type:timestamptz,nullzero,notnull,default:current_timestamp"`
 	UserID    string    `validate:"required,ulid" bun:"type:CHAR(26),unique:groupmembership,notnull,nullzero"`
-	User      *User     `validate:"-" bun:"rel:belongs-to"`
+	User      *User     `validate:"-" bun:"rel:belongs-to,join:user_id=id"`
 	GroupID   uuid.UUID `validate:"required" bun:",unique:groupmembership,notnull,nullzero"`
 }
 
