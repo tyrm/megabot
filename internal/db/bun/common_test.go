@@ -32,7 +32,7 @@ func TestCommonDB_Create(t *testing.T) {
 	}
 
 	tables := []struct {
-		object db.Creatable
+		object any
 		check  func(t *testing.T, o interface{}, b db.DB)
 	}{
 		{

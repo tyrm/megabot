@@ -1,36 +1,51 @@
 package models
 
 import (
+	"context"
 	"fmt"
 	"github.com/go-playground/validator/v10"
 	"github.com/google/uuid"
+	"github.com/uptrace/bun"
 	"testing"
+	"time"
 )
 
-func TestUser_GenID(t *testing.T) {
-	validate := validator.New()
+func TestUser_BeforeAppendModel_Insert(t *testing.T) {
+	obj := &User{}
 
-	for n := 0; n < 5; n++ {
-		i := n
+	err := obj.BeforeAppendModel(context.Background(), &bun.InsertQuery{})
+	if err != nil {
+		t.Errorf("got error: %s", err.Error())
+		return
+	}
 
-		name := fmt.Sprintf("[%d] Running user GenID", i)
-		t.Run(name, func(t *testing.T) {
-			t.Parallel()
+	emptyTime := time.Time{}
+	err = validator.New().Var(obj.ID, "required,ulid")
+	if err != nil {
+		t.Errorf("invalid id: %s", err.Error())
+	}
+	if obj.CreatedAt == emptyTime {
+		t.Errorf("invalid created at time: %s", obj.CreatedAt.String())
+	}
+	if obj.UpdatedAt == emptyTime {
+		t.Errorf("invalid updated at time: %s", obj.UpdatedAt.String())
+	}
+}
 
-			user := User{}
+func TestUser_BeforeAppendModel_Update(t *testing.T) {
+	obj := &User{
+		ID: "01FYFXS49Z22W6K1NPBAQ9M0GB",
+	}
 
-			err := user.GenID()
-			if err != nil {
-				t.Errorf("[%d] got error generating id; %s", i, err)
-				return
-			}
+	err := obj.BeforeAppendModel(context.Background(), &bun.UpdateQuery{})
+	if err != nil {
+		t.Errorf("got error: %s", err.Error())
+		return
+	}
 
-			err = validate.Var(user.ID, "required,ulid")
-			if err != nil {
-				t.Errorf("[%d] invalid id: %s", i, err)
-				return
-			}
-		})
+	emptyTime := time.Time{}
+	if obj.UpdatedAt == emptyTime {
+		t.Errorf("invalid updated at time: %s", obj.UpdatedAt.String())
 	}
 }
 

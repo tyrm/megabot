@@ -1,10 +1,13 @@
 package models
 
 import (
+	"context"
 	"fmt"
 	"github.com/go-playground/validator/v10"
 	"github.com/google/uuid"
+	"github.com/uptrace/bun"
 	"testing"
+	"time"
 )
 
 func TestGroup(t *testing.T) {
@@ -81,64 +84,46 @@ func TestGroupTitle(t *testing.T) {
 	}
 }
 
-func TestGroupMembership_GenID(t *testing.T) {
-	validate := validator.New()
+func TestGroupMembership_BeforeAppendModel_Insert(t *testing.T) {
+	obj := &GroupMembership{
+		GroupID: uuid.MustParse("957bb260-2a48-464e-91ba-6ac7f7863825"),
+		UserID:  "01FYFX7NAAH4QM7RP1R60SS8Q3",
+	}
 
-	for n := 0; n < 5; n++ {
-		i := n
+	err := obj.BeforeAppendModel(context.Background(), &bun.InsertQuery{})
+	if err != nil {
+		t.Errorf("got error: %s", err.Error())
+		return
+	}
 
-		name := fmt.Sprintf("[%d] Running user GenID", i)
-		t.Run(name, func(t *testing.T) {
-			t.Parallel()
-
-			gm := GroupMembership{}
-
-			err := gm.GenID()
-			if err != nil {
-				t.Errorf("[%d] got error generating id; %s", i, err)
-				return
-			}
-
-			err = validate.Var(gm.ID, "required,ulid")
-			if err != nil {
-				t.Errorf("[%d] id '%s' is invalid: %s", i, gm.ID, err.Error())
-				return
-			}
-		})
+	emptyTime := time.Time{}
+	err = validator.New().Var(obj.ID, "required,ulid")
+	if err != nil {
+		t.Errorf("invalid id: %s", err.Error())
+	}
+	if obj.CreatedAt == emptyTime {
+		t.Errorf("invalid created at time: %s", obj.CreatedAt.String())
+	}
+	if obj.UpdatedAt == emptyTime {
+		t.Errorf("invalid updated at time: %s", obj.UpdatedAt.String())
 	}
 }
 
-func TestGroupMemberships_GenID(t *testing.T) {
-	validate := validator.New()
+func TestGroupMembership_BeforeAppendModel_Update(t *testing.T) {
+	obj := &GroupMembership{
+		ID:      "01FYFXWMC5KE8NRXZ3PVJJB579",
+		GroupID: uuid.MustParse("957bb260-2a48-464e-91ba-6ac7f7863825"),
+		UserID:  "01FYFX7NAAH4QM7RP1R60SS8Q3",
+	}
 
-	for n := 0; n < 5; n++ {
-		i := n
+	err := obj.BeforeAppendModel(context.Background(), &bun.UpdateQuery{})
+	if err != nil {
+		t.Errorf("got error: %s", err.Error())
+		return
+	}
 
-		name := fmt.Sprintf("[%d] Running user GenID", i)
-		t.Run(name, func(t *testing.T) {
-			t.Parallel()
-
-			gms := GroupMemberships{
-				{},
-				{},
-				{},
-				{},
-				{},
-			}
-
-			err := gms.GenID()
-			if err != nil {
-				t.Errorf("[%d] got error generating id; %s", i, err)
-				return
-			}
-
-			for _, gm := range gms {
-				err = validate.Var(gm.ID, "required,ulid")
-				if err != nil {
-					t.Errorf("[%d] id '%s' is invalid: %s", i, gm.ID, err.Error())
-					return
-				}
-			}
-		})
+	emptyTime := time.Time{}
+	if obj.UpdatedAt == emptyTime {
+		t.Errorf("invalid updated at time: %s", obj.UpdatedAt.String())
 	}
 }
