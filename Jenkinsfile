@@ -41,7 +41,7 @@ pipeline {
     stage('Test') {
       agent {
         docker {
-          image 'gobuild:1.17'
+          image 'gobuild:1.18'
           args '--network ${networkName} -e GOCACHE=/gocache -e HOME=${WORKSPACE} -v /var/lib/jenkins/gocache:/gocache -v /var/lib/jenkins/go:/go -v /var/lib/jenkins/.npm:/.npm'
           reuseNode true
         }
