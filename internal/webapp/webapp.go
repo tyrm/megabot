@@ -19,6 +19,7 @@ import (
 	"github.com/tyrm/megabot/internal/kv/redis"
 	"github.com/tyrm/megabot/internal/language"
 	"github.com/tyrm/megabot/internal/models"
+	mbtemplate "github.com/tyrm/megabot/internal/template"
 	"github.com/tyrm/megabot/internal/web"
 	"html/template"
 	"io/fs"
@@ -47,14 +48,13 @@ var tmplFuncs = template.FuncMap{
 
 // Module contains a webapp module for the web server. Implements web.Module
 type Module struct {
-	db        db.DB
-	store     sessions.Store
-	language  *language.Module
-	minify    *minify.M
-	templates *template.Template
+	db       db.DB
+	store    sessions.Store
+	language *language.Module
+	minify   *minify.M
 
-	headLinks     []templateHeadLink
-	footerScripts []templateScript
+	headLinks     []mbtemplate.HeadLink
+	footerScripts []mbtemplate.Script
 
 	sigCache     map[string]string
 	sigCacheLock sync.RWMutex
@@ -63,12 +63,6 @@ type Module struct {
 // New returns a new webapp module
 func New(ctx context.Context, db db.DB, r *redis.Client, lMod *language.Module) (web.Module, error) {
 	l := logger.WithField("func", "New")
-
-	// Load Templates
-	t, err := compileTemplates(templateDir, ".gohtml", &tmplFuncs)
-	if err != nil {
-		return nil, err
-	}
 
 	// Fetch new store.
 	store, err := redisstore.NewRedisStore(ctx, r.RedisClient())
@@ -95,7 +89,7 @@ func New(ctx context.Context, db db.DB, r *redis.Client, lMod *language.Module) 
 	}
 
 	// generate head links
-	var hl []templateHeadLink
+	var hl []mbtemplate.HeadLink
 	paths := []string{
 		pathFileBootstrapCSS,
 		pathFileFontAwesome,
@@ -107,7 +101,7 @@ func New(ctx context.Context, db db.DB, r *redis.Client, lMod *language.Module) 
 			l.Errorf("getting signature for %s: %s", filePath, err.Error())
 		}
 
-		hl = append(hl, templateHeadLink{
+		hl = append(hl, mbtemplate.HeadLink{
 			HRef:        pathStatic + path,
 			Rel:         "stylesheet",
 			CrossOrigin: "anonymous",
@@ -116,7 +110,7 @@ func New(ctx context.Context, db db.DB, r *redis.Client, lMod *language.Module) 
 	}
 
 	// generate head links
-	var fs []templateScript
+	var fs []mbtemplate.Script
 	scriptPaths := []string{
 		pathFileBootstrapJS,
 	}
@@ -127,7 +121,7 @@ func New(ctx context.Context, db db.DB, r *redis.Client, lMod *language.Module) 
 			l.Errorf("getting signature for %s: %s", filePath, err.Error())
 		}
 
-		fs = append(fs, templateScript{
+		fs = append(fs, mbtemplate.Script{
 			Src:         pathStatic + path,
 			CrossOrigin: "anonymous",
 			Integrity:   signature,
@@ -135,11 +129,10 @@ func New(ctx context.Context, db db.DB, r *redis.Client, lMod *language.Module) 
 	}
 
 	return &Module{
-		db:        db,
-		language:  lMod,
-		minify:    m,
-		templates: t,
-		store:     store,
+		db:       db,
+		language: lMod,
+		minify:   m,
+		store:    store,
 
 		headLinks:     hl,
 		footerScripts: fs,

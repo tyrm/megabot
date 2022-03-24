@@ -6,148 +6,14 @@ import (
 	"encoding/base64"
 	"fmt"
 	"github.com/gorilla/sessions"
-	"github.com/tyrm/megabot"
 	"github.com/tyrm/megabot/internal/language"
 	"github.com/tyrm/megabot/internal/models"
-	"html/template"
-	"io/ioutil"
+	mbtemplate "github.com/tyrm/megabot/internal/template"
 	"net/http"
 	"regexp"
-	"strings"
 )
 
-type templateVars interface {
-	AddHeadLink(l templateHeadLink)
-	AddFooterScript(s templateScript)
-	SetLanguage(l string)
-	SetLocalizer(l *language.Localizer)
-	SetNavbar(nodes []templateNavbarNode)
-	SetUser(user *models.User)
-}
-
-type templateCommon struct {
-	Language  string
-	Localizer *language.Localizer
-
-	FooterScripts []templateScript
-	HeadLinks     []templateHeadLink
-	NavBar        []templateNavbarNode
-	PageTitle     string
-	User          *models.User
-}
-
-func (t *templateCommon) AddHeadLink(l templateHeadLink) {
-	if t.HeadLinks == nil {
-		t.HeadLinks = []templateHeadLink{}
-	}
-	t.HeadLinks = append(t.HeadLinks, l)
-	return
-}
-
-func (t *templateCommon) AddFooterScript(s templateScript) {
-	if t.FooterScripts == nil {
-		t.FooterScripts = []templateScript{}
-	}
-	t.FooterScripts = append(t.FooterScripts, s)
-	return
-}
-
-func (t *templateCommon) SetLanguage(l string) {
-	t.Language = l
-	return
-}
-
-func (t *templateCommon) SetLocalizer(l *language.Localizer) {
-	t.Localizer = l
-	return
-}
-
-func (t *templateCommon) SetNavbar(nodes []templateNavbarNode) {
-	t.NavBar = nodes
-	return
-}
-
-func (t *templateCommon) SetUser(user *models.User) {
-	t.User = user
-	return
-}
-
-type templateHeadLink struct {
-	HRef        string
-	Rel         string
-	Integrity   string
-	CrossOrigin string
-	Sizes       string
-	Type        string
-}
-
-type templateImage struct {
-	Src    string
-	Alt    string
-	Height int
-	Width  int
-	Class  string
-}
-
-type templateNavbarNode struct {
-	Text     string
-	URL      string
-	MatchStr *regexp.Regexp
-	FAIcon   string
-
-	Active   bool
-	Disabled bool
-
-	Children []templateNavbarNode
-}
-
-type templateScript struct {
-	Src         string
-	Integrity   string
-	CrossOrigin string
-}
-
-func compileTemplates(path string, suffix string, funcs *template.FuncMap) (*template.Template, error) {
-	///l := logger.WithField("func", "compileTemplates")
-
-	tpl := template.New("")
-	if funcs != nil {
-		tpl.Funcs(*funcs)
-	}
-
-	dir, err := megabot.Files.ReadDir(path)
-	if err != nil {
-		return nil, err
-	}
-	for _, d := range dir {
-		filePath := path + "/" + d.Name()
-		if d.IsDir() || !strings.HasSuffix(d.Name(), suffix) {
-			continue
-		}
-
-		// open it
-		file, err := megabot.Files.Open(filePath)
-		if err != nil {
-			return nil, err
-		}
-
-		// read it
-		tmplData, err := ioutil.ReadAll(file)
-		if err != nil {
-			return nil, err
-		}
-
-		// It can now be parsed as a string.
-		_, err = tpl.Parse(string(tmplData))
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	return tpl, err
-}
-
-func (m *Module) initTemplate(w http.ResponseWriter, r *http.Request, tmpl templateVars) error {
+func (m *Module) initTemplate(w http.ResponseWriter, r *http.Request, tmpl mbtemplate.InitTemplate) error {
 	l := logger.WithField("func", "initTemplate")
 
 	// set text handler
@@ -170,7 +36,7 @@ func (m *Module) initTemplate(w http.ResponseWriter, r *http.Request, tmpl templ
 
 	// navbar
 	navbar := makeNavbar(r, localizer)
-	tmpl.SetNavbar(*navbar)
+	tmpl.SetNavbar(navbar)
 
 	if r.Context().Value(userKey) != nil {
 		user := r.Context().Value(userKey).(*models.User)
@@ -198,7 +64,7 @@ func (m *Module) initTemplate(w http.ResponseWriter, r *http.Request, tmpl templ
 
 func (m *Module) executeTemplate(w http.ResponseWriter, name string, tmplVars interface{}) error {
 	b := new(bytes.Buffer)
-	err := m.templates.ExecuteTemplate(b, name, tmplVars)
+	err := mbtemplate.Templates.ExecuteTemplate(b, name, tmplVars)
 	if err != nil {
 		return err
 	}
@@ -214,10 +80,9 @@ func (m *Module) executeTemplate(w http.ResponseWriter, name string, tmplVars in
 	return m.minify.Minify("text/html", w, b)
 }
 
-func makeNavbar(r *http.Request, l *language.Localizer) *[]templateNavbarNode {
-
+func makeNavbar(r *http.Request, l *language.Localizer) []*mbtemplate.NavbarNode {
 	// create navbar
-	newNavbar := []templateNavbarNode{
+	newNavbar := []*mbtemplate.NavbarNode{
 		{
 			Text:     l.TextHomeShort().String(),
 			MatchStr: regexp.MustCompile("^/app/$"),
@@ -226,21 +91,7 @@ func makeNavbar(r *http.Request, l *language.Localizer) *[]templateNavbarNode {
 		},
 	}
 
-	for i := 0; i < len(newNavbar); i++ {
-		if newNavbar[i].MatchStr != nil {
-			if newNavbar[i].MatchStr.Match([]byte(r.URL.Path)) {
-				newNavbar[i].Active = true
-			}
-		}
-		for j := 0; j < len(newNavbar[i].Children); j++ {
-			if newNavbar[i].Children[j].MatchStr != nil {
-				if newNavbar[i].Children[j].MatchStr.Match([]byte(r.URL.Path)) {
-					newNavbar[i].Active = true
-					newNavbar[i].Children[j].Active = true
-				}
-			}
-		}
-	}
+	mbtemplate.MakeNavbar(r, newNavbar)
 
-	return &newNavbar
+	return newNavbar
 }
