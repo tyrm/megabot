@@ -17,15 +17,15 @@ $black:    #000;
 // scss-docs-end gray-color-variables
 
 // scss-docs-start color-variables
-$blue:    #4d527c;
-$lt-blue: #b0b6ea;
+$blue:    #202342;
+$lt-blue: #7e83ba;
 $indigo:  #6610f2;
 $purple:  #6f42c1;
 $pink:    #d63384;
 $red:     #c55549;
 $orange:  #fd7e14;
 $yellow:  #ffee69;
-$green:   #89f602;
+$green:   #4eff00;
 $teal:    #20c997;
 $cyan:    #0dcaf0;
 // scss-docs-end color-variables
@@ -71,6 +71,8 @@ $green-800: shade-color($green, 60%);
 $green-900: shade-color($green, 80%);
 
 $form-feedback-valid-color: $green-700;
+
+$progress-bar-color:        $black;
 
 // Import Bootstrap
 @import "../node_modules/bootstrap/scss/bootstrap";
