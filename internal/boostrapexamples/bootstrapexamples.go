@@ -1,4 +1,4 @@
-package boostrapcheatsheet
+package boostrapexamples
 
 import (
 	"context"

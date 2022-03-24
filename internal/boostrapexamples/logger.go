@@ -1,4 +1,4 @@
-package boostrapcheatsheet
+package boostrapexamples
 
 import (
 	"github.com/tyrm/megabot/internal/log"

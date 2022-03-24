@@ -5,10 +5,7 @@ import "embed"
 // Files contains static files required by the application
 //go:embed locales/active.*.toml
 //go:embed test/fixture.yml
-//go:embed web/bootstrap-cheatsheet/bootstrap-logo-white.svg
-//go:embed web/bootstrap-cheatsheet/cheatsheet.css
-//go:embed web/bootstrap-cheatsheet/cheatsheet.js
-//go:embed web/bootstrap-cheatsheet/index.html
+//go:embed web/bootstrap-examples/*
 //go:embed web/static/css/bootstrap.min.css
 //go:embed web/static/css/bootstrap.min.css.map
 //go:embed web/static/css/error.min.css

@@ -7,7 +7,7 @@ import (
 	"github.com/spf13/viper"
 	"github.com/tyrm/go-util"
 	"github.com/tyrm/megabot/cmd/megabot/action"
-	"github.com/tyrm/megabot/internal/boostrapcheatsheet"
+	"github.com/tyrm/megabot/internal/boostrapexamples"
 	"github.com/tyrm/megabot/internal/config"
 	"github.com/tyrm/megabot/internal/db/bun"
 	"github.com/tyrm/megabot/internal/graphql"
@@ -95,7 +95,7 @@ var Start action.Action = func(ctx context.Context) error {
 	var webModules []web.Module
 	if util.ContainsString(viper.GetStringSlice(config.Keys.ServerRoles), config.ServerRoleBootstrap) {
 		l.Infof("adding bootstrap test module")
-		webMod, err := boostrapcheatsheet.New(ctx)
+		webMod, err := boostrapexamples.New(ctx)
 		if err != nil {
 			logrus.Errorf("bootstrap test module: %s", err.Error())
 			return err
