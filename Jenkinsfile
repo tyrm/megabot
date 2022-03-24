@@ -18,7 +18,6 @@ pipeline {
         script {
           sh """#!/bin/bash
           make clean
-          make clean-npm
           make npm-scss
           make minify-static
           """

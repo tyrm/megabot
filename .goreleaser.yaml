@@ -3,12 +3,8 @@
 before:
   hooks:
     - make clean
-    - make clean-npm
-    - make npm-install
     - make npm-scss
     - make minify-static
-    - go mod tidy
-    - go fmt ./...
     - go generate ./...
 builds:
   - main: ./cmd/megabot
