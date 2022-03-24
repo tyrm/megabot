@@ -45,6 +45,9 @@ minify-static:
 npm-scss:
 	cd web/bootstrap && npm run sass
 
+npm-upgrade:
+	cd web/bootstrap && npm upgrade
+
 test-docker-restart: test-docker-stop test-docker-start
 
 test-docker-start:
@@ -74,4 +77,4 @@ tidy:
 vendor: tidy
 	go mod vendor
 
-.PHONY: build-snapshot bun-new-migration clean fmt gosec lint minify-static npm-scss test-docker-restart test-docker-start test-docker-stop test test-ext test-race test-race-ext test-verbose tidy vendor
+.PHONY: build-snapshot bun-new-migration clean fmt gosec lint minify-static npm-scss npm-upgrade test-docker-restart test-docker-start test-docker-stop test test-ext test-race test-race-ext test-verbose tidy vendor
