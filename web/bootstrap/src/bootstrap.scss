@@ -56,8 +56,8 @@ $success:       $green;
 $info:          $lt-blue;
 $warning:       $yellow;
 $danger:        $red;
-$light:         $lt-blue;
-$dark:          $blue;
+$light:         $gray-100;
+$dark:          $gray-900;
 // scss-docs-end theme-color-variables
 
 $green-100: tint-color($green, 80%);
