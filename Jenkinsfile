@@ -19,7 +19,7 @@ pipeline {
           sh """#!/bin/bash
           make clean
           make npm-scss
-          make minify-static
+          make stage-static
           """
         }
       }
@@ -64,7 +64,7 @@ pipeline {
       }
     }
 
-    stage('Release') {
+    stage('Build Release') {
       when {
         buildingTag()
       }
@@ -73,8 +73,21 @@ pipeline {
           withCredentials([
             usernamePassword(credentialsId: 'gihub-tyrm-pat', usernameVariable: 'GITHUB_USER', passwordVariable: 'GITHUB_TOKEN')
           ]) {
-            sh 'goreleaser'
+            sh 'make build'
           }
+        }
+      }
+    }
+
+    stage('Build Snapshot') {
+      when {
+        not {
+          buildingTag()
+        }
+      }
+      steps {
+        script {
+          sh 'make build-snapshot'
         }
       }
     }

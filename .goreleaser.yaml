@@ -4,7 +4,7 @@ before:
   hooks:
     - make clean
     - make npm-scss
-    - make minify-static
+    - make stage-static
     - go generate ./...
 builds:
   - main: ./cmd/megabot

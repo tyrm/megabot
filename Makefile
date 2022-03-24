@@ -2,6 +2,9 @@ PROJECT_NAME=megabot
 
 .DEFAULT_GOAL := test
 
+build: clean
+	goreleaser build
+
 build-snapshot: clean
 	goreleaser build --snapshot
 
@@ -36,17 +39,17 @@ lint:
 	@echo linting
 	@golint $(shell go list ./... | grep -v /vendor/)
 
-minify-static:
-	minify web/static-src/css/error.css > web/static/css/error.min.css
-	minify web/static-src/css/login.css > web/static/css/login.min.css
-	minify web/bootstrap/dist/bootstrap.css > web/static/css/bootstrap.min.css
-	minify web/bootstrap/node_modules/bootstrap/dist/js/bootstrap.bundle.js > web/static/js/bootstrap.bundle.min.js
-
 npm-scss:
 	cd web/bootstrap && npm run sass
 
 npm-upgrade:
 	cd web/bootstrap && npm upgrade
+
+stage-static:
+	minify web/static-src/css/error.css > web/static/css/error.min.css
+	minify web/static-src/css/login.css > web/static/css/login.min.css
+	minify web/bootstrap/dist/bootstrap.css > web/static/css/bootstrap.min.css
+	minify web/bootstrap/node_modules/bootstrap/dist/js/bootstrap.bundle.js > web/static/js/bootstrap.bundle.min.js
 
 test-docker-restart: test-docker-stop test-docker-start
 
@@ -77,4 +80,4 @@ tidy:
 vendor: tidy
 	go mod vendor
 
-.PHONY: build-snapshot bun-new-migration clean fmt gosec lint minify-static npm-scss npm-upgrade test-docker-restart test-docker-start test-docker-stop test test-ext test-race test-race-ext test-verbose tidy vendor
+.PHONY: build-snapshot bun-new-migration clean fmt gosec lint stage-static npm-scss npm-upgrade test-docker-restart test-docker-start test-docker-stop test test-ext test-race test-race-ext test-verbose tidy vendor
