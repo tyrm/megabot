@@ -1,10 +1,13 @@
 package webapp
 
-import "net/http"
+import (
+	"github.com/tyrm/megabot/internal/template"
+	"net/http"
+)
 
 // HomeTemplate contains the variables for the "home" template.
 type HomeTemplate struct {
-	templateCommon
+	template.Common
 }
 
 // HomeGetHandler serves the home page
@@ -13,7 +16,7 @@ func (m *Module) HomeGetHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Init template variables
 	tmplVars := &HomeTemplate{
-		templateCommon{
+		template.Common{
 			PageTitle: "Home",
 		},
 	}

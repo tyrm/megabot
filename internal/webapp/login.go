@@ -3,12 +3,13 @@ package webapp
 import (
 	"github.com/gorilla/sessions"
 	"github.com/tyrm/megabot/internal/language"
+	"github.com/tyrm/megabot/internal/template"
 	"net/http"
 )
 
 // LoginTemplate contains the variables for the "login" template.
 type LoginTemplate struct {
-	templateCommon
+	template.Common
 
 	BotImage string
 
@@ -97,7 +98,7 @@ func (m *Module) displayLoginPage(w http.ResponseWriter, r *http.Request, email,
 	if err != nil {
 		l.Errorf("getting signature for %s: %s", pathFileLoginCSS, err.Error())
 	}
-	tmplVars.AddHeadLink(templateHeadLink{
+	tmplVars.AddHeadLink(template.HeadLink{
 		HRef:        pathStatic + pathFileLoginCSS,
 		Rel:         "stylesheet",
 		CrossOrigin: "anonymous",
