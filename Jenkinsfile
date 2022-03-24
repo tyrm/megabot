@@ -40,7 +40,7 @@ pipeline {
       agent {
         docker {
           image 'gobuild:1.18'
-          args '--network ${networkName} -e GOCACHE=/gocache -e HOME=${WORKSPACE} -v /var/lib/jenkins/gocache:/gocache -v /var/lib/jenkins/go:/go -v /var/lib/jenkins/.npm:/.npm'
+          args '--network ${networkName} -e HOME=${WORKSPACE} -v /var/lib/jenkins/go:/go'
           reuseNode true
         }
       }
@@ -65,6 +65,13 @@ pipeline {
     }
 
     stage('Build Release') {
+      agent {
+        docker {
+          image 'gobuild:1.18'
+          args '--network ${networkName} -e HOME=${WORKSPACE} -v /var/lib/jenkins/go:/go'
+          reuseNode true
+        }
+      }
       when {
         buildingTag()
       }
@@ -80,6 +87,13 @@ pipeline {
     }
 
     stage('Build Snapshot') {
+      agent {
+        docker {
+          image 'gobuild:1.18'
+          args '--network ${networkName} -e HOME=${WORKSPACE} -v /var/lib/jenkins/go:/go'
+          reuseNode true
+        }
+      }
       when {
         not {
           buildingTag()
