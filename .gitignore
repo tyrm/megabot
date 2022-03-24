@@ -2,15 +2,16 @@
 /server.key
 
 /coverage.txt
-dist/
+/dist/
 /megabot
 /pkged.go
 
 /web/bootstrap/dist
-/web/bootstrap/node_modules
 /web/static/css/bootstrap.min.css
+/web/static/css/bootstrap.min.css.map
 /web/static/css/login.min.css
 /web/static/css/error.min.css
 /web/static/js/bootstrap.bundle.min.js
+/web/static/js/bootstrap.bundle.min.js.map
 
 /locales/translate.*.toml

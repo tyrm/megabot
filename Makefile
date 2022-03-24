@@ -1,27 +1,29 @@
 PROJECT_NAME=megabot
 
-BUN_TIMESTAMP := $(shell date +%Y%m%d%H%M%S | head -c 14)
-MYCODE := $(shell go list ./... | grep -v /vendor/)
-
 .DEFAULT_GOAL := test
+
+build: clean
+	goreleaser build
 
 build-snapshot: clean
 	goreleaser build --snapshot
 
+bun-new-migration: export BUN_TIMESTAMP=$(shell date +%Y%m%d%H%M%S | head -c 14)
 bun-new-migration:
 	touch internal/db/bun/migrations/${BUN_TIMESTAMP}_new.go
 	cat internal/db/bun/migrations/migration.go.tmpl > internal/db/bun/migrations/${BUN_TIMESTAMP}_new.go
 
 clean:
-	rm -Rvf coverage.txt dist gosec.xml megabot
-	find . -name ".DS_Store" -exec rm -v {} \;
-
-clean-npm:
-	rm -Rvf web/bootstrap/dist web/static/css/bootstrap.min.css web/static/js/bootstrap.bundle.min.js
+	@echo cleaning up workspace
+	@rm -Rvf coverage.txt dist gosec.xml megabot
+	@find . -name ".DS_Store" -exec rm -v {} \;
+	@rm -Rvf web/bootstrap/dist
+	@rm -Rvf web/static/css/bootstrap.min.css web/static/css/bootstrap.min.css.map web/static/css/error.min.css web/static/css/login.min.css
+	@rm -Rvf web/static/js/bootstrap.bundle.min.js web/static/js/bootstrap.bundle.min.js.map
 
 fmt:
 	@echo formatting
-	@go fmt ${MYCODE}
+	@go fmt $(shell go list ./... | grep -v /vendor/)
 
 gosec:
 	gosec ./...
@@ -37,22 +39,21 @@ i18n-translations:
 
 lint:
 	@echo linting
-	@golint ${MYCODE}
-
-minify-static:
-	minify web/static-src/css/error.css > web/static/css/error.min.css
-	minify web/static-src/css/login.css > web/static/css/login.min.css
-	minify web/bootstrap/dist/bootstrap.css > web/static/css/bootstrap.min.css
-	minify web/bootstrap/node_modules/bootstrap/dist/js/bootstrap.bundle.js > web/static/js/bootstrap.bundle.min.js
-
-npm-install:
-	cd web/bootstrap && npm install
-
-npm-install-jenkins:
-	cd web/bootstrap && npm install --cache=/.npm
+	@golint $(shell go list ./... | grep -v /vendor/)
 
 npm-scss:
 	cd web/bootstrap && npm run sass
+
+npm-upgrade:
+	cd web/bootstrap && npm upgrade
+
+stage-static:
+	minify web/static-src/css/error.css > web/static/css/error.min.css
+	minify web/static-src/css/login.css > web/static/css/login.min.css
+	minify web/bootstrap/dist/bootstrap.css > web/static/css/bootstrap.min.css
+	cat web/bootstrap/dist/bootstrap.css.map > web/static/css/bootstrap.min.css.map
+	cat web/bootstrap/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js > web/static/js/bootstrap.bundle.min.js
+	cat web/bootstrap/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js.map > web/static/js/bootstrap.bundle.min.js.map
 
 test-docker-restart: test-docker-stop test-docker-start
 
@@ -83,4 +84,4 @@ tidy:
 vendor: tidy
 	go mod vendor
 
-.PHONY: bun-new-migration fmt lint test test-ext tidy vendor
+.PHONY: build-snapshot bun-new-migration clean fmt gosec lint stage-static npm-scss npm-upgrade test-docker-restart test-docker-start test-docker-stop test test-ext test-race test-race-ext test-verbose tidy vendor

@@ -18,10 +18,8 @@ pipeline {
         script {
           sh """#!/bin/bash
           make clean
-          make clean-npm
-          make npm-install
           make npm-scss
-          make minify-static
+          make stage-static
           """
         }
       }
@@ -42,7 +40,7 @@ pipeline {
       agent {
         docker {
           image 'gobuild:1.18'
-          args '--network ${networkName} -e GOCACHE=/gocache -e HOME=${WORKSPACE} -v /var/lib/jenkins/gocache:/gocache -v /var/lib/jenkins/go:/go -v /var/lib/jenkins/.npm:/.npm'
+          args '--network ${networkName} -e HOME=${WORKSPACE} -v /var/lib/jenkins/go:/go'
           reuseNode true
         }
       }
@@ -54,10 +52,9 @@ pipeline {
             file(credentialsId: 'tls-localhost-key', variable: 'MB_TLS_KEY')
           ]) {
             sh """#!/bin/bash
-            go get -t -v ./...
             go test --tags=postgres,redis -race -coverprofile=coverage.txt -covermode=atomic ./...
             RESULT=\$?
-            gosec -fmt=junit-xml -out=gosec.xml  ./...
+            #gosec -fmt=junit-xml -out=gosec.xml  ./...
             bash <(curl -s https://codecov.io/bash)
             exit \$RESULT
             """
@@ -67,7 +64,14 @@ pipeline {
       }
     }
 
-    stage('Release') {
+    stage('Build Release') {
+      agent {
+        docker {
+          image 'gobuild:1.18'
+          args '--network ${networkName} -e HOME=${WORKSPACE} -v /var/lib/jenkins/go:/go'
+          reuseNode true
+        }
+      }
       when {
         buildingTag()
       }
@@ -76,8 +80,28 @@ pipeline {
           withCredentials([
             usernamePassword(credentialsId: 'gihub-tyrm-pat', usernameVariable: 'GITHUB_USER', passwordVariable: 'GITHUB_TOKEN')
           ]) {
-            sh 'goreleaser'
+            sh 'make build'
           }
+        }
+      }
+    }
+
+    stage('Build Snapshot') {
+      agent {
+        docker {
+          image 'gobuild:1.18'
+          args '--network ${networkName} -e HOME=${WORKSPACE} -v /var/lib/jenkins/go:/go'
+          reuseNode true
+        }
+      }
+      when {
+        not {
+          buildingTag()
+        }
+      }
+      steps {
+        script {
+          sh 'make build-snapshot'
         }
       }
     }
