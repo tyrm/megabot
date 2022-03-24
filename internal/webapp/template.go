@@ -8,12 +8,12 @@ import (
 	"github.com/gorilla/sessions"
 	"github.com/tyrm/megabot/internal/language"
 	"github.com/tyrm/megabot/internal/models"
-	mbtemplate "github.com/tyrm/megabot/internal/template"
+	"github.com/tyrm/megabot/internal/web/template"
 	"net/http"
 	"regexp"
 )
 
-func (m *Module) initTemplate(w http.ResponseWriter, r *http.Request, tmpl mbtemplate.InitTemplate) error {
+func (m *Module) initTemplate(w http.ResponseWriter, r *http.Request, tmpl template.InitTemplate) error {
 	l := logger.WithField("func", "initTemplate")
 
 	// set text handler
@@ -64,7 +64,7 @@ func (m *Module) initTemplate(w http.ResponseWriter, r *http.Request, tmpl mbtem
 
 func (m *Module) executeTemplate(w http.ResponseWriter, name string, tmplVars interface{}) error {
 	b := new(bytes.Buffer)
-	err := mbtemplate.Templates.ExecuteTemplate(b, name, tmplVars)
+	err := template.Templates.ExecuteTemplate(b, name, tmplVars)
 	if err != nil {
 		return err
 	}
@@ -80,9 +80,9 @@ func (m *Module) executeTemplate(w http.ResponseWriter, name string, tmplVars in
 	return m.minify.Minify("text/html", w, b)
 }
 
-func makeNavbar(r *http.Request, l *language.Localizer) []*mbtemplate.NavbarNode {
+func makeNavbar(r *http.Request, l *language.Localizer) []*template.NavbarNode {
 	// create navbar
-	newNavbar := []*mbtemplate.NavbarNode{
+	newNavbar := []*template.NavbarNode{
 		{
 			Text:     l.TextHomeShort().String(),
 			MatchStr: regexp.MustCompile("^/app/$"),
@@ -91,7 +91,7 @@ func makeNavbar(r *http.Request, l *language.Localizer) []*mbtemplate.NavbarNode
 		},
 	}
 
-	mbtemplate.MakeNavbar(r, newNavbar)
+	template.MakeNavbar(r, newNavbar)
 
 	return newNavbar
 }

@@ -6,7 +6,6 @@ import (
 	"encoding/base64"
 	"encoding/gob"
 	"fmt"
-	"github.com/google/uuid"
 	"github.com/gorilla/sessions"
 	"github.com/rbcervilla/redisstore/v8"
 	"github.com/spf13/viper"
@@ -19,32 +18,13 @@ import (
 	"github.com/tyrm/megabot/internal/kv/redis"
 	"github.com/tyrm/megabot/internal/language"
 	"github.com/tyrm/megabot/internal/models"
-	mbtemplate "github.com/tyrm/megabot/internal/template"
 	"github.com/tyrm/megabot/internal/web"
-	"html/template"
+	mbtemplate "github.com/tyrm/megabot/internal/web/template"
 	"io/fs"
 	"io/ioutil"
 	"net/http"
 	"sync"
 )
-
-var tmplFuncs = template.FuncMap{
-	"dec": func(i int) int {
-		i--
-		return i
-	},
-	"groupSuperAdmin": func() uuid.UUID {
-		return models.GroupSuperAdmin()
-	},
-	"htmlSafe": func(html string) template.HTML {
-		/* #nosec G203 */
-		return template.HTML(html)
-	},
-	"inc": func(i int) int {
-		i++
-		return i
-	},
-}
 
 // Module contains a webapp module for the web server. Implements web.Module
 type Module struct {
