@@ -12,15 +12,16 @@ type Values struct {
 	SoftwareVersion string
 
 	// database
-	DbType         string
-	DbAddress      string
-	DbPort         int
-	DbUser         string
-	DbPassword     string
-	DbDatabase     string
-	DbTLSMode      string
-	DbTLSCACert    string
-	DbLoadTestData bool
+	DbType          string
+	DbAddress       string
+	DbPort          int
+	DbUser          string
+	DbPassword      string
+	DbDatabase      string
+	DbTLSMode       string
+	DbTLSCACert     string
+	DbLoadTestData  bool
+	DbEncryptionKey string
 
 	// redis
 	RedisAddress  string

@@ -10,15 +10,16 @@ type KeyNames struct {
 	SoftwareVersion string
 
 	// database
-	DbType         string
-	DbAddress      string
-	DbPort         string
-	DbUser         string
-	DbPassword     string
-	DbDatabase     string
-	DbTLSMode      string
-	DbTLSCACert    string
-	DbLoadTestData string
+	DbType          string
+	DbAddress       string
+	DbPort          string
+	DbUser          string
+	DbPassword      string
+	DbDatabase      string
+	DbTLSMode       string
+	DbTLSCACert     string
+	DbLoadTestData  string
+	DbEncryptionKey string
 
 	// redis
 	RedisAddress  string
@@ -67,15 +68,16 @@ var Keys = KeyNames{
 	SoftwareVersion: "software-version", // Set at build
 
 	// database
-	DbType:         "db-type",
-	DbAddress:      "db-address",
-	DbPort:         "db-port",
-	DbUser:         "db-user",
-	DbPassword:     "db-password",
-	DbDatabase:     "db-database",
-	DbTLSMode:      "db-tls-mode",
-	DbTLSCACert:    "db-tls-ca-cert",
-	DbLoadTestData: "test-data", // CLI only
+	DbType:          "db-type",
+	DbAddress:       "db-address",
+	DbPort:          "db-port",
+	DbUser:          "db-user",
+	DbPassword:      "db-password",
+	DbDatabase:      "db-database",
+	DbTLSMode:       "db-tls-mode",
+	DbTLSCACert:     "db-tls-ca-cert",
+	DbLoadTestData:  "test-data", // CLI only
+	DbEncryptionKey: "db-crypto-key",
 
 	// redis
 	RedisAddress:  "redis-address",
