@@ -27,6 +27,25 @@ func TestEncryptedString_Scan_Bytes(t *testing.T) {
 	}
 }
 
+func TestEncryptedString_Scan_BytesEmpty(t *testing.T) {
+	viper.Reset()
+
+	viper.Set(config.Keys.DbEncryptionKey, "0123456789012345")
+
+	var estring EncryptedString
+
+	var byts []byte
+
+	err := estring.Scan(byts)
+	if err != nil {
+		t.Errorf("unexpected error getting scanning, got: '%s', want: 'nil", err)
+		return
+	}
+	if estring != "" {
+		t.Errorf("unexpected value, got: '%s', want: '%s'", estring, "")
+	}
+}
+
 func TestEncryptedString_Scan_Int(t *testing.T) {
 	viper.Reset()
 
@@ -78,6 +97,23 @@ func TestEncryptedString_Scan_String(t *testing.T) {
 	}
 	if estring != "test string 1" {
 		t.Errorf("unexpected value, got: '%s', want: '%s'", estring, "test string 1")
+	}
+}
+
+func TestEncryptedString_Scan_StringEmpty(t *testing.T) {
+	viper.Reset()
+
+	viper.Set(config.Keys.DbEncryptionKey, "0123456789012345")
+
+	var estring EncryptedString
+
+	err := estring.Scan("")
+	if err != nil {
+		t.Errorf("unexpected error getting scanning, got: '%s', want: 'nil", err)
+		return
+	}
+	if estring != "" {
+		t.Errorf("unexpected value, got: '%s', want: '%s'", estring, "")
 	}
 }
 
