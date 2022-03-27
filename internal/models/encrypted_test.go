@@ -81,6 +81,14 @@ func TestEncryptedString_Scan_String(t *testing.T) {
 	}
 }
 
+func TestEncryptedString_String(t *testing.T) {
+	var e EncryptedString = "test string 1"
+
+	if e.String() != "test string 1" {
+		t.Errorf("unexpected value, got: '%s', want: '%s'", e.String(), "test string 1")
+	}
+}
+
 func TestEncryptedString_Value(t *testing.T) {
 	viper.Reset()
 

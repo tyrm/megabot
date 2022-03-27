@@ -13,8 +13,10 @@ import (
 	"strings"
 )
 
+// EncryptedString is a string which is written to the database encrypted
 type EncryptedString string
 
+// Scan decrypts the value while reading it from the database
 func (e *EncryptedString) Scan(src interface{}) error {
 	l := logger.WithField("func", "Scan").WithField("type", "EncryptedString")
 
@@ -61,6 +63,9 @@ func (e *EncryptedString) Scan(src interface{}) error {
 	return nil
 }
 
+func (e *EncryptedString) String() string { return string(*e) }
+
+// Value encrypts the value while writing it to the database
 func (e *EncryptedString) Value() (driver.Value, error) {
 	l := logger.WithField("func", "Value").WithField("type", "EncryptedString")
 
