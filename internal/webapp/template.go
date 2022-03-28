@@ -92,7 +92,7 @@ func makeNavbar(r *http.Request, l *language.Localizer) []*template.NavbarNode {
 		{
 			Text:     l.TextChatbot().String(),
 			MatchStr: regexp.MustCompile("^/app/chatbot"),
-			FAIcon:   "home",
+			FAIcon:   "comments",
 			URL:      "/app/chatbot",
 		},
 	}
