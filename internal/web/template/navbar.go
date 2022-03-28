@@ -1,9 +1,11 @@
 package template
 
 import (
-	"net/http"
 	"regexp"
 )
+
+// Navbar is a navbar that can be added to a page
+type Navbar []*NavbarNode
 
 // NavbarNode is an entry on a navbar, can be nested one level
 type NavbarNode struct {
@@ -18,22 +20,21 @@ type NavbarNode struct {
 	Children []NavbarNode
 }
 
-// MakeNavbar sets the active attribute based on the request url
-func MakeNavbar(r *http.Request, newNavbar []*NavbarNode) {
-	for i := 0; i < len(newNavbar); i++ {
-		if newNavbar[i].MatchStr != nil {
-			if newNavbar[i].MatchStr.Match([]byte(r.URL.Path)) {
-				newNavbar[i].Active = true
+// SetActive sets the active bool based on the match regex
+func (n *Navbar) SetActive(path string) {
+	for i := 0; i < len(*n); i++ {
+		if (*n)[i].MatchStr != nil {
+			if (*n)[i].MatchStr.Match([]byte(path)) {
+				(*n)[i].Active = true
 			}
 		}
-		for j := 0; j < len(newNavbar[i].Children); j++ {
-			if newNavbar[i].Children[j].MatchStr != nil {
-				if newNavbar[i].Children[j].MatchStr.Match([]byte(r.URL.Path)) {
-					newNavbar[i].Active = true
-					newNavbar[i].Children[j].Active = true
+		for j := 0; j < len((*n)[i].Children); j++ {
+			if (*n)[i].Children[j].MatchStr != nil {
+				if (*n)[i].Children[j].MatchStr.Match([]byte(path)) {
+					(*n)[i].Active = true
+					(*n)[i].Children[j].Active = true
 				}
 			}
 		}
 	}
-	return
 }

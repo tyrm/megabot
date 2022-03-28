@@ -82,7 +82,7 @@ func (m *Module) executeTemplate(w http.ResponseWriter, name string, tmplVars in
 
 func makeNavbar(r *http.Request, l *language.Localizer) []*template.NavbarNode {
 	// create navbar
-	newNavbar := []*template.NavbarNode{
+	newNavbar := template.Navbar{
 		{
 			Text:     l.TextHomeShort().String(),
 			MatchStr: regexp.MustCompile("^/app/$"),
@@ -97,7 +97,7 @@ func makeNavbar(r *http.Request, l *language.Localizer) []*template.NavbarNode {
 		},
 	}
 
-	template.MakeNavbar(r, newNavbar)
+	newNavbar.SetActive(r.URL.Path)
 
 	return newNavbar
 }
