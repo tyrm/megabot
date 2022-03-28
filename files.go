@@ -8,6 +8,7 @@ import "embed"
 //go:embed web/bootstrap-examples/*
 //go:embed web/static/css/bootstrap.min.css
 //go:embed web/static/css/bootstrap.min.css.map
+//go:embed web/static/css/default.min.css
 //go:embed web/static/css/error.min.css
 //go:embed web/static/css/login.min.css
 //go:embed web/static/img/*

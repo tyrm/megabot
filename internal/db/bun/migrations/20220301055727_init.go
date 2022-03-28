@@ -12,6 +12,7 @@ func init() {
 			modelList := []interface{}{
 				&models.User{},
 				&models.GroupMembership{},
+				&models.ChatbotService{},
 			}
 			for _, i := range modelList {
 				if _, err := tx.NewCreateTable().Model(i).IfNotExists().Exec(ctx); err != nil {

@@ -1,3 +1,7 @@
+[Chatbot]
+description = "Chatbot common phrase for chatbot"
+other = "Chatbot"
+
 [Email]
 description = "the common phrase for email"
 other = "Email"

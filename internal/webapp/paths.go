@@ -9,6 +9,7 @@ const (
 
 	pathFileBootstrapCSS = "/css/bootstrap.min.css"
 	pathFileBootstrapJS  = "/js/bootstrap.bundle.min.js"
+	pathFileDefaultCSS   = "/css/default.min.css"
 	pathFileErrorCSS     = "/css/error.min.css"
 	pathFileFontAwesome  = "/vendor/fontawesome-free-6.0.0-web/css/all.min.css"
 	pathFileLoginCSS     = "/css/login.min.css"
@@ -19,7 +20,8 @@ const (
 	pathFileBotMad      = "/img/bot/noun_mad-bot_black.svg"
 	pathFileBotOffline  = "/img/bot/noun_offline-bot_black.svg"
 
-	pathHome   = "/"
-	pathLogin  = "/login"
-	pathLogout = "/logout"
+	pathHome    = "/"
+	pathLogin   = "/login"
+	pathLogout  = "/logout"
+	pathChatbot = "/chatbot"
 )

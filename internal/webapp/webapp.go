@@ -73,6 +73,7 @@ func New(ctx context.Context, db db.DB, r *redis.Client, lMod *language.Module) 
 	paths := []string{
 		pathFileBootstrapCSS,
 		pathFileFontAwesome,
+		pathFileDefaultCSS,
 	}
 	for _, path := range paths {
 		filePath := staticDir + path
@@ -152,6 +153,7 @@ func (m *Module) Route(s web.Server) error {
 	protected.MethodNotAllowedHandler = m.methodNotAllowedHandler()
 
 	protected.HandleFunc(pathHome, m.HomeGetHandler).Methods("GET")
+	protected.HandleFunc(pathChatbot, m.ChatbotGetHandler).Methods("GET")
 	return nil
 }
 

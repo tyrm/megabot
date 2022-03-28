@@ -48,6 +48,7 @@ npm-upgrade:
 	cd web/bootstrap && npm upgrade
 
 stage-static:
+	minify web/static-src/css/default.css > web/static/css/default.min.css
 	minify web/static-src/css/error.css > web/static/css/error.min.css
 	minify web/static-src/css/login.css > web/static/css/login.min.css
 	minify web/bootstrap/dist/bootstrap.css > web/static/css/bootstrap.min.css

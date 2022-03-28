@@ -22,4 +22,5 @@ func Global(cmd *cobra.Command, values config.Values) {
 	cmd.PersistentFlags().String(config.Keys.DbDatabase, values.DbDatabase, usage.DbDatabase)
 	cmd.PersistentFlags().String(config.Keys.DbTLSMode, values.DbTLSMode, usage.DbTLSMode)
 	cmd.PersistentFlags().String(config.Keys.DbTLSCACert, values.DbTLSCACert, usage.DbTLSCACert)
+	cmd.PersistentFlags().String(config.Keys.DbEncryptionKey, values.DbEncryptionKey, usage.DbEncryptionKey)
 }
