@@ -7,6 +7,7 @@ import (
 	"github.com/spf13/viper"
 	"github.com/tyrm/megabot/internal/config"
 	"github.com/tyrm/megabot/internal/kv"
+	"strconv"
 	"testing"
 	"time"
 )
@@ -155,7 +156,7 @@ func TestClient_SetJWTAccessToken(t *testing.T) {
 		return
 	}
 
-	testID := "01FY8C6NW8BJDX2YMNJ8FBFCD2"
+	var testID int64 = 9999
 
 	err = client.SetJWTAccessToken(context.Background(), "test", testID, 1*time.Second)
 	if err != nil {
@@ -168,8 +169,13 @@ func TestClient_SetJWTAccessToken(t *testing.T) {
 		t.Logf("error checking test: %s", err.Error())
 		return
 	}
-	if resp != testID {
-		t.Logf("unexpected data in redis, got: %s, want: %s", resp, testID)
+	respInt, err := strconv.ParseInt(resp, 10, 64)
+	if err != nil {
+		t.Logf("error converting to int64: %s", err.Error())
+		return
+	}
+	if respInt != testID {
+		t.Logf("unexpected data in redis, got: %d, want: %d", respInt, testID)
 		return
 	}
 
@@ -198,7 +204,7 @@ func TestClient_SetJWTRefreshToken(t *testing.T) {
 		return
 	}
 
-	testID := "01FY8C6NW8BJDX2YMNJ8FBFCD2"
+	var testID int64 = 9999
 
 	err = client.SetJWTRefreshToken(context.Background(), "test", testID, 1*time.Second)
 	if err != nil {
@@ -211,8 +217,13 @@ func TestClient_SetJWTRefreshToken(t *testing.T) {
 		t.Logf("error checking test: %s", err.Error())
 		return
 	}
-	if resp != testID {
-		t.Logf("unexpected data in redis, got: %s, want: %s", resp, testID)
+	respInt, err := strconv.ParseInt(resp, 10, 64)
+	if err != nil {
+		t.Logf("error converting to int64: %s", err.Error())
+		return
+	}
+	if respInt != testID {
+		t.Logf("unexpected data in redis, got: %d, want: %d", respInt, testID)
 		return
 	}
 

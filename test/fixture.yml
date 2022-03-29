@@ -2,13 +2,11 @@
 - model: User
   rows:
     - _id: test
-      id: 01FX66G84MXP9DA4N3P9RVXVMB
       email: test@example.com
       encrypted_password: $2a$14$iU.0NmiiQ5vdQefC77RTMeWpEbBUFsmyOOddo0srZHqXJF7oVC7ye
       created_at: 2022-03-02 20:52:48
       updated_at: 2022-03-02 20:52:48
     - _id: test2
-      id: 01FX740C6CFRQYW5QP0JEJF20K
       email: test2@example.com
       encrypted_password: $2a$14$gleBixsHuNkr/TJGYbkTiOrci1J33778f/Nq39EAn7mlirR87XIx.
       created_at: 2022-03-03 05:28:25
@@ -16,7 +14,6 @@
 - model: GroupMembership
   rows:
     - _id: test_admin
-      id: 01FX7489AQABXYYW0SNFCNSFBN
       user_id: '{{ $.User.test.ID }}'
       group_id: !!binary "MTFhMDhhZWMtYjdlMC00NmI0LWJhNTMtZTk1YTg1OGQ0Y2Fk"
       created_at: 2022-03-02 20:52:48

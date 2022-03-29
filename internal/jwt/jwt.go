@@ -14,6 +14,7 @@ import (
 	"github.com/tyrm/megabot/internal/kv"
 	"github.com/tyrm/megabot/internal/models"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -64,7 +65,7 @@ type TokenDetails struct {
 }
 
 // CreateAuth inserts the token data into the KV
-func (m *Module) CreateAuth(ctx context.Context, userid string, td *TokenDetails) error {
+func (m *Module) CreateAuth(ctx context.Context, userid int64, td *TokenDetails) error {
 	l := logrus.WithField("func", "CreateAuth")
 
 	at := time.Unix(td.AtExpires, 0) //converting Unix to UTC(to Time object)
@@ -98,7 +99,7 @@ func (m *Module) CreateToken(ctx context.Context, user *models.User) (*TokenDeta
 	td.AccessID = newAccessToken
 
 	td.RtExpires = time.Now().Add(viper.GetDuration(config.Keys.RefreshExpiration)).Unix()
-	td.RefreshID = td.AccessID + "++" + user.ID
+	td.RefreshID = td.AccessID + "++" + strconv.FormatInt(user.ID, 10)
 
 	//Creating Access Token
 	atClaims := jwt.MapClaims{}
@@ -261,7 +262,7 @@ func (m *Module) RefreshAccessToken(ctx context.Context, refreshToken string) (*
 		}
 
 		// get user
-		user, err := m.db.ReadUserByID(ctx, claims[claimUserID].(string))
+		user, err := m.db.ReadUserByID(ctx, claims[claimUserID].(int64))
 		if err != nil {
 			logrus.Errorf("getting user: %s", err.Error())
 			return nil, err

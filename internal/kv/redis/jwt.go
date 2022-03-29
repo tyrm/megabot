@@ -47,7 +47,7 @@ func (c *Client) GetJWTRefreshToken(ctx context.Context, refreshTokenID string) 
 }
 
 // SetJWTAccessToken adds an access token to redis.
-func (c *Client) SetJWTAccessToken(ctx context.Context, accessTokenID, userID string, expire time.Duration) error {
+func (c *Client) SetJWTAccessToken(ctx context.Context, accessTokenID string, userID int64, expire time.Duration) error {
 	_, err := c.redis.SetEX(ctx, kv.KeyJwtAccess(accessTokenID), userID, expire).Result()
 	if err != nil {
 		return err
@@ -57,7 +57,7 @@ func (c *Client) SetJWTAccessToken(ctx context.Context, accessTokenID, userID st
 }
 
 // SetJWTRefreshToken adds a refresh token to redis.
-func (c *Client) SetJWTRefreshToken(ctx context.Context, refreshTokenID string, userID string, expire time.Duration) error {
+func (c *Client) SetJWTRefreshToken(ctx context.Context, refreshTokenID string, userID int64, expire time.Duration) error {
 	_, err := c.redis.SetEX(ctx, kv.KeyJwtRefresh(refreshTokenID), userID, expire).Result()
 	if err != nil {
 		return err

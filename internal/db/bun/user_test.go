@@ -8,13 +8,13 @@ import (
 )
 
 var testUser1 = models.User{
-	ID:                "01FX66G84MXP9DA4N3P9RVXVMB",
+	ID:                1,
 	Email:             "test@example.com",
 	EncryptedPassword: "$2a$14$iU.0NmiiQ5vdQefC77RTMeWpEbBUFsmyOOddo0srZHqXJF7oVC7ye",
 }
 
 var testUser2 = models.User{
-	ID:                "01FX740C6CFRQYW5QP0JEJF20K",
+	ID:                2,
 	Email:             "test2@example.com",
 	EncryptedPassword: "$2a$14$gleBixsHuNkr/TJGYbkTiOrci1J33778f/Nq39EAn7mlirR87XIx.",
 }
@@ -40,7 +40,7 @@ func TestUserDB_ReadUserByID(t *testing.T) {
 		},
 		{
 			user: &models.User{
-				ID: "01FY0TJFHGY8ESHJ1CGB7CV61F",
+				ID: 3,
 			},
 			exists: false,
 		},
@@ -56,7 +56,7 @@ func TestUserDB_ReadUserByID(t *testing.T) {
 
 			user, err := client.ReadUserByID(context.Background(), table.user.ID)
 			if err != nil {
-				t.Errorf("[%d] got error reading user %s: %s", i, table.user.ID, err.Error())
+				t.Errorf("[%d] got error reading user %d: %s", i, table.user.ID, err.Error())
 				return
 			}
 
@@ -67,7 +67,7 @@ func TestUserDB_ReadUserByID(t *testing.T) {
 				}
 
 				if user.ID != table.user.ID {
-					t.Errorf("[%d] wrong id for user: got '%s', want '%s'", i, user.ID, table.user.ID)
+					t.Errorf("[%d] wrong id for user: got '%d', want '%d'", i, user.ID, table.user.ID)
 				}
 				if user.Email != table.user.Email {
 					t.Errorf("[%d] wrong email for user: got '%s', want '%s'", i, user.Email, table.user.Email)
@@ -123,7 +123,7 @@ func TestUserDB_ReadUserByEmail(t *testing.T) {
 
 			user, err := client.ReadUserByEmail(context.Background(), table.user.Email)
 			if err != nil {
-				t.Errorf("[%d] got error reading user %s: %s", i, table.user.ID, err.Error())
+				t.Errorf("[%d] got error reading user %d: %s", i, table.user.ID, err.Error())
 				return
 			}
 
@@ -134,7 +134,7 @@ func TestUserDB_ReadUserByEmail(t *testing.T) {
 				}
 
 				if user.ID != table.user.ID {
-					t.Errorf("[%d] wrong id for user: got '%s', want '%s'", i, user.ID, table.user.ID)
+					t.Errorf("[%d] wrong id for user: got '%d', want '%d'", i, user.ID, table.user.ID)
 				}
 				if user.Email != table.user.Email {
 					t.Errorf("[%d] wrong email for user: got '%s', want '%s'", i, user.Email, table.user.Email)

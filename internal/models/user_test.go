@@ -3,7 +3,6 @@ package models
 import (
 	"context"
 	"fmt"
-	"github.com/go-playground/validator/v10"
 	"github.com/google/uuid"
 	"github.com/uptrace/bun"
 	"testing"
@@ -20,10 +19,6 @@ func TestUser_BeforeAppendModel_Insert(t *testing.T) {
 	}
 
 	emptyTime := time.Time{}
-	err = validator.New().Var(obj.ID, "required,ulid")
-	if err != nil {
-		t.Errorf("invalid id: %s", err.Error())
-	}
 	if obj.CreatedAt == emptyTime {
 		t.Errorf("invalid created at time: %s", obj.CreatedAt.String())
 	}
@@ -33,9 +28,7 @@ func TestUser_BeforeAppendModel_Insert(t *testing.T) {
 }
 
 func TestUser_BeforeAppendModel_Update(t *testing.T) {
-	obj := &User{
-		ID: "01FYFXS49Z22W6K1NPBAQ9M0GB",
-	}
+	obj := &User{}
 
 	err := obj.BeforeAppendModel(context.Background(), &bun.UpdateQuery{})
 	if err != nil {

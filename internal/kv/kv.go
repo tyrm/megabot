@@ -17,6 +17,6 @@ type JWT interface {
 	DeleteJWTRefreshToken(ctx context.Context, refreshTokenID string) error
 	GetJWTAccessToken(ctx context.Context, accessTokenID string) (string, error)
 	GetJWTRefreshToken(ctx context.Context, refreshTokenID string) (string, error)
-	SetJWTAccessToken(ctx context.Context, accessTokenID, userID string, expire time.Duration) error
-	SetJWTRefreshToken(ctx context.Context, refreshTokenID, userID string, expire time.Duration) error
+	SetJWTAccessToken(ctx context.Context, accessTokenID string, userID int64, expire time.Duration) error
+	SetJWTRefreshToken(ctx context.Context, refreshTokenID string, userID int64, expire time.Duration) error
 }

@@ -3,7 +3,6 @@ package models
 import (
 	"context"
 	"github.com/google/uuid"
-	"github.com/tyrm/megabot/internal/id"
 	"github.com/uptrace/bun"
 	"golang.org/x/crypto/bcrypt"
 	"time"
@@ -11,7 +10,7 @@ import (
 
 // User represents a human user.
 type User struct {
-	ID                string             `validate:"required,ulid" bun:"type:CHAR(26),pk,nullzero,notnull,unique"`
+	ID                int64              `validate:"-" bun:"id,pk,autoincrement"`
 	CreatedAt         time.Time          `validate:"-" bun:"type:timestamptz,nullzero,notnull,default:current_timestamp"`
 	UpdatedAt         time.Time          `validate:"-" bun:"type:timestamptz,nullzero,notnull,default:current_timestamp"`
 	Email             string             `validate:"-" bun:",nullzero,notnull,unique"`
@@ -27,14 +26,6 @@ var _ bun.BeforeAppendModelHook = (*User)(nil)
 func (u *User) BeforeAppendModel(_ context.Context, query bun.Query) error {
 	switch query.(type) {
 	case *bun.InsertQuery:
-		if u.ID == "" {
-			newID, err := id.NewULID()
-			if err != nil {
-				return err
-			}
-			u.ID = newID
-		}
-
 		now := time.Now()
 		u.CreatedAt = now
 		u.UpdatedAt = now

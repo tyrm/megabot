@@ -33,7 +33,7 @@ var Show action.Action = func(ctx context.Context) error {
 		return err
 	}
 
-	l.Infof("ID: %s", user.ID)
+	l.Infof("ID: %d", user.ID)
 	l.Infof("Email: %s", user.Email)
 
 	groupSlice := make([]string, len(user.Groups))

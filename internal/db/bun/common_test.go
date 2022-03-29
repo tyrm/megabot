@@ -44,7 +44,7 @@ func TestCommonDB_Create(t *testing.T) {
 		},
 		{
 			object: &models.GroupMembership{
-				UserID:  "01FX740C6CFRQYW5QP0JEJF20K",
+				UserID:  2,
 				GroupID: models.GroupSuperAdmin(),
 			},
 			check: testCreateGroupMembership,
@@ -74,7 +74,7 @@ func testCreateGroupMembership(t *testing.T, o interface{}, b db.DB) {
 	user := o.(*models.GroupMembership)
 	emptyTime := time.Time{}
 
-	if user.ID == "" {
+	if user.ID == 0 {
 		t.Errorf("invalid ID")
 	}
 	if user.CreatedAt == emptyTime {
@@ -89,7 +89,7 @@ func testCreateUser(t *testing.T, o interface{}, b db.DB) {
 	user := o.(*models.User)
 	emptyTime := time.Time{}
 
-	if user.ID == "" {
+	if user.ID == 0 {
 		t.Errorf("invalid ID")
 	}
 	if user.Disabled {

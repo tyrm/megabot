@@ -3,17 +3,16 @@ package models
 import (
 	"context"
 	"github.com/google/uuid"
-	"github.com/tyrm/megabot/internal/id"
 	"github.com/uptrace/bun"
 	"time"
 )
 
 // GroupMembership represents a user's membership in a group
 type GroupMembership struct {
-	ID        string    `validate:"required,ulid" bun:"type:CHAR(26),pk,nullzero,notnull,unique"`
+	ID        int64     `validate:"-" bun:"id,pk,autoincrement"`
 	CreatedAt time.Time `validate:"-" bun:"type:timestamptz,nullzero,notnull,default:current_timestamp"`
 	UpdatedAt time.Time `validate:"-" bun:"type:timestamptz,nullzero,notnull,default:current_timestamp"`
-	UserID    string    `validate:"required,ulid" bun:"type:CHAR(26),unique:groupmembership,notnull,nullzero"`
+	UserID    int64     `validate:"min=1" bun:",unique:groupmembership,notnull,nullzero"`
 	User      *User     `validate:"-" bun:"rel:belongs-to,join:user_id=id"`
 	GroupID   uuid.UUID `validate:"required" bun:",unique:groupmembership,notnull,nullzero"`
 }
@@ -24,14 +23,6 @@ var _ bun.BeforeAppendModelHook = (*GroupMembership)(nil)
 func (gm *GroupMembership) BeforeAppendModel(_ context.Context, query bun.Query) error {
 	switch query.(type) {
 	case *bun.InsertQuery:
-		if gm.ID == "" {
-			newID, err := id.NewULID()
-			if err != nil {
-				return err
-			}
-			gm.ID = newID
-		}
-
 		now := time.Now()
 		gm.CreatedAt = now
 		gm.UpdatedAt = now

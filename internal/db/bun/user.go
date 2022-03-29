@@ -19,7 +19,7 @@ func (u *userDB) newUserQ(user *models.User) *bun.SelectQuery {
 		Relation("Groups")
 }
 
-func (u *userDB) ReadUserByID(ctx context.Context, id string) (*models.User, db.Error) {
+func (u *userDB) ReadUserByID(ctx context.Context, id int64) (*models.User, db.Error) {
 	return u.getUser(
 		ctx,
 		func() (*models.User, bool) {

@@ -4,7 +4,7 @@ import "time"
 
 // User as of 20220301055727
 type User struct {
-	ID                string             `validate:"required,ulid" bun:"type:CHAR(26),pk,nullzero,notnull,unique"`
+	ID                int64              `validate:"-" bun:"id,pk,autoincrement"`
 	CreatedAt         time.Time          `validate:"-" bun:"type:timestamptz,nullzero,notnull,default:current_timestamp"`
 	UpdatedAt         time.Time          `validate:"-" bun:"type:timestamptz,nullzero,notnull,default:current_timestamp"`
 	Email             string             `validate:"-" bun:",nullzero,notnull,unique"`
