@@ -5,7 +5,35 @@ import (
 )
 
 // Navbar is a navbar that can be added to a page
-type Navbar []*NavbarNode
+type Navbar []NavbarNode
+
+// ActivateFromPath sets the active bool based on the match regex
+func (n *Navbar) ActivateFromPath(path string) {
+	SetActive(n, path)
+}
+
+// GetChildren returns the children of the node or nil if no children
+func (n *Navbar) GetChildren(i int) ActivableSlice {
+	if len((*n)[i].Children) == 0 {
+		return nil
+	}
+	return &(*n)[i].Children
+}
+
+// GetMatcher returns the matcher of the node or nil if no matcher
+func (n *Navbar) GetMatcher(i int) *regexp.Regexp {
+	return (*n)[i].MatchStr
+}
+
+// SetActive sets the active bool based on the match regex
+func (n *Navbar) SetActive(i int, a bool) {
+	(*n)[i].Active = a
+}
+
+// Len returns the matcher of the node or nil if no matcher
+func (n *Navbar) Len() int {
+	return len(*n)
+}
 
 // NavbarNode is an entry on a navbar, can be nested one level
 type NavbarNode struct {
@@ -17,24 +45,5 @@ type NavbarNode struct {
 	Active   bool
 	Disabled bool
 
-	Children []NavbarNode
-}
-
-// SetActive sets the active bool based on the match regex
-func (n *Navbar) SetActive(path string) {
-	for i := 0; i < len(*n); i++ {
-		if (*n)[i].MatchStr != nil {
-			if (*n)[i].MatchStr.Match([]byte(path)) {
-				(*n)[i].Active = true
-			}
-		}
-		for j := 0; j < len((*n)[i].Children); j++ {
-			if (*n)[i].Children[j].MatchStr != nil {
-				if (*n)[i].Children[j].MatchStr.Match([]byte(path)) {
-					(*n)[i].Active = true
-					(*n)[i].Children[j].Active = true
-				}
-			}
-		}
-	}
+	Children Navbar
 }

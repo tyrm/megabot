@@ -3,6 +3,7 @@ package webapp
 import (
 	"github.com/tyrm/megabot/internal/web/template"
 	"net/http"
+	"regexp"
 )
 
 // ChatbotGetHandler serves the chatbot main page
@@ -16,14 +17,14 @@ func (m *Module) ChatbotGetHandler(w http.ResponseWriter, r *http.Request) {
 		},
 	}
 
-	tmplVars.Sidebar = []template.SidebarSection{
+	tmplVars.Sidebar = []template.SidebarNode{
 		{
 			Children: []template.SidebarNode{
 				{
-					Text:   "Dashboard",
-					Icon:   "home",
-					URL:    "#",
-					Active: true,
+					Text:     "Dashboard",
+					MatchStr: regexp.MustCompile("^/app/chatbot$"),
+					Icon:     "home",
+					URL:      "#",
 				},
 				{
 					Text: "Orders",
@@ -50,7 +51,7 @@ func (m *Module) ChatbotGetHandler(w http.ResponseWriter, r *http.Request) {
 			},
 		},
 		{
-			Text: "Saved reports",
+			Label: "Saved reports",
 			Children: []template.SidebarNode{
 				{
 					Text: "Current month",
@@ -71,6 +72,8 @@ func (m *Module) ChatbotGetHandler(w http.ResponseWriter, r *http.Request) {
 			},
 		},
 	}
+
+	tmplVars.Sidebar.ActivateFromPath(r.URL.Path)
 
 	err := m.initTemplate(w, r, tmplVars)
 	if err != nil {

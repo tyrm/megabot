@@ -69,8 +69,8 @@
       <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
         <span>{{ .Text }}</span>
         {{- if .ButtonURL -}}
-        <a class="link-secondary" href="{{ .ButtonURL }}" aria-label="{{ .ButtonLabel }}">
-          <i class="fa-solid fa-{{ .ButtonIcon }}"></i>
+        <a class="link-secondary" href="{{ .URL }}" aria-label="{{ .Label }}">
+          <i class="fa-solid fa-{{ .Icon }}"></i>
         </a>
         {{- end }}
       </h6>

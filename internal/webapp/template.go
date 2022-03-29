@@ -80,7 +80,7 @@ func (m *Module) executeTemplate(w http.ResponseWriter, name string, tmplVars in
 	return m.minify.Minify("text/html", w, b)
 }
 
-func makeNavbar(r *http.Request, l *language.Localizer) []*template.NavbarNode {
+func makeNavbar(r *http.Request, l *language.Localizer) template.Navbar {
 	// create navbar
 	newNavbar := template.Navbar{
 		{
@@ -97,7 +97,7 @@ func makeNavbar(r *http.Request, l *language.Localizer) []*template.NavbarNode {
 		},
 	}
 
-	newNavbar.SetActive(r.URL.Path)
+	newNavbar.ActivateFromPath(r.URL.Path)
 
 	return newNavbar
 }

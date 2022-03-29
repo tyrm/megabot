@@ -4,5 +4,5 @@ package template
 type ChatbotTemplate struct {
 	Common
 
-	Sidebar []SidebarSection
+	Sidebar Sidebar
 }

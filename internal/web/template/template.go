@@ -18,7 +18,7 @@ type InitTemplate interface {
 	AddFooterScript(s Script)
 	SetLanguage(l string)
 	SetLocalizer(l *language.Localizer)
-	SetNavbar(nodes []*NavbarNode)
+	SetNavbar(nodes Navbar)
 	SetUser(user *models.User)
 }
 

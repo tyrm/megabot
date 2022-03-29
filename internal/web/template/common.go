@@ -12,7 +12,7 @@ type Common struct {
 
 	FooterScripts []Script
 	HeadLinks     []HeadLink
-	NavBar        []*NavbarNode
+	NavBar        Navbar
 	PageTitle     string
 	User          *models.User
 }
@@ -48,7 +48,7 @@ func (t *Common) SetLocalizer(l *language.Localizer) {
 }
 
 // SetNavbar sets the top level navbar used by the template
-func (t *Common) SetNavbar(nodes []*NavbarNode) {
+func (t *Common) SetNavbar(nodes Navbar) {
 	t.NavBar = nodes
 	return
 }
