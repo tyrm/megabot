@@ -1,10 +1,40 @@
 package webapp
 
 import (
+	"github.com/tyrm/megabot/internal/language"
 	"github.com/tyrm/megabot/internal/web/template"
 	"net/http"
 	"regexp"
 )
+
+func makeChatbotSidebar(r *http.Request) template.Sidebar {
+	// get localizer
+	localizer := r.Context().Value(localizerKey).(*language.Localizer)
+
+	// create sidebar
+	newSidebar := template.Sidebar{
+		{
+			Children: []template.SidebarNode{
+				{
+					Text:     localizer.TextDashboard().String(),
+					MatchStr: regexp.MustCompile("^" + pathBase + pathChatbot + "$"),
+					Icon:     "home",
+					URL:      pathBase + pathChatbot,
+				},
+				{
+					Text:     localizer.TextServices().String(),
+					MatchStr: regexp.MustCompile("^" + pathBase + pathChatbot + pathChatbotServices + "$"),
+					Icon:     "person-digging",
+					URL:      pathBase + pathChatbot + pathChatbotServices,
+				},
+			},
+		},
+	}
+
+	newSidebar.ActivateFromPath(r.URL.Path)
+
+	return newSidebar
+}
 
 // ChatbotGetHandler serves the chatbot main page
 func (m *Module) ChatbotGetHandler(w http.ResponseWriter, r *http.Request) {
@@ -17,63 +47,7 @@ func (m *Module) ChatbotGetHandler(w http.ResponseWriter, r *http.Request) {
 		},
 	}
 
-	tmplVars.Sidebar = []template.SidebarNode{
-		{
-			Children: []template.SidebarNode{
-				{
-					Text:     "Dashboard",
-					MatchStr: regexp.MustCompile("^/app/chatbot$"),
-					Icon:     "home",
-					URL:      "#",
-				},
-				{
-					Text: "Orders",
-					Icon: "file",
-					URL:  "#",
-				},
-				{
-					Text: "Products",
-					Icon: "cart-shopping",
-					URL:  "#",
-				},
-				{
-					Text: "Customers",
-					URL:  "#",
-				},
-				{
-					Text: "Reports",
-					URL:  "#",
-				},
-				{
-					Text: "Integrations",
-					URL:  "#",
-				},
-			},
-		},
-		{
-			Label: "Saved reports",
-			Children: []template.SidebarNode{
-				{
-					Text: "Current month",
-					URL:  "#",
-				},
-				{
-					Text: "Last Quarter",
-					URL:  "#",
-				},
-				{
-					Text: "Social engagement",
-					URL:  "#",
-				},
-				{
-					Text: "Year-end sale",
-					URL:  "#",
-				},
-			},
-		},
-	}
-
-	tmplVars.Sidebar.ActivateFromPath(r.URL.Path)
+	tmplVars.Sidebar = makeChatbotSidebar(r)
 
 	err := m.initTemplate(w, r, tmplVars)
 	if err != nil {

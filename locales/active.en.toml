@@ -2,6 +2,10 @@
 description = "Chatbot common phrase for chatbot"
 other = "Chatbot"
 
+[Dashboard]
+description = "the common phrase for dashboard"
+other = "Dashboard"
+
 [Email]
 description = "the common phrase for email"
 other = "Email"
@@ -29,3 +33,7 @@ other = "Login"
 [Password]
 description = "the common phrase for password"
 other = "Password"
+
+[Services]
+description = "the common phrase for services"
+other = "Services"

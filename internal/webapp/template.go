@@ -85,15 +85,15 @@ func makeNavbar(r *http.Request, l *language.Localizer) template.Navbar {
 	newNavbar := template.Navbar{
 		{
 			Text:     l.TextHomeShort().String(),
-			MatchStr: regexp.MustCompile("^/app/$"),
+			MatchStr: regexp.MustCompile("^" + pathBase + "/$"),
 			FAIcon:   "home",
-			URL:      "/app/",
+			URL:      pathBase + "/",
 		},
 		{
 			Text:     l.TextChatbot().String(),
-			MatchStr: regexp.MustCompile("^/app/chatbot"),
+			MatchStr: regexp.MustCompile("^" + pathBase + pathChatbot),
 			FAIcon:   "comments",
-			URL:      "/app/chatbot",
+			URL:      pathBase + pathChatbot,
 		},
 	}
 

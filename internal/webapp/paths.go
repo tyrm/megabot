@@ -1,8 +1,7 @@
 package webapp
 
 const (
-	templateDir = "web/template"
-	staticDir   = "web/static"
+	staticDir = "web/static"
 
 	pathBase   = "/app"
 	pathStatic = "/static"
@@ -20,8 +19,10 @@ const (
 	pathFileBotMad      = "/img/bot/noun_mad-bot_black.svg"
 	pathFileBotOffline  = "/img/bot/noun_offline-bot_black.svg"
 
-	pathHome    = "/"
-	pathLogin   = "/login"
-	pathLogout  = "/logout"
-	pathChatbot = "/chatbot"
+	pathHome   = "/"
+	pathLogin  = "/login"
+	pathLogout = "/logout"
+
+	pathChatbot         = "/chatbot"
+	pathChatbotServices = "/services"
 )

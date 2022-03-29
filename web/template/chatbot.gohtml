@@ -1,16 +1,22 @@
-{{ define "chatbot" -}}
+{{ define "chatbot_header" -}}
 {{- template "header" . }}
-  <div class="container-fluid">
-    <div class="row">
+<div class="container-fluid">
+  <div class="row">
+    {{- template "sidebar" .Sidebar }}
+    <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+      <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+{{ end }}
 
-      {{- template "sidebar" .Sidebar }}
-
-      <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-          <h1><i class="fas fa-globe"></i> {{ .Localizer.TextHelloWorld }}</h1>
-        </div>
-      </main>
-    </div>
-  </div><!-- /.container -->
+{{ define "chatbot_footer" -}}
+      </div>
+    </main>
+  </div>
+</div><!-- /.container -->
 {{- template "footer" . -}}
+{{ end }}
+
+{{ define "chatbot" -}}
+{{- template "chatbot_header" . }}
+<h1 lang="{{ .Localizer.TextChatbot.Language }}"><i class="fas fa-globe"></i> {{ .Localizer.TextChatbot }}</h1>
+{{- template "chatbot_footer" . }}
 {{ end }}
