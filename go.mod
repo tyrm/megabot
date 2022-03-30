@@ -20,7 +20,6 @@ require (
 	github.com/lucas-clemente/quic-go v0.26.0
 	github.com/minio/minio-go/v7 v7.0.23
 	github.com/nicksnyder/go-i18n/v2 v2.2.0
-	github.com/oklog/ulid v1.3.1
 	github.com/rbcervilla/redisstore/v8 v8.1.0
 	github.com/sirupsen/logrus v1.8.1
 	github.com/speps/go-hashids/v2 v2.0.1

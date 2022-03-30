@@ -10,7 +10,6 @@ import (
 	"github.com/spf13/viper"
 	"github.com/tyrm/megabot/internal/config"
 	"github.com/tyrm/megabot/internal/db"
-	"github.com/tyrm/megabot/internal/id"
 	"github.com/tyrm/megabot/internal/kv"
 	"github.com/tyrm/megabot/internal/models"
 	"net/http"
@@ -91,12 +90,7 @@ func (m *Module) CreateToken(ctx context.Context, user *models.User) (*TokenDeta
 
 	td := &TokenDetails{}
 	td.AtExpires = time.Now().Add(viper.GetDuration(config.Keys.AccessExpiration)).Unix()
-	newAccessToken, err := id.NewRandomULID()
-	if err != nil {
-		l.Errorf("generating id: %s", err.Error())
-		return nil, err
-	}
-	td.AccessID = newAccessToken
+	td.AccessID = uuid.New().String()
 
 	td.RtExpires = time.Now().Add(viper.GetDuration(config.Keys.RefreshExpiration)).Unix()
 	td.RefreshID = td.AccessID + "++" + strconv.FormatInt(user.ID, 10)
@@ -109,6 +103,7 @@ func (m *Module) CreateToken(ctx context.Context, user *models.User) (*TokenDeta
 	atClaims[claimExpires] = td.AtExpires
 	atClaims[claimGroups] = user.Groups
 	at := jwt.NewWithClaims(jwt.SigningMethodHS512, atClaims)
+	var err error
 	td.AccessToken, err = at.SignedString([]byte(viper.GetString(config.Keys.AccessSecret)))
 	if err != nil {
 		l.Errorf("access token signed string: %s", err.Error())
