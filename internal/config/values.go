@@ -10,6 +10,7 @@ type Values struct {
 	// application
 	ApplicationName string
 	SoftwareVersion string
+	TokenSalt       string
 
 	// database
 	DbType          string

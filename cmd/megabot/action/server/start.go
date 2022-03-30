@@ -80,7 +80,6 @@ var Start action.Action = func(ctx context.Context) error {
 		}
 		webServers = append(webServers, server2)
 	}
-	l.Infof("%v", viper.GetBool(config.Keys.ServerHTTP3))
 	if viper.GetBool(config.Keys.ServerHTTP3) {
 		l.Debugf("creating http3 server")
 		server3, err := web.New3(ctx)

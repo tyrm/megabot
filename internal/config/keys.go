@@ -8,6 +8,7 @@ type KeyNames struct {
 	// application
 	ApplicationName string
 	SoftwareVersion string
+	TokenSalt       string
 
 	// database
 	DbType          string
@@ -66,6 +67,7 @@ var Keys = KeyNames{
 	// application
 	ApplicationName: "application-name",
 	SoftwareVersion: "software-version", // Set at build
+	TokenSalt:       "token-salt",
 
 	// database
 	DbType:          "db-type",

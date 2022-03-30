@@ -12,6 +12,7 @@ func Global(cmd *cobra.Command, values config.Values) {
 
 	// application
 	cmd.PersistentFlags().String(config.Keys.ApplicationName, values.ApplicationName, usage.ApplicationName)
+	cmd.PersistentFlags().String(config.Keys.TokenSalt, values.TokenSalt, usage.TokenSalt)
 
 	// database
 	cmd.PersistentFlags().String(config.Keys.DbType, values.DbType, usage.DbType)
