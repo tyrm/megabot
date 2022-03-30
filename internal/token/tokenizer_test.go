@@ -145,3 +145,33 @@ func testNewTestTokenizer() (*Tokenizer, error) {
 	viper.Set(config.Keys.TokenSalt, "test1234")
 	return New()
 }
+
+func BenchmarkTokenizer_DecodeToken(b *testing.B) {
+	tokenizer, err := testNewTestTokenizer()
+	if err != nil {
+		b.Errorf("init: %s", err.Error())
+		return
+	}
+
+	b.ResetTimer()
+	b.RunParallel(func(pb *testing.PB) {
+		for pb.Next() {
+			_, _, _ = tokenizer.DecodeToken("AMroVP59cwLPE5pb")
+		}
+	})
+}
+
+func BenchmarkTokenizer_EncodeToken(b *testing.B) {
+	tokenizer, err := testNewTestTokenizer()
+	if err != nil {
+		b.Errorf("init: %s", err.Error())
+		return
+	}
+
+	b.ResetTimer()
+	b.RunParallel(func(pb *testing.PB) {
+		for pb.Next() {
+			_, _ = tokenizer.EncodeToken(KindUser, 123)
+		}
+	})
+}

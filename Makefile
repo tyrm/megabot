@@ -70,6 +70,9 @@ test: tidy fmt lint #gosec
 test-ext: tidy fmt lint #gosec
 	MB_TLS_CERT=../../server.crt MB_TLS_KEY=../../server.key go test --tags=postgres,redis -cover ./...
 
+test-bench-ext: tidy fmt lint #gosec
+	MB_TLS_CERT=../../server.crt MB_TLS_KEY=../../server.key go test  -run=XXX -bench=. --tags=postgres,redis -cover ./...
+
 test-race: tidy fmt lint #gosec
 	MB_TLS_CERT=../../server.crt MB_TLS_KEY=../../server.key go test -race -cover ./...
 
