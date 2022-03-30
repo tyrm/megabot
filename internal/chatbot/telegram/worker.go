@@ -59,7 +59,7 @@ func (s *Service) StartWorkers(ctx context.Context, workerCount int) chatbot.Err
 	}
 	_, err := s.botapi.Request(wh)
 	if err != nil {
-		l.Errorf("error creating webhook for %s (telegram)", s.id)
+		l.Errorf("error creating webhook for %d (telegram)", s.id)
 
 		l.Debugf("closing update channel")
 		close(s.updateChan)
@@ -79,14 +79,14 @@ func (s *Service) StopWorkers(ctx context.Context) chatbot.Error {
 
 	// skip if stopped
 	if s.GetWorkerState() == chatbot.StateStopped {
-		l.Warnf("tried to stop workers on %s (telegram) but they are not running", s.id)
+		l.Warnf("tried to stop workers on %d (telegram) but they are not running", s.id)
 		return nil
 	}
 
 	// ask telegram to stop calling webhook
 	_, err := s.botapi.Request(&tgbotapi.DeleteWebhookConfig{})
 	if err != nil {
-		l.Errorf("error deleting webhook config for %s (telegram)", s.id)
+		l.Errorf("error deleting webhook config for %d (telegram)", s.id)
 		return chatbot.ErrAPIError
 	}
 

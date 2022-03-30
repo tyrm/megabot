@@ -11,6 +11,7 @@ type ChatbotService struct {
 	ID          int64                  `validate:"-" bun:"id,pk,autoincrement"`
 	CreatedAt   time.Time              `validate:"-" bun:"type:timestamptz,nullzero,notnull,default:current_timestamp"`
 	UpdatedAt   time.Time              `validate:"-" bun:"type:timestamptz,nullzero,notnull,default:current_timestamp"`
-	ServiceType chatbot.ChatService    `validate:"min=1,max=1" bun:",nullzero,notnull"`
+	Description string                 `validate:"required" bun:",nullzero,notnull"`
+	ServiceType chatbot.ChatService    `validate:"min=1,max=2" bun:",nullzero,notnull"`
 	Config      models.EncryptedString `validate:"-" bun:",nullzero,notnull"`
 }

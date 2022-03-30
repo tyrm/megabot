@@ -36,14 +36,17 @@ const (
 
 // Bun represents a bun db connection and it's error handler
 type Bun struct {
-	errProc func(error) db.Error
 	*bun.DB
+
+	errProc func(error) db.Error
 }
 
 // Client is a DB interface compatible client for Bun
 type Client struct {
+	chatbotDB
 	commonDB
 	userDB
+
 	bun *Bun
 }
 

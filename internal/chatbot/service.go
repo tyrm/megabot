@@ -11,12 +11,16 @@ type ChatService int
 const (
 	// ServiceUnknown is an unknown chat service
 	ServiceUnknown ChatService = iota
+	// ServiceMock is a mock service used only for testing
+	ServiceMock
 	// ServiceTelegram is the telegram service (https://telegram.org/)
 	ServiceTelegram
 )
 
 func (s ChatService) String() string {
 	switch s {
+	case ServiceMock:
+		return "mock"
 	case ServiceTelegram:
 		return "telegram"
 	default:

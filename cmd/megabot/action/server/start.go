@@ -14,6 +14,7 @@ import (
 	"github.com/tyrm/megabot/internal/jwt"
 	"github.com/tyrm/megabot/internal/kv/redis"
 	"github.com/tyrm/megabot/internal/language"
+	"github.com/tyrm/megabot/internal/token"
 	"github.com/tyrm/megabot/internal/web"
 	"github.com/tyrm/megabot/internal/webapp"
 	"os"
@@ -27,6 +28,12 @@ var Start action.Action = func(ctx context.Context) error {
 	l := logger.WithField("func", "Start")
 
 	l.Infof("starting")
+	_, err := token.New()
+	if err != nil {
+		l.Errorf("db: %s", err.Error())
+		return err
+	}
+
 	dbClient, err := bun.New(ctx)
 	if err != nil {
 		l.Errorf("db: %s", err.Error())

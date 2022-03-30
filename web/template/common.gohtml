@@ -59,6 +59,26 @@
   </nav>
 {{- end }}
 
+{{define "pagination" -}}
+<nav>
+  <ul class="pagination">
+      {{range $rm := .}}
+        <li class="page-item{{if .Active}} active{{end}}{{if .Disabled}} disabled{{end}}"{{if .Active}} aria-current="page"{{end}}>
+            {{if .HRef}}
+              <a class="page-link" href="{{.HRef}}">
+                  {{if .DisplayHTML}}<span aria-hidden="true">{{.DisplayHTML | htmlSafe}}</span>{{else}}{{.Text}}{{end}}{{if .Active}} <span class="sr-only">(current)</span>{{end}}
+              </a>
+            {{else}}
+              <span class="page-link"{{if .DisplayHTML}} aria-label="{{.Text}}"{{end}}>
+              {{if .DisplayHTML}}<span aria-hidden="true">{{.DisplayHTML | htmlSafe}}</span>{{else}}{{.Text}}{{end}}{{if .Active}} <span class="sr-only">(current)</span>{{end}}
+          </span>
+            {{end}}
+        </li>
+      {{end}}
+  </ul>
+</nav>
+{{- end}}
+
 {{ define "script" }}<script src="{{ .Src }}"{{if .Integrity}} integrity="{{ htmlSafe .Integrity }}"{{end}}{{if .CrossOrigin}} crossorigin="{{ .CrossOrigin }}"{{end}}></script>{{ end }}
 
 {{ define "sidebar" }}

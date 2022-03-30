@@ -8,7 +8,7 @@ import (
 
 // Service works with the telegram service
 type Service struct {
-	id     string
+	id     int64
 	botapi *tgbotapi.BotAPI
 
 	// worker
@@ -20,7 +20,7 @@ type Service struct {
 }
 
 // New creates a new telegram service
-func New(id, tgToken string) (chatbot.Service, error) {
+func New(id int64, tgToken string) (chatbot.Service, error) {
 	botapi, err := tgbotapi.NewBotAPI(tgToken)
 	if err != nil {
 		return nil, err

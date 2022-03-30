@@ -10,6 +10,7 @@ import (
 
 func TestChatbotService_BeforeAppendModel_Insert(t *testing.T) {
 	obj := &ChatbotService{
+		Description: "test 1",
 		ServiceType: chatbot.ServiceTelegram,
 	}
 
@@ -30,6 +31,7 @@ func TestChatbotService_BeforeAppendModel_Insert(t *testing.T) {
 
 func TestChatbotService_BeforeAppendModel_Update(t *testing.T) {
 	obj := &ChatbotService{
+		Description: "test 1",
 		ServiceType: chatbot.ServiceTelegram,
 	}
 

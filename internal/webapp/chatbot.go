@@ -59,5 +59,29 @@ func (m *Module) ChatbotGetHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		l.Errorf("could not render home template: %s", err.Error())
 	}
+}
 
+// ChatbotServiceGetHandler serves the chatbot services page
+func (m *Module) ChatbotServiceGetHandler(w http.ResponseWriter, r *http.Request) {
+	l := logger.WithField("func", "ChatbotServiceGetHandler")
+
+	// Init template variables
+	tmplVars := &template.ChatbotServiceTemplate{
+		Common: template.Common{
+			PageTitle: "Chatbot",
+		},
+	}
+
+	tmplVars.Sidebar = makeChatbotSidebar(r)
+
+	err := m.initTemplate(w, r, tmplVars)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	err = m.executeTemplate(w, "chatbot_service", tmplVars)
+	if err != nil {
+		l.Errorf("could not render home template: %s", err.Error())
+	}
 }
