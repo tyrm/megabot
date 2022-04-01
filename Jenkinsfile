@@ -32,7 +32,7 @@ pipeline {
             sh """NETWORK_NAME="${networkName}" docker-compose -f ${composeFile} pull
             NETWORK_NAME="${networkName}" docker-compose -p ${env.BUILD_TAG} -f ${composeFile} up -d
 
-            docker exec -it ${env.BUILD_TAG}_mariadb_1 mysqladmin status"""
+            docker exec ${env.BUILD_TAG}_mariadb_1 mysqladmin status"""
           }
         }
       }
