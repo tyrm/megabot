@@ -20,7 +20,7 @@ var testUser2 = models.User{
 }
 
 func TestUserDB_ReadUserByID(t *testing.T) {
-	client, err := testNewTestClient()
+	client, err := testNewSqliteClient()
 	if err != nil {
 		t.Errorf("unexpected error initializing pg options: %s", err.Error())
 		return
@@ -87,7 +87,7 @@ func TestUserDB_ReadUserByID(t *testing.T) {
 }
 
 func TestUserDB_ReadUserByEmail(t *testing.T) {
-	client, err := testNewTestClient()
+	client, err := testNewSqliteClient()
 	if err != nil {
 		t.Errorf("unexpected error initializing pg options: %s", err.Error())
 		return

@@ -494,31 +494,6 @@ func TestSqliteConn_BadPath(t *testing.T) {
 	}
 }
 
-func testNewTestClient() (db.DB, error) {
-	viper.Reset()
-
-	viper.Set(config.Keys.DbType, "sqlite")
-	viper.Set(config.Keys.DbAddress, ":memory:")
-	viper.Set(config.Keys.DbEncryptionKey, "test1234test5678")
-
-	client, err := New(context.Background())
-	if err != nil {
-		return nil, err
-	}
-
-	err = client.DoMigration(context.Background())
-	if err != nil {
-		return nil, err
-	}
-
-	err = client.LoadTestData(context.Background())
-	if err != nil {
-		return nil, err
-	}
-
-	return client, nil
-}
-
 func TestProcessError(t *testing.T) {
 	bun := &Bun{
 		errProc: processPostgresError,
@@ -553,4 +528,29 @@ func TestProcessError(t *testing.T) {
 			}
 		})
 	}
+}
+
+func testNewSqliteClient() (db.DB, error) {
+	viper.Reset()
+
+	viper.Set(config.Keys.DbType, "sqlite")
+	viper.Set(config.Keys.DbAddress, ":memory:")
+	viper.Set(config.Keys.DbEncryptionKey, "test1234test5678")
+
+	client, err := New(context.Background())
+	if err != nil {
+		return nil, err
+	}
+
+	err = client.DoMigration(context.Background())
+	if err != nil {
+		return nil, err
+	}
+
+	err = client.LoadTestData(context.Background())
+	if err != nil {
+		return nil, err
+	}
+
+	return client, nil
 }

@@ -11,7 +11,7 @@ import (
 )
 
 func TestCommonDB_Close(t *testing.T) {
-	client, err := testNewTestClient()
+	client, err := testNewSqliteClient()
 	if err != nil {
 		t.Errorf("init: %s", err.Error())
 		return
@@ -25,7 +25,7 @@ func TestCommonDB_Close(t *testing.T) {
 }
 
 func TestCommonDB_Create(t *testing.T) {
-	client, err := testNewTestClient()
+	client, err := testNewSqliteClient()
 	if err != nil {
 		t.Errorf("init: %s", err.Error())
 		return

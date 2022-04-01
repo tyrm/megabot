@@ -9,7 +9,7 @@ import (
 )
 
 func TestChatbotDB_ReadChatbotServiceByID(t *testing.T) {
-	client, err := testNewTestClient()
+	client, err := testNewSqliteClient()
 	if err != nil {
 		t.Errorf("unexpected error initializing pg options: %s", err.Error())
 		return

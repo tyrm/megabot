@@ -3,9 +3,35 @@ package bun
 import (
 	"errors"
 	"fmt"
+	"github.com/go-sql-driver/mysql"
 	"github.com/jackc/pgconn"
 	"testing"
 )
+
+func TestProcessMysqlError(t *testing.T) {
+	tables := []struct {
+		x error
+		n string
+	}{
+		{errors.New("test"), "test"},
+		{&mysql.MySQLError{Number: 1, Message: "test2"}, "Error 1: test2"},
+	}
+
+	for i, table := range tables {
+		i := i
+		table := table
+
+		name := fmt.Sprintf("[%d] Running processMysqlError for %s", i, table.x.Error())
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+
+			err := processMysqlError(table.x)
+			if err.Error() != table.n {
+				t.Errorf("[%d] invalid error, got: '%s', want: '%s'", i, err.Error(), table.n)
+			}
+		})
+	}
+}
 
 func TestProcessPostgresError(t *testing.T) {
 	tables := []struct {
