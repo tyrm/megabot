@@ -34,7 +34,7 @@ pipeline {
           }
           retry(5) {
             sleep 5
-            sh "docker exec ${env.BUILD_TAG}_mariadb_1 mysqladmin status"
+            sh "docker exec ${env.BUILD_TAG}_mariadb_1 mysqladmin --password test status"
           }
         }
       }
