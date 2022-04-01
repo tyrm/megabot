@@ -39,7 +39,7 @@ pipeline {
     stage('Wait for External Requirements') {
       agent {
         docker {
-          image 'gobuild:1.18'
+          image 'subfuzion/netcat:latest'
           args '--network ${networkName} -e HOME=${WORKSPACE} -v /var/lib/jenkins/go:/go'
           reuseNode true
         }
