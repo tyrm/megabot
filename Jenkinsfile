@@ -34,7 +34,7 @@ pipeline {
           }
           retry(30) {
             sleep 1
-            sh "docker run -t --rm --network=${networkName} subfuzion/netcat mariadb 3306"
+            sh "docker run -t --rm --network=${networkName} subfuzion/netcat -z mariadb 3306"
           }
         }
       }
