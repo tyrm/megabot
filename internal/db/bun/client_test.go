@@ -19,7 +19,7 @@ func TestDeriveBunDBMyOptions(t *testing.T) {
 	dbPort := 3306
 	dbUser := "user"
 
-	epectedOpts := "user:password@tcp(db.example.com:3306)/database"
+	expectedOpts := "user:password@tcp(db.example.com:3306)/database"
 
 	viper.Reset()
 
@@ -40,8 +40,8 @@ func TestDeriveBunDBMyOptions(t *testing.T) {
 		t.Errorf("opts is nil")
 		return
 	}
-	if opts != epectedOpts {
-		t.Errorf("unexpected options, got: '%s', want: '%s'", opts, epectedOpts)
+	if opts != expectedOpts {
+		t.Errorf("unexpected options, got: '%s', want: '%s'", opts, expectedOpts)
 	}
 }
 
@@ -53,7 +53,7 @@ func TestDeriveBunDBMyOptions_TLSDisable(t *testing.T) {
 	dbTLSMode := dbTLSModeDisable
 	dbUser := "user"
 
-	epectedOpts := "user:password@tcp(db.example.com:3306)/database"
+	expectedOpts := "user:password@tcp(db.example.com:3306)/database"
 
 	viper.Reset()
 
@@ -75,8 +75,8 @@ func TestDeriveBunDBMyOptions_TLSDisable(t *testing.T) {
 		t.Errorf("opts is nil")
 		return
 	}
-	if opts != epectedOpts {
-		t.Errorf("unexpected options, got: '%s', want: '%s'", opts, epectedOpts)
+	if opts != expectedOpts {
+		t.Errorf("unexpected options, got: '%s', want: '%s'", opts, expectedOpts)
 	}
 }
 
@@ -88,7 +88,7 @@ func TestDeriveBunDBMyOptions_TLSEnable(t *testing.T) {
 	dbTLSMode := dbTLSModeEnable
 	dbUser := "user"
 
-	epectedOpts := "user:password@tcp(db.example.com:3306)/database?tls=bun"
+	expectedOpts := "user:password@tcp(db.example.com:3306)/database?tls=bun"
 
 	viper.Reset()
 
@@ -110,8 +110,8 @@ func TestDeriveBunDBMyOptions_TLSEnable(t *testing.T) {
 		t.Errorf("opts is nil")
 		return
 	}
-	if opts != epectedOpts {
-		t.Errorf("unexpected options, got: '%s', want: '%s'", opts, epectedOpts)
+	if opts != expectedOpts {
+		t.Errorf("unexpected options, got: '%s', want: '%s'", opts, expectedOpts)
 	}
 }
 
@@ -123,7 +123,7 @@ func TestDeriveBunDBMyOptions_TLSRequire(t *testing.T) {
 	dbTLSMode := dbTLSModeRequire
 	dbUser := "user"
 
-	epectedOpts := "user:password@tcp(db.example.com:3306)/database?tls=bun"
+	expectedOpts := "user:password@tcp(db.example.com:3306)/database?tls=bun"
 
 	viper.Reset()
 
@@ -147,8 +147,8 @@ func TestDeriveBunDBMyOptions_TLSRequire(t *testing.T) {
 		t.Errorf("opts is nil")
 		return
 	}
-	if opts != epectedOpts {
-		t.Errorf("unexpected options, got: '%s', want: '%s'", opts, epectedOpts)
+	if opts != expectedOpts {
+		t.Errorf("unexpected options, got: '%s', want: '%s'", opts, expectedOpts)
 	}
 }
 
