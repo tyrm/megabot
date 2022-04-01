@@ -1,5 +1,13 @@
 version: '3.5'
 services:
+  mariadb:
+    image: mariadb:10
+    environment:
+      - MARIADB_ROOT_PASSWORD=test
+      - MARIADB_PASSWORD=test
+      - MARIADB_USER=test
+      - MARIADB_DATABASE=test
+    restart: always
   postgres:
     image: postgres:14
     environment:
