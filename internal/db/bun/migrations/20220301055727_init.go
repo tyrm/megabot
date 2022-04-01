@@ -7,6 +7,8 @@ import (
 )
 
 func init() {
+	l := logger.WithField("migration", "20220301055727")
+
 	up := func(ctx context.Context, db *bun.DB) error {
 		return db.RunInTx(ctx, nil, func(ctx context.Context, tx bun.Tx) error {
 			modelList := []interface{}{
@@ -15,7 +17,9 @@ func init() {
 				&models.ChatbotService{},
 			}
 			for _, i := range modelList {
+				l.Infof("creating table %T", i)
 				if _, err := tx.NewCreateTable().Model(i).IfNotExists().Exec(ctx); err != nil {
+					l.Errorf("can't create table %T: %s", i, err.Error())
 					return err
 				}
 			}

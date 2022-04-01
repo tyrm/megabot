@@ -11,8 +11,8 @@ import (
 // User represents a human user.
 type User struct {
 	ID                int64              `validate:"-" bun:"id,pk,autoincrement"`
-	CreatedAt         time.Time          `validate:"-" bun:"type:timestamptz,nullzero,notnull,default:current_timestamp"`
-	UpdatedAt         time.Time          `validate:"-" bun:"type:timestamptz,nullzero,notnull,default:current_timestamp"`
+	CreatedAt         time.Time          `validate:"-" bun:",nullzero,notnull,default:current_timestamp"`
+	UpdatedAt         time.Time          `validate:"-" bun:",nullzero,notnull,default:current_timestamp"`
 	Email             string             `validate:"-" bun:",nullzero,notnull,unique"`
 	EncryptedPassword string             `validate:"-" bun:""`
 	SignInCount       int                `validate:"min=0" bun:",notnull,default:0"`
@@ -53,9 +53,16 @@ func (u *User) CheckPasswordHash(password string) bool {
 
 // InGroup returns true if user is member of group
 func (u *User) InGroup(g ...uuid.UUID) bool {
+	l := logger.WithField("func", "InGroup").WithField("model", "User")
 	for _, group := range u.Groups {
 		for _, needle := range g {
-			if group.GroupID == needle {
+			var gid uuid.UUID
+			var err error
+			if gid, err = group.GetGroupID(); err != nil {
+				l.Warnf("problem reading uuid for group membership %d: %s", group.ID, err.Error())
+				continue
+			}
+			if gid == needle {
 				return true
 			}
 		}

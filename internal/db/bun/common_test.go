@@ -3,6 +3,7 @@ package bun
 import (
 	"context"
 	"fmt"
+	"github.com/tmthrgd/go-hex"
 	"github.com/tyrm/megabot/internal/db"
 	"github.com/tyrm/megabot/internal/models"
 	"reflect"
@@ -24,13 +25,17 @@ func TestCommonDB_Close(t *testing.T) {
 	}
 }
 
-func TestCommonDB_Create(t *testing.T) {
+func TestCommonDB_Create_Sqlite(t *testing.T) {
 	client, err := testNewSqliteClient()
 	if err != nil {
 		t.Errorf("init: %s", err.Error())
 		return
 	}
 
+	testCommonDBCreate(t, client)
+}
+
+func testCommonDBCreate(t *testing.T, client db.DB) {
 	tables := []struct {
 		object any
 		check  func(t *testing.T, o interface{}, b db.DB)
@@ -45,7 +50,7 @@ func TestCommonDB_Create(t *testing.T) {
 		{
 			object: &models.GroupMembership{
 				UserID:  2,
-				GroupID: models.GroupSuperAdmin(),
+				GroupID: hex.MustDecodeString("11a08aecb7e046b4ba53e95a858d4cad"),
 			},
 			check: testCreateGroupMembership,
 		},

@@ -1,4 +1,4 @@
-//go:build postgres
+//go:build mysql
 
 package bun
 
@@ -9,8 +9,8 @@ import (
 	"testing"
 )
 
-func TestCommonDB_Create_Postgres(t *testing.T) {
-	client, err := testNewPostresClient()
+func TestCommonDB_Create_Mysql(t *testing.T) {
+	client, err := testNewMysqlClient()
 	if err != nil {
 		t.Errorf("init: %s", err.Error())
 		return
@@ -19,15 +19,15 @@ func TestCommonDB_Create_Postgres(t *testing.T) {
 	testCommonDBCreate(t, client)
 }
 
-func TestCommonDB_DoMigration_Postgres(t *testing.T) {
+func TestCommonDB_DoMigration_Mysql(t *testing.T) {
 	viper.Reset()
 
-	viper.Set(config.Keys.DbType, "postgres")
+	viper.Set(config.Keys.DbType, "mysql")
 
-	viper.Set(config.Keys.DbAddress, "postgres")
+	viper.Set(config.Keys.DbAddress, "mariadb")
 	viper.Set(config.Keys.DbDatabase, "test")
 	viper.Set(config.Keys.DbPassword, "test")
-	viper.Set(config.Keys.DbPort, 5432)
+	viper.Set(config.Keys.DbPort, 3306)
 	viper.Set(config.Keys.DbUser, "test")
 
 	client, err := New(context.Background())

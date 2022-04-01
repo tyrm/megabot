@@ -82,7 +82,6 @@ func (c *commonDB) LoadTestData(ctx context.Context) db.Error {
 	// Create Users
 	l.Debugf("creating %d users", len(testdata.TestUsers))
 	for i := 0; i < len(testdata.TestUsers); i++ {
-		l.Infof("[%d] creating user %d", i, testdata.TestUsers[i].ID)
 		err := c.Create(ctx, testdata.TestUsers[i])
 		if err != nil {
 			l.Errorf("[%d] creating user: %s", i, err.Error())
@@ -93,7 +92,6 @@ func (c *commonDB) LoadTestData(ctx context.Context) db.Error {
 	// Create GroupMembership
 	l.Debugf("creating %d group memeberships", len(testdata.TestGroupMembership))
 	for i := 0; i < len(testdata.TestGroupMembership); i++ {
-		l.Infof("[%d] creating group membership %d", i, testdata.TestGroupMembership[i].ID)
 		err := c.Create(ctx, testdata.TestGroupMembership[i])
 		if err != nil {
 			l.Errorf("[%d] creating group membership: %s", i, err.Error())
@@ -104,7 +102,6 @@ func (c *commonDB) LoadTestData(ctx context.Context) db.Error {
 	// Create ChatbotServices
 	l.Debugf("creating %d chatbot services", len(testdata.TestChatbotServices))
 	for i := 0; i < len(testdata.TestChatbotServices); i++ {
-		l.Infof("[%d] creating chatbot srevice %d", i, testdata.TestChatbotServices[i].ID)
 		err := c.Create(ctx, testdata.TestChatbotServices[i])
 		if err != nil {
 			l.Errorf("[%d] creating chatbot srevice: %s", i, err.Error())
@@ -133,24 +130,21 @@ func (c *commonDB) LoadTestData(ctx context.Context) db.Error {
 
 	switch c.bun.Dialect().Name() {
 	case dialect.SQLite:
-		for _, s := range sequences {
-			_, err := c.bun.Exec("UPDATE SQLITE_SEQUENCE SET seq = ? WHERE name = ?;", s.currentValue, s.table)
-			if err != nil {
-				l.Errorf("can't update sequence for %s: %s", s.table, err.Error())
-			}
-		}
+		// nothing to do
 	case dialect.PG:
 		for _, s := range sequences {
 			_, err := c.bun.Exec("SELECT setval(?, ?, true);", fmt.Sprintf("%s_id_seq", s.table), s.currentValue)
 			if err != nil {
 				l.Errorf("can't update sequence for %s: %s", s.table, err.Error())
+				return err
 			}
 		}
 	case dialect.MySQL:
 		for _, s := range sequences {
-			_, err := c.bun.Exec("ALTER TABLE ? AUTO_INCREMENT = ?;", s.table, s.currentValue)
+			_, err := c.bun.Exec(fmt.Sprintf("ALTER TABLE %s AUTO_INCREMENT = ?;", s.table), s.currentValue)
 			if err != nil {
 				l.Errorf("can't update sequence for %s: %s", s.table, err.Error())
+				return err
 			}
 		}
 	case dialect.MSSQL:

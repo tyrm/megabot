@@ -10,11 +10,11 @@ import (
 // GroupMembership represents a user's membership in a group
 type GroupMembership struct {
 	ID        int64     `validate:"-" bun:"id,pk,autoincrement"`
-	CreatedAt time.Time `validate:"-" bun:"type:timestamptz,nullzero,notnull,default:current_timestamp"`
-	UpdatedAt time.Time `validate:"-" bun:"type:timestamptz,nullzero,notnull,default:current_timestamp"`
+	CreatedAt time.Time `validate:"-" bun:",nullzero,notnull,default:current_timestamp"`
+	UpdatedAt time.Time `validate:"-" bun:",nullzero,notnull,default:current_timestamp"`
 	UserID    int64     `validate:"min=1" bun:",unique:groupmembership,notnull,nullzero"`
 	User      *User     `validate:"-" bun:"rel:belongs-to,join:user_id=id"`
-	GroupID   uuid.UUID `validate:"required" bun:",unique:groupmembership,notnull,nullzero"`
+	GroupID   []byte    `validate:"required" bun:",unique:groupmembership,notnull,nullzero"`
 }
 
 var _ bun.BeforeAppendModelHook = (*GroupMembership)(nil)
@@ -39,6 +39,24 @@ func (gm *GroupMembership) BeforeAppendModel(_ context.Context, query bun.Query)
 			return err
 		}
 	}
+	return nil
+}
+
+// GetGroupID sets bytes for GroupID
+func (gm *GroupMembership) GetGroupID() (uuid.UUID, error) {
+	if len(gm.GroupID) == 0 {
+		return uuid.Nil, nil
+	}
+	return uuid.FromBytes(gm.GroupID)
+}
+
+// SetGroupID sets bytes for GroupID
+func (gm *GroupMembership) SetGroupID(u uuid.UUID) error {
+	d, err := u.MarshalBinary()
+	if err != nil {
+		return err
+	}
+	gm.GroupID = d
 	return nil
 }
 

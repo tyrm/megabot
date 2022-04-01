@@ -85,11 +85,15 @@ func TestGroupTitle(t *testing.T) {
 
 func TestGroupMembership_BeforeAppendModel_Insert(t *testing.T) {
 	obj := &GroupMembership{
-		GroupID: uuid.MustParse("957bb260-2a48-464e-91ba-6ac7f7863825"),
-		UserID:  1,
+		UserID: 1,
+	}
+	err := obj.SetGroupID(uuid.MustParse("957bb260-2a48-464e-91ba-6ac7f7863825"))
+	if err != nil {
+		t.Errorf("got error setting id: %s", err.Error())
+		return
 	}
 
-	err := obj.BeforeAppendModel(context.Background(), &bun.InsertQuery{})
+	err = obj.BeforeAppendModel(context.Background(), &bun.InsertQuery{})
 	if err != nil {
 		t.Errorf("got error: %s", err.Error())
 		return
@@ -106,11 +110,15 @@ func TestGroupMembership_BeforeAppendModel_Insert(t *testing.T) {
 
 func TestGroupMembership_BeforeAppendModel_Update(t *testing.T) {
 	obj := &GroupMembership{
-		GroupID: uuid.MustParse("957bb260-2a48-464e-91ba-6ac7f7863825"),
-		UserID:  2,
+		UserID: 2,
+	}
+	err := obj.SetGroupID(uuid.MustParse("957bb260-2a48-464e-91ba-6ac7f7863825"))
+	if err != nil {
+		t.Errorf("got error setting id: %s", err.Error())
+		return
 	}
 
-	err := obj.BeforeAppendModel(context.Background(), &bun.UpdateQuery{})
+	err = obj.BeforeAppendModel(context.Background(), &bun.UpdateQuery{})
 	if err != nil {
 		t.Errorf("got error: %s", err.Error())
 		return

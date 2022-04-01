@@ -43,32 +43,42 @@ func TestUser_BeforeAppendModel_Update(t *testing.T) {
 }
 
 func TestUser_InGroup(t *testing.T) {
+	groupIDs := make([][]byte, 5)
+
+	for i := 0; i < 5; i++ {
+		bin, err := uuid.MustParse(fmt.Sprintf("35326c82-adac-43f6-a03f-%012d", i+1)).MarshalBinary()
+		if err != nil {
+			t.Errorf("problem generating uuid")
+		}
+		groupIDs[i] = bin
+	}
+
 	user1 := &User{
 		Groups: []*GroupMembership{},
 	}
 	user2 := &User{
 		Groups: []*GroupMembership{
 			{
-				GroupID: uuid.MustParse("35326c82-adac-43f6-a03f-000000000001"),
+				GroupID: groupIDs[0],
 			},
 		},
 	}
 	user3 := &User{
 		Groups: []*GroupMembership{
 			{
-				GroupID: uuid.MustParse("35326c82-adac-43f6-a03f-000000000001"),
+				GroupID: groupIDs[0],
 			},
 			{
-				GroupID: uuid.MustParse("35326c82-adac-43f6-a03f-000000000002"),
+				GroupID: groupIDs[1],
 			},
 			{
-				GroupID: uuid.MustParse("35326c82-adac-43f6-a03f-000000000003"),
+				GroupID: groupIDs[2],
 			},
 			{
-				GroupID: uuid.MustParse("35326c82-adac-43f6-a03f-000000000004"),
+				GroupID: groupIDs[3],
 			},
 			{
-				GroupID: uuid.MustParse("35326c82-adac-43f6-a03f-000000000005"),
+				GroupID: groupIDs[4],
 			},
 		},
 	}

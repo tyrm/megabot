@@ -6,6 +6,7 @@ import (
 	"context"
 	"github.com/spf13/viper"
 	"github.com/tyrm/megabot/internal/config"
+	"github.com/tyrm/megabot/internal/db"
 	"testing"
 )
 
@@ -67,4 +68,33 @@ func TestMyConn(t *testing.T) {
 		t.Errorf("client is nil")
 		return
 	}
+}
+
+func testNewMysqlClient() (db.DB, error) {
+	viper.Reset()
+
+	viper.Set(config.Keys.DbType, "mysql")
+
+	viper.Set(config.Keys.DbAddress, "mariadb")
+	viper.Set(config.Keys.DbDatabase, "test")
+	viper.Set(config.Keys.DbPassword, "test")
+	viper.Set(config.Keys.DbPort, 3306)
+	viper.Set(config.Keys.DbUser, "test")
+
+	client, err := New(context.Background())
+	if err != nil {
+		return nil, err
+	}
+
+	err = client.DoMigration(context.Background())
+	if err != nil {
+		return nil, err
+	}
+
+	err = client.LoadTestData(context.Background())
+	if err != nil {
+		return nil, err
+	}
+
+	return client, nil
 }

@@ -23,9 +23,8 @@ var TestUsers = []*models.User{
 // TestGroupMembership contains a set of test group memberships
 var TestGroupMembership = []*models.GroupMembership{
 	{
-		ID:      1,
-		UserID:  TestUsers[0].ID,
-		GroupID: models.GroupSuperAdmin(),
+		ID:     1,
+		UserID: TestUsers[0].ID,
 	},
 }
 
@@ -209,4 +208,11 @@ var TestChatbotServicesConfigs = []string{
 	"{\"key\":\"test-23\"}",
 	"{\"key\":\"test-24\"}",
 	"{\"key\":\"test-25\"}",
+}
+
+func init() {
+	err := TestGroupMembership[0].SetGroupID(models.GroupSuperAdmin())
+	if err != nil {
+		panic(err)
+	}
 }

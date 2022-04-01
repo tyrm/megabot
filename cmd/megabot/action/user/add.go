@@ -48,9 +48,12 @@ var Add action.Action = func(ctx context.Context) error {
 			return errors.New(msg)
 		}
 
-		groupMem := &models.GroupMembership{
-			GroupID: groupID,
+		groupMem := &models.GroupMembership{}
+		err := groupMem.SetGroupID(groupID)
+		if err != nil {
+			return err
 		}
+
 		l.Debugf("adding group: %s", group)
 		newUser.Groups = append(newUser.Groups, groupMem)
 	}
