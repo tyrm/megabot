@@ -71,7 +71,6 @@ func TestChatbotService_GetConfig(t *testing.T) {
 }
 
 func TestChatbotService_SetConfig(t *testing.T) {
-
 	viper.Reset()
 
 	viper.Set(config.Keys.DbEncryptionKey, "0123456789012345")
