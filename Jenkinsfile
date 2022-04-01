@@ -32,10 +32,26 @@ pipeline {
             sh """NETWORK_NAME="${networkName}" docker-compose -f ${composeFile} pull
             NETWORK_NAME="${networkName}" docker-compose -p ${env.BUILD_TAG} -f ${composeFile} up -d"""
           }
-          retry(30) {
-            sleep 1
-            sh "docker run -t --rm --network=${networkName} subfuzion/netcat -z mariadb 3306"
-          }
+          parallel(
+            mysql: {
+              retry(30) {
+                sleep 1
+                sh "docker run -t --rm --network=${networkName} subfuzion/netcat -z mariadb 3306"
+              }
+            },
+            postgres: {
+              retry(30) {
+                sleep 1
+                sh "docker run -t --rm --network=${networkName} subfuzion/netcat -z posgres 5432"
+              }
+            },
+            redis: {
+              retry(30) {
+                sleep 1
+                sh "docker run -t --rm --network=${networkName} subfuzion/netcat -z redis 6379"
+              }
+            }
+          )
         }
       }
     }
