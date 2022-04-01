@@ -28,11 +28,13 @@ pipeline {
     stage('Start External Test Requirements'){
       steps{
         script{
-          retry(4) {
+          retry(2) {
             sh """NETWORK_NAME="${networkName}" docker-compose -f ${composeFile} pull
-            NETWORK_NAME="${networkName}" docker-compose -p ${env.BUILD_TAG} -f ${composeFile} up -d
-
-            docker exec ${env.BUILD_TAG}_mariadb_1 mysqladmin status"""
+            NETWORK_NAME="${networkName}" docker-compose -p ${env.BUILD_TAG} -f ${composeFile} up -d"""
+          }
+          retry(5) {
+            sleep 5
+            sh "docker exec ${env.BUILD_TAG}_mariadb_1 mysqladmin status"
           }
         }
       }
