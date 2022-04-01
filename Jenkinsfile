@@ -32,23 +32,9 @@ pipeline {
             sh """NETWORK_NAME="${networkName}" docker-compose -f ${composeFile} pull
             NETWORK_NAME="${networkName}" docker-compose -p ${env.BUILD_TAG} -f ${composeFile} up -d"""
           }
-        }
-      }
-    }
-
-    stage('Wait for External Requirements') {
-      agent {
-        docker {
-          image 'subfuzion/netcat:latest'
-          args '--network ${networkName} -e HOME=${WORKSPACE} -v /var/lib/jenkins/go:/go'
-          reuseNode true
-        }
-      }
-      steps {
-        script {
           retry(30) {
             sleep 1
-            sh "nc -zv mariadb 3306"
+            sh "docker run -t --rm --network=${networkName} subfuzion/netcat mariadb 3306"
           }
         }
       }
