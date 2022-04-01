@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/tyrm/megabot/internal/models"
-	"github.com/tyrm/megabot/internal/testdata"
+	"github.com/tyrm/megabot/internal/models/testdata"
 	"testing"
 )
 

@@ -8,6 +8,7 @@ require (
 	github.com/go-playground/validator/v10 v10.10.1
 	github.com/go-redis/redis/v8 v8.11.5
 	github.com/go-redsync/redsync/v4 v4.5.0
+	github.com/go-sql-driver/mysql v1.6.0
 	github.com/go-telegram-bot-api/telegram-bot-api/v5 v5.5.1
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/google/uuid v1.3.0
@@ -29,9 +30,10 @@ require (
 	github.com/tdewolff/minify/v2 v2.10.0
 	github.com/tmthrgd/go-hex v0.0.0-20190904060850-447a3041c3bc
 	github.com/tyrm/go-util v0.2.0
-	github.com/uptrace/bun v1.1.2
-	github.com/uptrace/bun/dialect/pgdialect v1.1.2
-	github.com/uptrace/bun/dialect/sqlitedialect v1.1.2
+	github.com/uptrace/bun v1.1.3
+	github.com/uptrace/bun/dialect/mysqldialect v1.1.3
+	github.com/uptrace/bun/dialect/pgdialect v1.1.3
+	github.com/uptrace/bun/dialect/sqlitedialect v1.1.3
 	golang.org/x/crypto v0.0.0-20220321153916-2c7772ba3064
 	golang.org/x/text v0.3.7
 	modernc.org/sqlite v1.15.3
@@ -92,7 +94,7 @@ require (
 	github.com/vmihailenco/tagparser/v2 v2.0.0 // indirect
 	golang.org/x/mod v0.6.0-dev.0.20220106191415-9b9b3d81d5e3 // indirect
 	golang.org/x/net v0.0.0-20220225172249-27dd8689420f // indirect
-	golang.org/x/sys v0.0.0-20220319134239-a9b59b0215f8 // indirect
+	golang.org/x/sys v0.0.0-20220328115105-d36c6a25d886 // indirect
 	golang.org/x/tools v0.1.10 // indirect
 	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect
 	gopkg.in/ini.v1 v1.66.4 // indirect

@@ -1,16 +1,29 @@
-# [](https://github.com/uptrace/bun/compare/v1.1.1...v) (2022-03-22)
+# [](https://github.com/uptrace/bun/compare/v1.1.2...v) (2022-03-29)
 
 
 ### Bug Fixes
 
-* correctly handle bun.In([][]byte{...}) ([800616e](https://github.com/uptrace/bun/commit/800616ed28ca600ad676319a10adb970b2b4daf6))
+* fix panic message when has-many encounter an error ([cfd2747](https://github.com/uptrace/bun/commit/cfd27475fac89a1c8cf798bfa64898bd77bbba79))
+* **migrate:** change rollback to match migrate behavior ([df5af9c](https://github.com/uptrace/bun/commit/df5af9c9cbdf54ce243e037bbb2c7b154f8422b3))
 
 
 ### Features
 
-* accept extend option to allow extending existing models ([48b80e4](https://github.com/uptrace/bun/commit/48b80e4f7e3ed8a28fd305f7853ebe7ab984a497))
+* added QueryBuilder interface for SelectQuery, UpdateQuery, DeleteQuery ([#499](https://github.com/uptrace/bun/issues/499)) ([59fef48](https://github.com/uptrace/bun/commit/59fef48f6b3ec7f32bdda779b6693c333ff1dfdb))
 
 
+
+# [1.1.2](https://github.com/uptrace/bun/compare/v1.1.2...v) (2022-03-22)
+
+### Bug Fixes
+
+- correctly handle bun.In([][]byte{...})
+  ([800616e](https://github.com/uptrace/bun/commit/800616ed28ca600ad676319a10adb970b2b4daf6))
+
+### Features
+
+- accept extend option to allow extending existing models
+  ([48b80e4](https://github.com/uptrace/bun/commit/48b80e4f7e3ed8a28fd305f7853ebe7ab984a497))
 
 # [1.1.0](https://github.com/uptrace/bun/compare/v1.1.0-beta.1...v1.1.0) (2022-02-28)
 

@@ -12,6 +12,170 @@ import (
 	"testing"
 )
 
+func TestDeriveBunDBMyOptions(t *testing.T) {
+	dbAddress := "db.example.com"
+	dbDatabase := "database"
+	dbPassword := "password"
+	dbPort := 3306
+	dbUser := "user"
+
+	epectedOpts := "user:password@tcp(db.example.com:3306)/database"
+
+	viper.Reset()
+
+	viper.Set(config.Keys.DbType, "mysql")
+
+	viper.Set(config.Keys.DbAddress, dbAddress)
+	viper.Set(config.Keys.DbDatabase, dbDatabase)
+	viper.Set(config.Keys.DbPassword, dbPassword)
+	viper.Set(config.Keys.DbPort, dbPort)
+	viper.Set(config.Keys.DbUser, dbUser)
+
+	opts, err := deriveBunDBMyOptions()
+	if err != nil {
+		t.Errorf("unexpected error initializing mysql options: %s", err.Error())
+		return
+	}
+	if opts == "" {
+		t.Errorf("opts is nil")
+		return
+	}
+	if opts != epectedOpts {
+		t.Errorf("unexpected options, got: '%s', want: '%s'", opts, epectedOpts)
+	}
+}
+
+func TestDeriveBunDBMyOptions_TLSDisable(t *testing.T) {
+	dbAddress := "db.example.com"
+	dbDatabase := "database"
+	dbPassword := "password"
+	dbPort := 3306
+	dbTLSMode := dbTLSModeDisable
+	dbUser := "user"
+
+	epectedOpts := "user:password@tcp(db.example.com:3306)/database"
+
+	viper.Reset()
+
+	viper.Set(config.Keys.DbType, "mysql")
+
+	viper.Set(config.Keys.DbAddress, dbAddress)
+	viper.Set(config.Keys.DbDatabase, dbDatabase)
+	viper.Set(config.Keys.DbPassword, dbPassword)
+	viper.Set(config.Keys.DbPort, dbPort)
+	viper.Set(config.Keys.DbTLSMode, dbTLSMode)
+	viper.Set(config.Keys.DbUser, dbUser)
+
+	opts, err := deriveBunDBMyOptions()
+	if err != nil {
+		t.Errorf("unexpected error initializing pg options: %s", err.Error())
+		return
+	}
+	if opts == "" {
+		t.Errorf("opts is nil")
+		return
+	}
+	if opts != epectedOpts {
+		t.Errorf("unexpected options, got: '%s', want: '%s'", opts, epectedOpts)
+	}
+}
+
+func TestDeriveBunDBMyOptions_TLSEnable(t *testing.T) {
+	dbAddress := "db.example.com"
+	dbDatabase := "database"
+	dbPassword := "password"
+	dbPort := 3306
+	dbTLSMode := dbTLSModeEnable
+	dbUser := "user"
+
+	epectedOpts := "user:password@tcp(db.example.com:3306)/database?tls=bun"
+
+	viper.Reset()
+
+	viper.Set(config.Keys.DbType, "mysql")
+
+	viper.Set(config.Keys.DbAddress, dbAddress)
+	viper.Set(config.Keys.DbDatabase, dbDatabase)
+	viper.Set(config.Keys.DbPassword, dbPassword)
+	viper.Set(config.Keys.DbPort, dbPort)
+	viper.Set(config.Keys.DbTLSMode, dbTLSMode)
+	viper.Set(config.Keys.DbUser, dbUser)
+
+	opts, err := deriveBunDBMyOptions()
+	if err != nil {
+		t.Errorf("unexpected error initializing pg options: %s", err.Error())
+		return
+	}
+	if opts == "" {
+		t.Errorf("opts is nil")
+		return
+	}
+	if opts != epectedOpts {
+		t.Errorf("unexpected options, got: '%s', want: '%s'", opts, epectedOpts)
+	}
+}
+
+func TestDeriveBunDBMyOptions_TLSRequire(t *testing.T) {
+	dbAddress := "db.example.com"
+	dbDatabase := "database"
+	dbPassword := "password"
+	dbPort := 3306
+	dbTLSMode := dbTLSModeRequire
+	dbUser := "user"
+
+	epectedOpts := "user:password@tcp(db.example.com:3306)/database?tls=bun"
+
+	viper.Reset()
+
+	viper.Set(config.Keys.DbType, "mysql")
+
+	viper.Set(config.Keys.DbAddress, dbAddress)
+	viper.Set(config.Keys.DbDatabase, dbDatabase)
+	viper.Set(config.Keys.DbPassword, dbPassword)
+	viper.Set(config.Keys.DbPort, dbPort)
+	viper.Set(config.Keys.DbTLSMode, dbTLSMode)
+	viper.Set(config.Keys.DbUser, dbUser)
+
+	viper.Set(config.Keys.DbTLSCACert, "../../../test/certificate.pem")
+
+	opts, err := deriveBunDBMyOptions()
+	if err != nil {
+		t.Errorf("unexpected error initializing pg options: %s", err.Error())
+		return
+	}
+	if opts == "" {
+		t.Errorf("opts is nil")
+		return
+	}
+	if opts != epectedOpts {
+		t.Errorf("unexpected options, got: '%s', want: '%s'", opts, epectedOpts)
+	}
+}
+
+func TestDeriveBunDBMyOptions_NoDatabase(t *testing.T) {
+	viper.Reset()
+
+	viper.Set(config.Keys.DbType, "mysql")
+
+	_, err := deriveBunDBMyOptions()
+	errText := "no database set"
+	if err.Error() != errText {
+		t.Errorf("unexpected error initializing sqlite connection, got: '%s', want: '%s'", err.Error(), errText)
+		return
+	}
+}
+
+func TestDeriveBunDBMyOptions_NoType(t *testing.T) {
+	viper.Reset()
+
+	_, err := deriveBunDBMyOptions()
+	errText := "expected bun type of POSTGRES but got "
+	if err.Error() != errText {
+		t.Errorf("unexpected error initializing sqlite connection, got: '%s', want: '%s'", err.Error(), errText)
+		return
+	}
+}
+
 func TestDeriveBunDBPGOptions(t *testing.T) {
 	dbDatabase := "database"
 	dbPassword := "password"
@@ -238,6 +402,17 @@ func TestDeriveBunDBPGOptions_NoDatabase(t *testing.T) {
 	}
 }
 
+func TestDeriveBunDBPGOptions_NoType(t *testing.T) {
+	viper.Reset()
+
+	_, err := deriveBunDBPGOptions()
+	errText := "expected bun type of POSTGRES but got "
+	if err.Error() != errText {
+		t.Errorf("unexpected error initializing sqlite connection, got: '%s', want: '%s'", err.Error(), errText)
+		return
+	}
+}
+
 func TestNew_Invalid(t *testing.T) {
 	viper.Reset()
 
@@ -264,17 +439,6 @@ func TestNew_Sqlite(t *testing.T) {
 	}
 	if bun == nil {
 		t.Errorf("client is nil")
-		return
-	}
-}
-
-func TestDeriveBunDBPGOptions_NoType(t *testing.T) {
-	viper.Reset()
-
-	_, err := deriveBunDBPGOptions()
-	errText := "expected bun type of POSTGRES but got "
-	if err.Error() != errText {
-		t.Errorf("unexpected error initializing sqlite connection, got: '%s', want: '%s'", err.Error(), errText)
 		return
 	}
 }

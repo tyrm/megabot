@@ -2,10 +2,13 @@ package bun
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"github.com/tyrm/megabot/internal/db"
 	"github.com/tyrm/megabot/internal/db/bun/migrations"
 	"github.com/tyrm/megabot/internal/models"
-	"github.com/tyrm/megabot/internal/testdata"
+	"github.com/tyrm/megabot/internal/models/testdata"
+	"github.com/uptrace/bun/dialect"
 	"github.com/uptrace/bun/migrate"
 )
 
@@ -107,6 +110,52 @@ func (c *commonDB) LoadTestData(ctx context.Context) db.Error {
 			l.Errorf("[%d] creating chatbot srevice: %s", i, err.Error())
 			return err
 		}
+	}
+
+	// fix sequences
+	sequences := []struct {
+		table        string
+		currentValue int
+	}{
+		{
+			table:        "users",
+			currentValue: len(testdata.TestUsers),
+		},
+		{
+			table:        "group_memberships",
+			currentValue: len(testdata.TestGroupMembership),
+		},
+		{
+			table:        "chatbot_services",
+			currentValue: len(testdata.TestChatbotServices),
+		},
+	}
+
+	switch c.bun.Dialect().Name() {
+	case dialect.SQLite:
+		for _, s := range sequences {
+			_, err := c.bun.Exec("UPDATE SQLITE_SEQUENCE SET seq = ? WHERE name = ?;", s.currentValue, s.table)
+			if err != nil {
+				l.Errorf("can't update sequence for %s: %s", s.table, err.Error())
+			}
+		}
+	case dialect.PG:
+		for _, s := range sequences {
+			_, err := c.bun.Exec("SELECT setval(?, ?, true);", fmt.Sprintf("%s_id_seq", s.table), s.currentValue)
+			if err != nil {
+				l.Errorf("can't update sequence for %s: %s", s.table, err.Error())
+			}
+		}
+	case dialect.MySQL:
+		for _, s := range sequences {
+			_, err := c.bun.Exec("ALTER TABLE ? AUTO_INCREMENT = ?;", s.table, s.currentValue)
+			if err != nil {
+				l.Errorf("can't update sequence for %s: %s", s.table, err.Error())
+			}
+		}
+	case dialect.MSSQL:
+	default:
+		return errors.New("unknown dialect")
 	}
 
 	return nil

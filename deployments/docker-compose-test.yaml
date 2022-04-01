@@ -1,5 +1,15 @@
 version: '3'
 services:
+  mariadb:
+    image: mariadb:10
+    ports:
+      - 127.0.0.1:3306:3306/tcp
+    environment:
+      - MARIADB_ROOT_PASSWORD=test
+      - MARIADB_PASSWORD=test
+      - MARIADB_USER=test
+      - MARIADB_DATABASE=test
+    restart: always
   postgres:
     image: postgres:14
     ports:
