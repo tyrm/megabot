@@ -1,9 +1,11 @@
 package models
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"github.com/google/uuid"
+	"github.com/tmthrgd/go-hex"
 	"github.com/uptrace/bun"
 	"testing"
 	"time"
@@ -127,5 +129,92 @@ func TestGroupMembership_BeforeAppendModel_Update(t *testing.T) {
 	emptyTime := time.Time{}
 	if obj.UpdatedAt == emptyTime {
 		t.Errorf("invalid updated at time: %s", obj.UpdatedAt.String())
+	}
+}
+
+func TestGroupMembership_GetGroupID(t *testing.T) {
+	tables := []struct {
+		x []byte
+		y uuid.UUID
+		e string
+	}{
+		{hex.MustDecodeString("57261eb2a2224497ae76f2b18a5da681"), uuid.MustParse("57261eb2-a222-4497-ae76-f2b18a5da681"), ""},
+		{hex.MustDecodeString("11"), uuid.Nil, "invalid UUID (got 1 bytes)"},
+	}
+
+	for i, table := range tables {
+		i := i
+		table := table
+
+		name := fmt.Sprintf("[%d] Comparing %s to %s", i, table.x, table.y)
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+
+			u := GroupMembership{
+				GroupID: table.x,
+			}
+
+			gid, err := u.GetGroupID()
+			if table.e == "" {
+				if err != nil {
+					t.Errorf("[%d] got error getting group id %x: %s", i, table.x, err.Error())
+					return
+				}
+			} else {
+				if err == nil {
+					t.Errorf("[%d] expected error getting group id %x, got: 'nil', want: '%v'", i, table.x, table.e)
+					return
+				}
+				if err.Error() != table.e {
+					t.Errorf("[%d] unexpected error getting group id %x, got: '%s', want: '%s'", i, table.x, err.Error(), table.e)
+					return
+				}
+			}
+			if gid != table.y {
+				t.Errorf("[%d] got bad data for %x, got: %s, want: %s", i, table.x, gid.String(), table.y.String())
+			}
+		})
+	}
+}
+
+func TestGroupMembership_SetGroupID(t *testing.T) {
+	tables := []struct {
+		x uuid.UUID
+		y []byte
+		e string
+	}{
+		{uuid.MustParse("57261eb2-a222-4497-ae76-f2b18a5da681"), hex.MustDecodeString("57261eb2a2224497ae76f2b18a5da681"), ""},
+	}
+
+	for i, table := range tables {
+		i := i
+		table := table
+
+		name := fmt.Sprintf("[%d] Comparing %s to %s", i, table.x, table.y)
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+
+			u := GroupMembership{}
+
+			err := u.SetGroupID(table.x)
+			if table.e == "" {
+				if err != nil {
+					t.Errorf("[%d] got error setting group id %x: %s", i, table.x, err.Error())
+					return
+				}
+			} else {
+				if err == nil {
+					t.Errorf("[%d] expected error setting group id %x, got: 'nil', want: '%v'", i, table.x, table.e)
+					return
+				}
+				if err.Error() != table.e {
+					t.Errorf("[%d] unexpected error setting group id %x, got: '%s', want: '%s'", i, table.x, err.Error(), table.e)
+					return
+				}
+			}
+			if bytes.Compare(u.GroupID, table.y) > 0 {
+				t.Errorf("[%d] got bad data for %s, got: %x, want: %x,", i, table.x.String(), u.GroupID, table.y)
+			}
+		})
 	}
 }
