@@ -4,70 +4,40 @@ import (
 	"crypto/aes"
 	gocipher "crypto/cipher"
 	"crypto/rand"
-	"database/sql/driver"
 	"errors"
-	"fmt"
 	"github.com/spf13/viper"
 	"github.com/tyrm/megabot/internal/config"
 	"io"
 	"strings"
 )
 
-// EncryptedString is a string which is written to the database encrypted
-type EncryptedString string
-
-// Scan decrypts the value while reading it from the database
-func (e *EncryptedString) Scan(src interface{}) error {
-	l := logger.WithField("func", "Scan").WithField("type", "EncryptedString")
-
-	var data []byte
-	switch src := src.(type) {
-	case nil:
-		return nil
-	case string:
-		if src == "" {
-			return nil
-		}
-		data = []byte(src)
-	case []byte:
-		if len(src) == 0 {
-			return nil
-		}
-		data = src
-	default:
-		msg := fmt.Sprintf("unable to scan type %T into EncryptedString", src)
-		l.Error(msg)
-		return errors.New(msg)
-	}
+func decrypt(b []byte) ([]byte, error) {
+	l := logger.WithField("func", "decrypt")
 
 	gcm, err := getCrypto()
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	nonceSize := gcm.NonceSize()
-	if len(data) < nonceSize {
+	if len(b) < nonceSize {
 		msg := "data too small"
 		l.Error(msg)
-		return errors.New(msg)
+		return nil, errors.New(msg)
 	}
 
-	nonce, ciphertext := data[:nonceSize], data[nonceSize:]
+	nonce, ciphertext := b[:nonceSize], b[nonceSize:]
 	plaintext, err := gcm.Open(nil, nonce, ciphertext, nil)
 	if err != nil {
 		l.Errorf("decrypting: %s", err.Error())
-		return err
+		return nil, err
 	}
 
-	*e = EncryptedString(plaintext)
-	return nil
+	return plaintext, nil
 }
 
-func (e *EncryptedString) String() string { return string(*e) }
-
-// Value encrypts the value while writing it to the database
-func (e *EncryptedString) Value() (driver.Value, error) {
-	l := logger.WithField("func", "Value").WithField("type", "EncryptedString")
+func encrypt(b []byte) ([]byte, error) {
+	l := logger.WithField("func", "encrypt")
 
 	gcm, err := getCrypto()
 	if err != nil {
@@ -80,7 +50,7 @@ func (e *EncryptedString) Value() (driver.Value, error) {
 		return nil, err
 	}
 
-	return gcm.Seal(nonce, nonce, []byte(*e), nil), nil
+	return gcm.Seal(nonce, nonce, b, nil), nil
 }
 
 func getCrypto() (gocipher.AEAD, error) {

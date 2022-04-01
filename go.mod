@@ -30,7 +30,6 @@ require (
 	github.com/tmthrgd/go-hex v0.0.0-20190904060850-447a3041c3bc
 	github.com/tyrm/go-util v0.2.0
 	github.com/uptrace/bun v1.1.2
-	github.com/uptrace/bun/dbfixture v1.1.2
 	github.com/uptrace/bun/dialect/pgdialect v1.1.2
 	github.com/uptrace/bun/dialect/sqlitedialect v1.1.2
 	golang.org/x/crypto v0.0.0-20220321153916-2c7772ba3064
@@ -99,7 +98,6 @@ require (
 	gopkg.in/ini.v1 v1.66.4 // indirect
 	gopkg.in/tomb.v1 v1.0.0-20141024135613-dd632973f1e7 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
-	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect
 	lukechampine.com/uint128 v1.2.0 // indirect
 	modernc.org/cc/v3 v3.35.24 // indirect
 	modernc.org/ccgo/v3 v3.15.17 // indirect

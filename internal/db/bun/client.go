@@ -75,6 +75,9 @@ func New(ctx context.Context) (db.DB, error) {
 		commonDB: commonDB{
 			bun: newBun,
 		},
+		chatbotDB: chatbotDB{
+			bun: newBun,
+		},
 		userDB: userDB{
 			bun: newBun,
 		},

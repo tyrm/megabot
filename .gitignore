@@ -6,6 +6,8 @@
 /megabot
 /pkged.go
 
+/cmd/dev
+
 /web/bootstrap/dist
 /web/static/css/bootstrap.min.css
 /web/static/css/bootstrap.min.css.map

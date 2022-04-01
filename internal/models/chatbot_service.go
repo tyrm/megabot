@@ -14,7 +14,7 @@ type ChatbotService struct {
 	UpdatedAt   time.Time           `validate:"-" bun:"type:timestamptz,nullzero,notnull,default:current_timestamp"`
 	Description string              `validate:"required" bun:",nullzero,notnull"`
 	ServiceType chatbot.ChatService `validate:"min=1,max=2" bun:",nullzero,notnull"`
-	Config      EncryptedString     `validate:"-" bun:",nullzero,notnull"`
+	Config      []byte              `validate:"-" bun:",nullzero,notnull"`
 }
 
 var _ bun.BeforeAppendModelHook = (*ChatbotService)(nil)
@@ -39,5 +39,21 @@ func (c *ChatbotService) BeforeAppendModel(_ context.Context, query bun.Query) e
 			return err
 		}
 	}
+	return nil
+}
+
+// GetConfig returns unencrypted config
+func (c *ChatbotService) GetConfig() (string, error) {
+	data, err := decrypt(c.Config)
+	return string(data), err
+}
+
+// SetConfig sets encrypted config
+func (c *ChatbotService) SetConfig(s string) error {
+	data, err := encrypt([]byte(s))
+	if err != nil {
+		return err
+	}
+	c.Config = data
 	return nil
 }

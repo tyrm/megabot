@@ -335,6 +335,7 @@ func testNewTestClient() (db.DB, error) {
 
 	viper.Set(config.Keys.DbType, "sqlite")
 	viper.Set(config.Keys.DbAddress, ":memory:")
+	viper.Set(config.Keys.DbEncryptionKey, "test1234test5678")
 
 	client, err := New(context.Background())
 	if err != nil {

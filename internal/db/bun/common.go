@@ -2,11 +2,10 @@ package bun
 
 import (
 	"context"
-	"github.com/tyrm/megabot"
 	"github.com/tyrm/megabot/internal/db"
 	"github.com/tyrm/megabot/internal/db/bun/migrations"
 	"github.com/tyrm/megabot/internal/models"
-	"github.com/uptrace/bun/dbfixture"
+	"github.com/tyrm/megabot/internal/testdata"
 	"github.com/uptrace/bun/migrate"
 )
 
@@ -58,21 +57,56 @@ func (c *commonDB) DoMigration(ctx context.Context) db.Error {
 }
 
 func (c *commonDB) LoadTestData(ctx context.Context) db.Error {
-	l := logger.WithField("func", "DoMigration")
+	l := logger.WithField("func", "LoadTestData")
+	l.Debugf("adding test data")
 
-	// Register models before loading fixtures.
-	c.bun.RegisterModel(
-		(*models.User)(nil),
-		(*models.GroupMembership)(nil),
-	)
+	// Truncate
+	modelList := []interface{}{
+		&models.User{},
+		&models.GroupMembership{},
+		&models.ChatbotService{},
+	}
 
-	// Automatically create tables.
-	fixture := dbfixture.New(c.bun.DB, dbfixture.WithTruncateTables())
+	for _, m := range modelList {
+		l.Debugf("truncating %T", m)
+		_, err := c.bun.NewTruncateTable().Model(m).Exec(ctx)
+		if err != nil {
+			l.Errorf("truncating %T: %s", m, err.Error())
+			return err
+		}
+	}
 
-	// Load fixtures.
-	if err := fixture.Load(ctx, megabot.Files, "test/fixture.yml"); err != nil {
-		l.Errorf("loading test data: %s", err.Error())
-		return err
+	// Create Users
+	l.Debugf("creating %d users", len(testdata.TestUsers))
+	for i := 0; i < len(testdata.TestUsers); i++ {
+		l.Infof("[%d] creating user %d", i, testdata.TestUsers[i].ID)
+		err := c.Create(ctx, testdata.TestUsers[i])
+		if err != nil {
+			l.Errorf("[%d] creating user: %s", i, err.Error())
+			return err
+		}
+	}
+
+	// Create GroupMembership
+	l.Debugf("creating %d group memeberships", len(testdata.TestGroupMembership))
+	for i := 0; i < len(testdata.TestGroupMembership); i++ {
+		l.Infof("[%d] creating group membership %d", i, testdata.TestGroupMembership[i].ID)
+		err := c.Create(ctx, testdata.TestGroupMembership[i])
+		if err != nil {
+			l.Errorf("[%d] creating group membership: %s", i, err.Error())
+			return err
+		}
+	}
+
+	// Create ChatbotServices
+	l.Debugf("creating %d chatbot services", len(testdata.TestChatbotServices))
+	for i := 0; i < len(testdata.TestChatbotServices); i++ {
+		l.Infof("[%d] creating chatbot srevice %d", i, testdata.TestChatbotServices[i].ID)
+		err := c.Create(ctx, testdata.TestChatbotServices[i])
+		if err != nil {
+			l.Errorf("[%d] creating chatbot srevice: %s", i, err.Error())
+			return err
+		}
 	}
 
 	return nil
