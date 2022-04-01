@@ -32,9 +32,23 @@ pipeline {
             sh """NETWORK_NAME="${networkName}" docker-compose -f ${composeFile} pull
             NETWORK_NAME="${networkName}" docker-compose -p ${env.BUILD_TAG} -f ${composeFile} up -d"""
           }
-          retry(5) {
-            sleep 5
-            sh "docker exec ${env.BUILD_TAG}_mariadb_1 mysqladmin --password test status"
+        }
+      }
+    }
+
+    stage('Wait for External Requirements') {
+      agent {
+        docker {
+          image 'gobuild:1.18'
+          args '--network ${networkName} -e HOME=${WORKSPACE} -v /var/lib/jenkins/go:/go'
+          reuseNode true
+        }
+      }
+      steps {
+        script {
+          retry(30) {
+            sleep 1
+            sh "nc -zv mariadb 3306"
           }
         }
       }
