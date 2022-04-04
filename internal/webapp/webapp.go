@@ -18,8 +18,10 @@ import (
 	"github.com/tyrm/megabot/internal/kv/redis"
 	"github.com/tyrm/megabot/internal/language"
 	"github.com/tyrm/megabot/internal/models"
+	"github.com/tyrm/megabot/internal/token"
 	"github.com/tyrm/megabot/internal/web"
 	mbtemplate "github.com/tyrm/megabot/internal/web/template"
+	"html/template"
 	"io/fs"
 	"io/ioutil"
 	"net/http"
@@ -33,6 +35,7 @@ type Module struct {
 	language *language.Module
 	minify   *minify.M
 
+	templates     *template.Template
 	headLinks     []mbtemplate.HeadLink
 	footerScripts []mbtemplate.Script
 
@@ -66,6 +69,18 @@ func New(ctx context.Context, db db.DB, r *redis.Client, lMod *language.Module) 
 	if viper.GetBool(config.Keys.ServerMinifyHTML) {
 		m = minify.New()
 		m.AddFunc("text/html", html.Minify)
+	}
+
+	// get templates
+	tokz, err := token.New()
+	if err != nil {
+		l.Errorf("create tokenizer: %s", err.Error())
+		return nil, err
+	}
+	tmpl, err := mbtemplate.New(tokz)
+	if err != nil {
+		l.Errorf("create temates: %s", err.Error())
+		return nil, err
 	}
 
 	// generate head links
@@ -115,6 +130,7 @@ func New(ctx context.Context, db db.DB, r *redis.Client, lMod *language.Module) 
 		minify:   m,
 		store:    store,
 
+		templates:     tmpl,
 		headLinks:     hl,
 		footerScripts: fs,
 
@@ -154,6 +170,7 @@ func (m *Module) Route(s web.Server) error {
 
 	protected.HandleFunc(pathHome, m.HomeGetHandler).Methods("GET")
 	protected.HandleFunc(pathChatbot, m.ChatbotGetHandler).Methods("GET")
+	protected.HandleFunc(pathChatbot+pathChatbotServices, m.ChatbotServiceGetHandler).Methods("GET")
 	return nil
 }
 

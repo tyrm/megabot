@@ -5,6 +5,7 @@ import (
 	"github.com/tyrm/megabot"
 	"github.com/tyrm/megabot/internal/language"
 	"github.com/tyrm/megabot/internal/models"
+	"github.com/tyrm/megabot/internal/token"
 	"html/template"
 	"io/ioutil"
 	"strings"
@@ -22,30 +23,27 @@ type InitTemplate interface {
 	SetUser(user *models.User)
 }
 
-// Templates contain the pre-processed templates
-var Templates *template.Template
-
-var tmplFuncs = template.FuncMap{
-	"dec": func(i int) int {
-		i--
-		return i
-	},
-	"groupSuperAdmin": func() uuid.UUID {
-		return models.GroupSuperAdmin()
-	},
-	"htmlSafe": func(html string) template.HTML {
-		/* #nosec G203 */
-		return template.HTML(html)
-	},
-	"inc": func(i int) int {
-		i++
-		return i
-	},
-}
-
-func init() {
+// New creates a new tokenizer
+func New(t *token.Tokenizer) (*template.Template, error) {
 	tpl := template.New("")
-	tpl.Funcs(tmplFuncs)
+	tpl.Funcs(template.FuncMap{
+		"dec": func(i int) int {
+			i--
+			return i
+		},
+		"groupSuperAdmin": func() uuid.UUID {
+			return models.GroupSuperAdmin()
+		},
+		"htmlSafe": func(html string) template.HTML {
+			/* #nosec G203 */
+			return template.HTML(html)
+		},
+		"inc": func(i int) int {
+			i++
+			return i
+		},
+		"token": t.GetToken,
+	})
 
 	dir, err := megabot.Files.ReadDir(templateDir)
 	if err != nil {
@@ -60,21 +58,21 @@ func init() {
 		// open it
 		file, err := megabot.Files.Open(filePath)
 		if err != nil {
-			panic(err)
+			return nil, err
 		}
 
 		// read it
 		tmplData, err := ioutil.ReadAll(file)
 		if err != nil {
-			panic(err)
+			return nil, err
 		}
 
 		// It can now be parsed as a string.
 		_, err = tpl.Parse(string(tmplData))
 		if err != nil {
-			panic(err)
+			return nil, err
 		}
 	}
 
-	Templates = tpl
+	return tpl, nil
 }

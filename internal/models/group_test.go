@@ -140,6 +140,7 @@ func TestGroupMembership_GetGroupID(t *testing.T) {
 	}{
 		{hex.MustDecodeString("57261eb2a2224497ae76f2b18a5da681"), uuid.MustParse("57261eb2-a222-4497-ae76-f2b18a5da681"), ""},
 		{hex.MustDecodeString("11"), uuid.Nil, "invalid UUID (got 1 bytes)"},
+		{[]byte{}, uuid.Nil, ""},
 	}
 
 	for i, table := range tables {

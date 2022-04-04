@@ -12,3 +12,7 @@ const (
 )
 
 var defaultLanguage = language.English
+
+const (
+	defaultCount = 10
+)

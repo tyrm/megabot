@@ -64,7 +64,7 @@ func (m *Module) initTemplate(w http.ResponseWriter, r *http.Request, tmpl templ
 
 func (m *Module) executeTemplate(w http.ResponseWriter, name string, tmplVars interface{}) error {
 	b := new(bytes.Buffer)
-	err := template.Templates.ExecuteTemplate(b, name, tmplVars)
+	err := m.templates.ExecuteTemplate(b, name, tmplVars)
 	if err != nil {
 		return err
 	}

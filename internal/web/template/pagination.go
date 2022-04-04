@@ -18,6 +18,16 @@ type PaginationNode struct {
 	Disabled bool
 }
 
+// PaginationConfig
+type PaginationConfig struct {
+	Count         int    // item count
+	DisplayCount  int    // how many items to display per page
+	HRef          string // href to add query to
+	HRefCount     int    // count to include in the href, if 0 no count is added
+	MaxPagination int    // the max number of pages to show
+	Page          int    // current page
+}
+
 // MakePagination creates a pagination element from the provided parameters
 func MakePagination(page, count, displayCount int, href string, hrefCount int) Pagination {
 	displayItems := 5
@@ -26,7 +36,7 @@ func MakePagination(page, count, displayCount int, href string, hrefCount int) P
 
 	if pages < displayItems {
 		// less than
-		displayItems = count
+		displayItems = pages
 	} else if page > pages-displayItems/2 {
 		// end of the
 		startingNumber = pages - displayItems + 1

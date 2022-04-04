@@ -8,6 +8,7 @@ import (
 	"encoding/pem"
 	"errors"
 	"fmt"
+	"github.com/allegro/bigcache/v3"
 	"github.com/go-sql-driver/mysql"
 	"github.com/jackc/pgx/v4"
 	"github.com/jackc/pgx/v4/stdlib"
@@ -23,6 +24,7 @@ import (
 	"runtime"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/uptrace/bun"
 )
@@ -80,12 +82,19 @@ func New(ctx context.Context) (db.DB, error) {
 		return nil, fmt.Errorf("database type %s not supported for bundb", dbType)
 	}
 
+	// make caches
+	chatbotCountCache, err := bigcache.NewBigCache(bigcache.DefaultConfig(15 * time.Minute))
+	if err != nil {
+		return nil, err
+	}
+
 	ps := &Client{
 		commonDB: commonDB{
 			bun: newBun,
 		},
 		chatbotDB: chatbotDB{
-			bun: newBun,
+			bun:        newBun,
+			countCache: chatbotCountCache,
 		},
 		userDB: userDB{
 			bun: newBun,

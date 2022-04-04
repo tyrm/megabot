@@ -14,6 +14,6 @@ type ChatbotServiceTemplate struct {
 	Common
 
 	ChatbotServices           *[]models.ChatbotService
-	ChatbotServicesPagination Pagination
+	ChatbotServicesPagination *Pagination
 	Sidebar                   Sidebar
 }

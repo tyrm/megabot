@@ -3,13 +3,40 @@ package bun
 import (
 	"context"
 	"database/sql"
+	"github.com/allegro/bigcache/v3"
 	"github.com/tyrm/megabot/internal/db"
 	"github.com/tyrm/megabot/internal/models"
 	"github.com/uptrace/bun"
 )
 
+const countChatbotServicesKey = "choatbot_services"
+
 type chatbotDB struct {
-	bun *Bun
+	bun        *Bun
+	countCache *bigcache.BigCache
+}
+
+func (c *chatbotDB) CountChatbotServices(ctx context.Context) (int64, db.Error) {
+	l := logger.WithField("func", "CountChatbotServices")
+
+	return c.countChatbotServices(
+		ctx,
+		func() (int64, bool) {
+			count, err := c.countCache.Get(countChatbotServicesKey)
+			if err == bigcache.ErrEntryNotFound {
+				return 0, false
+			} else if err != nil {
+				l.Errorf("cache error: %s", err.Error())
+				return 0, false
+			}
+			return bytes2int(count), true
+		},
+		func() (int64, error) {
+			count, err := c.newChatbotServiceQ((*models.ChatbotService)(nil)).Count(ctx)
+			return int64(count), err
+		},
+	)
+
 }
 
 func (c *chatbotDB) ReadChatbotServiceByID(ctx context.Context, id int64) (*models.ChatbotService, db.Error) {
@@ -25,7 +52,7 @@ func (c *chatbotDB) ReadChatbotServiceByID(ctx context.Context, id int64) (*mode
 }
 
 func (c *chatbotDB) ReadChatbotServicesPage(ctx context.Context, index, count int) (*[]models.ChatbotService, db.Error) {
-	var chatbotServices *[]models.ChatbotService
+	chatbotServices := new([]models.ChatbotService)
 	err := c.bun.
 		NewSelect().
 		Model(chatbotServices).
@@ -44,6 +71,33 @@ func (c *chatbotDB) newChatbotServiceQ(chatbotService *models.ChatbotService) *b
 	return c.bun.
 		NewSelect().
 		Model(chatbotService)
+}
+
+func (c *chatbotDB) countChatbotServices(ctx context.Context, cacheGet func() (int64, bool), dbQuery func() (int64, error)) (int64, db.Error) {
+	l := logger.WithField("func", "countChatbotServices")
+
+	// Attempt to fetch cached account
+	chatbotServiceCount, cached := cacheGet()
+
+	if !cached {
+		// Not cached! Perform database query
+		count, err := dbQuery()
+		if err == sql.ErrNoRows {
+			return 0, nil
+		}
+		if err != nil {
+			return 0, c.bun.ProcessError(err)
+		}
+		chatbotServiceCount = count
+
+		// Place in the cache
+		err = c.countCache.Set(countChatbotServicesKey, int2bytes(chatbotServiceCount))
+		if err != nil {
+			l.Errorf("can't update count cache: %s", err.Error())
+		}
+	}
+
+	return chatbotServiceCount, nil
 }
 
 func (c *chatbotDB) getChatbotService(ctx context.Context, cacheGet func() (*models.ChatbotService, bool), dbQuery func(*models.ChatbotService) error) (*models.ChatbotService, db.Error) {

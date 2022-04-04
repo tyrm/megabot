@@ -4,11 +4,9 @@
   <div class="row">
     {{- template "sidebar" .Sidebar }}
     <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-      <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
 {{ end }}
 
 {{ define "chatbot_footer" -}}
-      </div>
     </main>
   </div>
 </div><!-- /.container -->
@@ -17,41 +15,63 @@
 
 {{ define "chatbot" -}}
 {{- template "chatbot_header" . }}
-<h1 lang="{{ .Localizer.TextChatbot.Language }}"><i class="fas fa-globe"></i> {{ .Localizer.TextChatbot }}</h1>
-{{- template "chatbot_footer" . }}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+  <h1 lang="{{ .Localizer.TextChatbot.Language }}"><i class="fas fa-globe"></i> {{ .Localizer.TextChatbot }}</h1>
+</div>
+{{ template "chatbot_footer" . }}
 {{ end }}
 
 {{ define "chatbot_services" -}}
 {{- template "chatbot_header" . }}
-<h1 lang="{{ .Localizer.TextChatbot.Language }}"><i class="fas fa-globe"></i> {{ .Localizer.TextChatbot }}</h1>
-<table class="table">
-  <thead>
-  <tr>
-    <th scope="col">Descrption</th>
-    <th scope="col">First</th>
-    <th scope="col">Last</th>
-    <th scope="col">Handle</th>
-  </tr>
-  </thead>
-  <tbody>
-  <tr>
-    <th scope="row">1</th>
-    <td>Mark</td>
-    <td>Otto</td>
-    <td>@mdo</td>
-  </tr>
-  <tr>
-    <th scope="row">2</th>
-    <td>Jacob</td>
-    <td>Thornton</td>
-    <td>@fat</td>
-  </tr>
-  <tr>
-    <th scope="row">3</th>
-    <td colspan="2">Larry the Bird</td>
-    <td>@twitter</td>
-  </tr>
-  </tbody>
-</table>
-{{- template "chatbot_footer" . }}
+<div class="row">
+  <div class="col d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 lang="{{ .Localizer.TextChatbot.Language }}"><i class="fa-solid fa-globe"></i> {{ .Localizer.TextChatbot }}</h1>
+  </div>
+</div>
+<div class="row">
+  <div class="col d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h2><i class="fa-solid fa-person-digging"></i> Chatbot Services</h2>
+    <div class="btn-toolbar mb-2 mb-md-0">
+      <div class="btn-group">
+        <a href="/responder/add" class="btn btn-sm btn-outline-primary"><i class="fa-solid fa-plus"></i></i></a>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row">
+  <div class="col">
+  {{- if .ChatbotServices }}
+    <table class="table">
+      <thead>
+      <tr>
+        <th scope="col">ID</th>
+        <th scope="col">Description</th>
+        <th scope="col">Service</th>
+        <th></th>
+      </tr>
+      </thead>
+      <tbody>
+      {{- range .ChatbotServices }}
+        <tr>
+          <th scope="row"><a href="/app/chatbot/services/view/{{ token . }}">{{ .ID }}</a></th>
+          <td><a href="/app/chatbot/services/view/{{ token . }}">{{ .Description }}</a></td>
+          <td>{{ .ServiceType }}</td>
+          <td></td>
+        </tr>
+      {{- end }}
+      </tbody>
+    </table>
+  {{- else }}
+    No Data
+  {{- end }}
+  </div>
+</div>
+{{- if .ChatbotServicesPagination }}
+<div class="row">
+  <div class="col text-center">
+    {{ template "pagination" .ChatbotServicesPagination }}
+  </div>
+</div>
+{{- end }}
+{{ template "chatbot_footer" . }}
 {{ end }}

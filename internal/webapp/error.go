@@ -2,13 +2,13 @@ package webapp
 
 import (
 	"fmt"
-	template2 "github.com/tyrm/megabot/internal/web/template"
+	"github.com/tyrm/megabot/internal/web/template"
 	"net/http"
 )
 
 // ErrorPageTemplate contains the variables for the "error" template.
 type ErrorPageTemplate struct {
-	template2.Common
+	template.Common
 
 	BotImage    string
 	Header      string
@@ -34,7 +34,7 @@ func (m *Module) returnErrorPage(w http.ResponseWriter, r *http.Request, code in
 	if err != nil {
 		l.Errorf("getting signature for %s: %s", pathFileErrorCSS, err.Error())
 	}
-	tmplVars.AddHeadLink(template2.HeadLink{
+	tmplVars.AddHeadLink(template.HeadLink{
 		HRef:        pathStatic + pathFileErrorCSS,
 		Rel:         "stylesheet",
 		CrossOrigin: "anonymous",

@@ -62,19 +62,19 @@
 {{define "pagination" -}}
 <nav>
   <ul class="pagination">
-      {{range $rm := .}}
-        <li class="page-item{{if .Active}} active{{end}}{{if .Disabled}} disabled{{end}}"{{if .Active}} aria-current="page"{{end}}>
-            {{if .HRef}}
-              <a class="page-link" href="{{.HRef}}">
-                  {{if .DisplayHTML}}<span aria-hidden="true">{{.DisplayHTML | htmlSafe}}</span>{{else}}{{.Text}}{{end}}{{if .Active}} <span class="sr-only">(current)</span>{{end}}
-              </a>
-            {{else}}
-              <span class="page-link"{{if .DisplayHTML}} aria-label="{{.Text}}"{{end}}>
-              {{if .DisplayHTML}}<span aria-hidden="true">{{.DisplayHTML | htmlSafe}}</span>{{else}}{{.Text}}{{end}}{{if .Active}} <span class="sr-only">(current)</span>{{end}}
-          </span>
-            {{end}}
-        </li>
-      {{end}}
+  {{- range $rm := . }}
+    <li class="page-item{{if .Active}} active{{end}}{{if .Disabled}} disabled{{end}}"{{if .Active}} aria-current="page"{{end}}>
+    {{- if .HRef }}
+      <a class="page-link" href="{{.HRef}}">
+        {{if .DisplayHTML}}<span aria-hidden="true">{{.DisplayHTML | htmlSafe}}</span>{{else}}{{.Text}}{{end}}{{if .Active}} <span class="sr-only">(current)</span>{{end}}
+      </a>
+    {{- else }}
+      <span class="page-link"{{if .DisplayHTML}} aria-label="{{.Text}}"{{end}}>
+        {{if .DisplayHTML}}<span aria-hidden="true">{{.DisplayHTML | htmlSafe}}</span>{{else}}{{.Text}}{{end}}{{if .Active}} <span class="sr-only">(current)</span>{{end}}
+      </span>
+    {{- end }}
+    </li>
+  {{- end }}
   </ul>
 </nav>
 {{- end}}
@@ -82,31 +82,31 @@
 {{ define "script" }}<script src="{{ .Src }}"{{if .Integrity}} integrity="{{ htmlSafe .Integrity }}"{{end}}{{if .CrossOrigin}} crossorigin="{{ .CrossOrigin }}"{{end}}></script>{{ end }}
 
 {{ define "sidebar" }}
-  <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
-    <div class="position-sticky pt-3">
-    {{- range . -}}
-      {{- if .Text }}
-      <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
-        <span>{{ .Text }}</span>
-        {{- if .ButtonURL -}}
-        <a class="link-secondary" href="{{ .URL }}" aria-label="{{ .Label }}">
-          <i class="fa-solid fa-{{ .Icon }}"></i>
-        </a>
-        {{- end }}
-      </h6>
-      <ul class="nav nav-pills flex-column mb-2">
-      {{- else }}
-      <ul class="nav nav-pills flex-column mb-auto">
+<nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+  <div class="position-sticky pt-3">
+  {{- range . -}}
+    {{- if .Text }}
+    <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+      <span>{{ .Text }}</span>
+      {{- if .ButtonURL -}}
+      <a class="link-secondary" href="{{ .URL }}" aria-label="{{ .Label }}">
+        <i class="fa-solid fa-{{ .Icon }}"></i>
+      </a>
       {{- end }}
-      {{- range .Children }}
-        <li class="nav-item">
-          <a class="nav-link{{ if .Active }} active{{ end }}" aria-current="page" href="{{ .URL }}">
-            {{ if .Icon }}<i class="fa-solid fa-{{ .Icon }}"></i> {{ end }}{{ .Text }}
-          </a>
-        </li>
-      {{- end }}
-      </ul>
+    </h6>
+    <ul class="nav nav-pills flex-column mb-2">
+    {{- else }}
+    <ul class="nav nav-pills flex-column mb-auto">
     {{- end }}
-    </div>
-  </nav>
+    {{- range .Children }}
+      <li class="nav-item">
+        <a class="nav-link{{ if .Active }} active{{ end }}" aria-current="page" href="{{ .URL }}">
+          {{ if .Icon }}<i class="fa-solid fa-{{ .Icon }}"></i> {{ end }}{{ .Text }}
+        </a>
+      </li>
+    {{- end }}
+    </ul>
+  {{- end }}
+  </div>
+</nav>
 {{- end }}
